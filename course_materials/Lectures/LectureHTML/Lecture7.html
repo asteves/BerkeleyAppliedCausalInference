@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 7</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture7_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 7
+### Alex Stephenson
+### 9-10-2021
+
+---
+
+
+
+
+
+
+## Blocking 
+
+Blocking helps reduce sampling variability. In practice, block on what you can and randomize on what you cannot.
+
+The total number of random allocations in a design with B blocks is always less than the total number of allocations under complete randomization. 
+
+Example N = 20, m = 10. Under complete randomization there are `\(\frac{20!}{10!10!}=184,756\)`. 
+
+Under blocking with complete randomization with 2 equal sized blocks. `\(\frac{10!}{5!5!}\frac{10!}{5!5!} = 63,504\)` 
+
+Blocking also guarantees that a certain subgroup will be available for analysis. E.g. we guarantee that there are 10 Democrats and 10 Republicans in each block. 
+???
+
+We calculate the number of complete randomizations in each block and then multiply them together to get the total number of allocations. 
+
+Block on what you can and randomize on what you can't might not be technically feasible or easy. It is not a major design flaw to not block. Covariate adjustment with large enough samples can do almost as well in terms of precision. 
+---
+
+## Block ATE 
+
+`$$ATE = \sum_i^J \frac{N_j}{N}ATE_j$$` 
+
+`$$ATE_j = E[Y_{ij}(1)] - E[Y_i{ij}(0)]$$`
+
+`\(ATE_j\)` is the within block j ATE. 
+
+J is total number of blocks.
+
+`\(\frac{N_j}{N}\)` is the weighted share of all units who are in block j 
+---
+## Block ATE in R 
+
+
+```r
+within_block_ate &lt;- function(df, y0, y1, block, block_weights){
+  # Block weights are the number of observations in each
+  # block 
+  treat &lt;- mean(df$y1[df$block==block], na.rm = T)
+  control &lt;- mean(df$y0[df$block==block], na.rm = T)
+  
+  return((treat-control)*block_weights)
+}
+```
+---
+## Block Conservative SE 
+
+For any number of blocks 
+
+`$$\sigma_{\hat{ATE}} = \sqrt{\sum_i^J(\frac{N_j}{N})^2\sigma^2_{\hat{ATE_j}}}$$`
+For two blocks this is: 
+`$$\sigma_{\hat{ATE}} = \sqrt{(\frac{N_1}{N})^2\sigma^2_{\hat{1}} + (\frac{N_2}{N})^2\sigma^2_{\hat{2}}}$$`
+???
+
+The fraction with N is the block weights which are squared. The sigmas are the standard errors squared, which is the same thing as the variance
+---
+## Block SE in R 
+
+
+```r
+within_block_se &lt;- function(df, y0, y1, block, N, m){
+  # formula for se = sqrt(V[X]/N-m + V[Y]/m)
+  # We need to get this within each block so subset appropriately
+  control &lt;- var(df$y0[df$block==block], na.rm = T)/(N-m) 
+  treat &lt;-var(df$y1[df$block==block], na.rm = T)/(m)
+  return(sqrt(treat+control))
+}
+```
+---
+
+## Block Confidence Intervals 
+
+Confidence Intervals for Blocking function like confidence intervals for non-blocked assignments. 
+
+Provided we have correctly estimated the ATE and SE, we proceed the same way as before. 
+---
+## Block Confidence Intervals in R 
+
+
+```r
+get_block_ci95 &lt;- function(block_ate, block_se){
+  # get 95% CI 
+  # 1.96 is the normal approximation value 
+  ci_l &lt;- block_ate - block_se*1.96
+  ci_u &lt;- block_ate + block_se*1.96
+  
+  return(c(ci_l, ci_u))
+}
+```
+
+---
+
+## Block Example 
+
+Suppose we have the following data frame 
+
+
+```r
+d &lt;- tibble(
+  block = c(rep("A", 8), rep("B",6)),
+  y0 = c(0,1, NA, 4,4,6,6,NA, 14, NA, 16,16,17, NA),
+  y1 = c(NA, NA, 1, NA, NA, NA, NA, 3, NA, 9, NA,NA,NA, 17)
+)
+```
+---
+
+## Block Example 
+
+We need to get the overall sum of each within block ATE 
+
+
+```r
+get_block_ate &lt;- function(df, y0, y1, block,block_weights){
+  val &lt;- NULL 
+  for(i in 1:length(block)){
+    val[i]&lt;-within_block_ate(df, y0, y1, block[i],
+                             block_weights[i])
+  }
+  return(sum(val))
+}
+```
+
+---
+## Block Example 
+
+We need to get the overall Block SE 
+
+
+```r
+get_block_se &lt;- function(df, y0, y1, block, N, m, block_weights){
+  # variance of sum of independent random variables 
+  # V[aX + bY] = a^2V[X]+b^2V[Y]
+  
+  # for loop to get sum of weighted variances
+  val &lt;- NULL
+  for(i in 1:length(block)){
+    val[i] &lt;- within_block_se(df, y0, y1, 
+                              block[i], N[i], 
+                              m[i])^2*block_weights[i]^2
+  }
+  
+  # sqrt of the sum to get se 
+  return(sqrt(sum(val)))
+}
+```
+
+---
+
+## Block Example 
+
+Use `get_block_ate()` with appropriate parameters to get: `\(\hat{\mu}\)`
+
+
+```r
+ate_hat &lt;-get_block_ate(d, y0="y0",y1="y1", 
+                      block=c("A","B"), 
+                      block_weights = c(sum(d$block=="A")/nrow(d),
+                                        sum(d$block=="B")/nrow(d)))
+kable(ate_hat)
+```
+
+
+
+|         x|
+|---------:|
+| -2.035714|
+
+---
+
+## Block Example 
+
+Use `get_block_se()` with appropriate parameters to get: `\(\hat{\sigma}_{ATE}\)`
+
+
+```r
+se_hat &lt;- get_block_se(df = d, 
+                   y0 = "y0",
+                   y1 = "y1",
+                   block = c("A","B"), 
+                   N = c(8,6), 
+                   m = c(2,2), 
+                   block_weights = c(sum(d$block=="A")/nrow(d),
+                                     sum(d$block=="B")/nrow(d)))
+kable(se_hat)
+```
+
+
+
+|        x|
+|--------:|
+| 1.918559|
+---
+
+## Block Example 
+
+Use `get_block_ci95()` with appropriate parameters to get our 95% CI
+
+
+```r
+block_ci &lt;- get_block_ci95(ate_hat, se_hat)
+
+kable(tibble(
+  interval = c("lower", "upper"),value = block_ci))
+```
+
+
+
+|interval |     value|
+|:--------|---------:|
+|lower    | -5.796089|
+|upper    |  1.724661|
+
+---
+
+## Clustered Designs 
+
+Situations in which underlying potential outcomes are related. Examples include schools, villages, towns, states. 
+
+There may be large N within cluster, but because of relations we have to analyze at the cluster level. 
+
+Each unit in a cluster is placed into either treatment or control conditions
+
+???
+
+cluster assignment rules out all possible allocations in which individuals in the same cluster are assigned to different experimental conditions
+---
+## Clustered Designs ATE 
+
+If clusters are the same size, then our estimate of the ATE via difference in means will be unbiased. 
+
+If clusters are not the same size, then our estimate of the ATE must take this into account. Naive estimates will be biased. 
+
+Clustered designs will have more variability (uncertainty) than non clustered designs. 
+
+We do clustered designs because we have to, not because we want to.
+---
+
+## Cluster Example 
+
+.pull-left[
+
+```r
+cdf &lt;- tibble(
+  cluster = c(rep("Berkeley",3), 
+              rep("Stanford",3),
+              rep("UCLA",3), 
+              rep("UCSD",3)),
+  dorm = c(rep(c(1,2,3),4)),
+  y0 = c(0:11),
+  y1 = y0 + 4
+)
+```
+]
+
+.pull-right[
+
+|cluster  | dorm| y0| y1|
+|:--------|----:|--:|--:|
+|Berkeley |    1|  0|  4|
+|Berkeley |    2|  1|  5|
+|Berkeley |    3|  2|  6|
+|Stanford |    1|  2|  6|
+|Stanford |    2|  3|  7|
+|Stanford |    3|  4|  8|
+|UCLA     |    1|  3|  7|
+|UCLA     |    2|  4|  8|
+|UCLA     |    3|  5|  9|
+|UCSD     |    1|  7| 11|
+|UCSD     |    2|  8| 12|
+|UCSD     |    3|  9| 13|
+]
+
+???
+
+Due to size constraints the last few UCSD have been cut off. Note that we have equal sized clusters. A naive difference in means will be unbiased here because of equal sizes. 
+
+However, there are only 4 possible random allocations here to put equal numbers of clusters in each treatment arm. If this was an individual experiment, there would be 924 ways. Our lack of size means that we have a tiny number of possible allocations, which is the intuition for the increase in variance. 
+
+---
+
+## Cluster ATE and Conservative SE 
+
+The Cluster ATE formula with equal sized clusters
+
+`$$\hat{\mu}_{DM} = \left[\frac{\sum_1^T\sum_1^nY_{it}}{\sum_i^Jn_t}-\frac{\sum_1^C\sum_1^NY_{ic}}{\sum_1^Cn_c}\right]$$`
+
+
+The Cluster Difference in Totals formula 
+`$$\hat{\mu} = \frac{k_c + k_t}{N}\left(\frac{\sum Y_i(1)|d_i =1}{k_t} - \frac{\sum Y_i(0)|d_i=0}{k_c} \right)$$`
+The Cluster SE Formula 
+`$$\hat{\sigma}_{\hat{ATE}} = \sqrt{\frac{N\hat{V}[\bar{Y_j}(0)]}{k(N-m)} + \frac{N\hat{V}[\bar{Y_j}(1)]}{km}}$$`
+
+???
+
+In words the difference in means estimator says sum the values inside each treated cluster and divide the sum of each number of units in treatment clusters and do the same procedure for control. This is only unbiased when clusters are the same size. 
+
+k_c is the number of clusters assigned to control and k_t is the number of clusters assigned to treatment. This estimator is different than the usual difference in means because it divides by quantities that are unaffected by which units are assigned to treatment. It is equivalent to the difference in means estimator when clusters are all the same size. 
+K is the number of clusters, J is the jth cluster.
+
+---
+
+## Cluster ATE with Equal Clusters
+
+.pull-left[
+
+```r
+assignment_vectors &lt;- list(
+  c(rep(0,3), rep(0,3), 
+    rep(1,3), rep(1,3)),
+  c(rep(0,3), rep(1,3), 
+    rep(0,3), rep(1,3)),
+  c(rep(1,3), rep(0,3), 
+    rep(0,3), rep(1,3)),
+  c(rep(1,3), rep(1,3), 
+    rep(0,3), rep(0,3)),
+  c(rep(0,3), rep(1,3), 
+    rep(1,3), rep(0,3)),
+  c(rep(1,3), rep(0,3), 
+    rep(1,3), rep(0,3))
+  
+)
+```
+]
+.pull-right[
+
+
+
+Running over all possible assignments, the ATE will be equal to 4
+
+|  x|
+|--:|
+|  4|
+]
+
+---
+
+## Next Week 
+
+Regression 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

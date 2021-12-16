@@ -1,0 +1,31 @@
+---
+title: "Problem Set [fill in] Makeup"
+author: "Fill in your name here"
+output: pdf_document 
+---
+
+```{r setup, include=FALSE, message=F, warning = F}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(estimatr)
+library(fabricatr)
+library(randomizr)
+```
+
+This is a template for a makeup submission. When you submit your work, delete this entire paragraph. For each question, you should use ## [QUESTION] to define what question you are answering. Below this, you should answer the question. If r code is required, you should create an r chunk and fill in your r code. The code must run. Before your knit the document, delete this paragraph. 
+
+Below is an example of what a question looks like. When you submit your makeup, delete everything that is not explicitly related to your submission. 
+
+## NAME OF QUESTION 
+
+Fill in answer. 
+
+If r code is required, include a correct r chunk 
+
+You can make an r chunk like so 
+
+```{r, warning = F}
+
+
+```
+

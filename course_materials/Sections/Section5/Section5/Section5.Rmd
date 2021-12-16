@@ -1,0 +1,223 @@
+---
+title: "Section 5"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#1381B0",
+  secondary_color = "#FF961C",
+  inverse_header_color = "#FFFFFF"
+)
+```
+
+## Jensen 2003
+
+Jensen is interested in the effect of regime type on foreign direct investment (FDI)
+
+The design is a TSCS design using regression of 114 countries from 1970-1997. 
+
+He finds that "democratic political institutions are associated with higher levels of FDI inflows" 
+
+Is this a causal parameter? If not, what would we need to assume or do to make it a causal parameter?
+
+???
+
+No. From a design perspective, it's not clear what's random here, or how we would randomly assign democratic political institutions. That should make us worry about selection bias in general. 
+
+From a model perspective, we could assume that we have all the controls such that conditional on controls democratic political 
+---
+## How do we code effective samples? 
+
+1. We define our treatment variable and any pre-treatment controls or additional model terms 
+
+2. Run a regression of the treatment on the controls 
+
+3. Extract the residuals from that regression 
+
+4. Square the residuals. 
+
+5. Get the average of these residuals^2 for each country 
+???
+
+The multiple regression weights are the squares of the residuals. 
+
+Here to measure the extent to which a given country contributes to the estimate, we take the sum of the weights for a country and divide by the sum of all weights in the sample. 
+---
+## Packages we'll need
+
+```{r, message = F, warning = F}
+library(tidyverse)
+library(sf) # for mapping 
+library(patchwork)
+
+```
+
+For ease of use, we'll use the base `lm()` function to run the regressions. Why is that ok here? 
+
+???
+
+Answer: We don't care about the standard errors. We are just interested in the fit. 
+---
+
+## Effective Weights as a function 
+
+```{r}
+
+effectiveWeights <- function(arg1, arg2, ...){
+  # Make the OLS formula call 
+  
+  # Run a regression of the treatment on the controls 
+
+  # Extract the residuals from that regression 
+
+  # Square the residuals. 
+
+}
+
+```
+---
+
+## Effective Weights as a function 
+
+```{r}
+effectiveWeights <- function(Y, controls, data){
+  # Make the OLS formula call 
+  treat_formula <- reformulate(termlabels = c(controls), 
+                               response = Y)
+  # Run a regression of the treatment on the controls 
+  treat.model <- lm(as.formula(treat_formula), data = data)
+  # Extract the residuals from that regression 
+  d.tilde <- as.numeric(residuals(treat.model))
+
+  # Square the residuals. 
+  weights <- d.tilde^2
+  return(weights)
+}
+```
+
+???
+
+reformulate() is a function to build formulas of the form y~x
+
+we can do d.tilde^2 because R is doing elementwise multiplication
+
+---
+
+## Get our Data 
+
+```{r}
+world <- st_read("world_countries_boundary_file_world_2002.shp")
+mapnames <- read_csv("mapnames_filled2.csv")
+
+jensenData <- read_csv("jensenData.csv")
+
+```
+
+---
+
+## Calculate effective weights 
+
+```{r}
+X.vars <- c("var5",
+            "market","lgdppc",
+            "gdpgrowt","tradeofg",
+            "overallb","generalg",
+            "country", "d2","d3")
+
+w <- effectiveWeights(Y = "regime", controls =X.vars, data = jensenData)
+```
+
+---
+
+## Step 5: Average of residuals^2 for each country 
+
+```{r}
+df <- tibble(weight = w, country = jensenData$country)
+
+weights <- df %>% 
+  group_by(country)%>%
+  summarise(avg = round(mean(weight),4))
+
+```
+
+---
+
+## Apply our weights to our map 
+
+```{r}
+mapWeights <- mapnames %>% 
+  left_join(weights, by = c("jensen"="country"))%>%
+  na.omit()
+
+output <- world %>% 
+  left_join(mapWeights, by = c("NAME"="mapname"))%>%
+  filter(NAME != "Antarctica")%>%
+  mutate(weight = if_else(is.na(avg), 0,avg),
+         expW = if_else(is.na(avg), 0, 1))
+
+```
+
+---
+
+## Make plots 
+
+```{r}
+ns <- ggplot(output)+
+  geom_sf(aes(fill = expW))+
+  scale_fill_gradient(low = "white", high = "black")+
+  theme_void()+
+  theme(legend.position = "none")+
+  ggtitle("Nominal Sample")
+
+es <- ggplot(output)+
+  geom_sf(aes(fill = weight))+
+  scale_fill_gradient(low = "white", high = "black")+
+  theme_void()+
+  theme(legend.position = "none")+
+  ggtitle("Effective Sample")
+
+```
+
+---
+
+## Put our maps on the same plot 
+
+```{r, eval = F}
+plots <- ns / es
+plots + plot_annotation(
+  title = "The difference between Effective and Nominal Samples"
+)
+
+```
+---
+## Put our maps on the same plot 
+
+```{r, echo = F, cache=TRUE}
+plots <- ns / es
+plots + plot_annotation(
+  title = "The difference between Effective and Nominal Samples"
+)
+```

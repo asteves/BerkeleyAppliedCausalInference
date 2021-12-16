@@ -1,0 +1,45 @@
+---
+title: "Checkpoint 3"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Due Date 
+
+This assignment is due on Friday 9/10 at 10:00:00. Assignments not turned in by that time without an excused absence are not eligible for a retake. 
+
+## Requirements 
+
+Answer the following questions in a pdf document with your name and the assignment clearly labeled at the top. 
+
+## Questions 
+
+1. State three properties of the expectation operator. 
+
+
+2. State the variance of a line and the variance of the sum of two random variables. 
+
+
+3. Define mean independence. Why is this useful for regression?
+
+
+4. Suppose we have two variables, **X** and **Y** and we run the regression of **Y** on **X**. Consider the model as $y_i = \beta_0 + \beta_1x_i + u_i$. Define in words what $\beta_0$ and \$beta_1$ are. What values do we need to identify them? You can answer with either mathemetical definitions or in words.  
+
+5. Suppose we have heteroskedastic errors (which in practice is always true). Is OLS estimator for a parameter biased? Why or why not? 
+
+
+### Sufficient Work 
+
+An assignment shows sufficient work if all questions are answered, and there is a clear effort for those answers to be correct. 
+
+## Evaluation 
+
+P/NP 
+
+## Retake Policy  
+
+There is one make-up for this assignment. Students must turn in the make-up exam at the beginning of Section on Wednesday. 
+

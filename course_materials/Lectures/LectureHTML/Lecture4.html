@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 4</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture4_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 4
+### Alex Stephenson
+### 9-1-2021
+
+---
+
+
+
+
+
+
+## What did we do last time?
+
+- Defined Causal Inference 
+- Introduced Potential Outcomes 
+- Introduced our first estimand 
+
+---
+## What are we doing today?
+
+- Continue our discussion of SUTVA
+
+- Discuss DAGs
+
+- Begin discussing what makes a good estimator
+---
+
+## Stability Assumptions 
+
+In order to get a situation where we have two potential outcomes, it must be the case that potential outcomes depend **solely** on whether a unit **itself** receives a singular **treatment**. 
+
+Solely is an *exclusion* restriction assumption
+
+Itself is a *non-interference* assumption 
+
+Treatment here means that there are not different levels or different kind of treatments. 
+
+???
+
+These assumptions are more or less plausible depending on the scenario we are considering
+
+The third part about the framework are a set of assumptions about how treatment affects units. In order to speak about estimands like the ATE, they have to hold as well. 
+---
+
+## Stability Assumptions: Excludability 
+
+
+That means that the treatment received `\(d_i\)` must be separated from the treatment group assigned. We call the latter `\(z_i\)` where `\(z_i \in {0,1}\)` is the observed group. 
+
+.center[Formally: `$$Y_i(z_i = 1, d_i) = Y_i(z_i = 0, d_i)$$`]
+
+In words: The value of z is irrelevant to the potential outcomes. Potential outcomes only respond to the treatment. 
+
+???
+
+Here's an example of a failure of the excludability restrictions. Everyone in this room has access to the NYT and the WSJ through the university. Suppose we were interested generally in the effect of receiving a free newspaper subscription on students' interest in politics. We conduct an experiment, but prior to the actual treatment, we send a letter around informing the students in our treatment group that they are in our treatment group. 
+
+Since this letter is only distributed to the treatment group, the assignment groups are now related to both the actual treatment of interest (newspaper subscription) and the letter. If we think that the letter matters, which we should, the excludability condition is violated. 
+
+Another example where excludability is violated is asymmetries in measurement. Suppose the value of treatment is measure differently than the value of control. When we compare the groups, we know also have the combination of the true effect and measurement procedures. Since we only want to know the first part, we have a problem. 
+
+This assumption is also the reason why double-blind experiments are preferred in medical trials. 
+---
+
+## No interference 
+
+No interference means that a unit's potential outcomes are not affected by the treatment applied to a different unit. It also means that the treatment is the same for all units that receive treatment. 
+
+Consider our example about the effect of the coal industry on local government. If the coal industry in one county affects the decisions made by a local government in a different county `\(\rightarrow\)` interference is present. 
+
+Formally `\(Y_i(\textbf{d}) = Y_i(d)\)` where `\(\textbf{d}\)` describes all treatments administered to every unit
+
+???
+
+This assumption is also known as the Stable Unit Treatment Value Assumption (SUTVA). 
+
+A violation of the same dose may occur if the treatment requires some kind of knowledge. For example, in studies of teaching some teachers may be better than others, and so the treatment is the curriculum + teacher. The treatment is therefore no longer stable. 
+
+A classic challenge of SUTVA are studies of networks. One of the most common areas are studies of crime interventions. Because crime is spatially related, crackdowns in one area may shift crime to a different area. In this case, untreated areas are affected by the treatment of other units, and so these untreated villages no longer constitute an untreated control group. 
+
+Another general equilibrium point that has salience to our existence is the causal effect of immunization, which crucially depends on how many others are immunized. If everyone else is immunized, then the causal effect of immunization is the different in potential outcomes + the level of immunization. 
+
+This assumption is also jeopardized when subjects are aware of the treatments other subjects receive. In this case, units may change their behavior as a result. 
+---
+
+## DAG
+
+A Directed Acyclic Graph (DAG) is a graphical representation of a chain of causal effects 
+
+Use nodes to represent random variables and arrows to represent the causal effect between variables 
+
+???
+
+The direction of the arrows captures the direction of causality. Directed graphs are graphs made up of a set of vertices connected by directed edges. Acyclic means that there are no cycles back in forth. 
+
+The direction of the arrows captures the direction of causality.
+---
+
+## DAG
+
+.pull-left[ 
+
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Directed_graph%2C_cyclic.svg" /&gt;
+
+**Directed Cyclic Graph**]
+
+.pull-right[
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Tred-G.svg" height = 250px width = 300px/&gt;
+
+**Directed Acyclic Graph**
+]
+
+???
+
+Here are two examples of cyclic and acyclic graphs. On the left is a cyclic graph. We can see that there is a loop in the middle. Starting at B, I can reach B again. 
+
+On the right, is an DAG. Note that starting at b, we cannot get back to B. 
+---
+
+## "Reading" DAGs
+
+.pull-left[
+
+There are three variables. 
+
+There is a direct path from D `\(\rightarrow\)` Y
+
+There is a *backdoor* path from 
+
+D `\(\leftarrow\)` X `\(\rightarrow\)` Y
+]
+
+.pull-right[
+
+&lt;img src="https://mixtape.scunning.com/causal_inference_mixtape_files/figure-html/simple_dag-1.png" /&gt;
+]
+
+???
+
+The direct path is a causal effect. The backdoor path is not. It is a process that creates spurious correlations between D and Y that are driven solely by fluctuations in X
+
+X is therefore known as a confounder. It jointly determines D and Y and so confounds our ability to discern the effect of D on Y without accounting for X. 
+
+We close a backdoor path by econditioning on the confounder. This is equivalent to controlling for in a regression context. 
+---
+
+## Reading DAGs
+.pull-left[
+
+This is an example of a DAG with an unobserved variable U
+
+This is a confounder we don't know about and do not observe.
+]
+.pull-right[
+
+&lt;img src="https://mixtape.scunning.com/causal_inference_mixtape_files/figure-html/earnings_dag-1.png" /&gt;
+
+]
+
+???
+
+Here, like before U is a noncollider along the backdoor path from D to Y. Unlike the previous slide, U is unobserved, which means it is not in our data set. There are still two paths from D to Y. There is the direct pathway again D to Y and there's the backdoor D &lt;- U -&gt; Y. Since U is unobserved, we say that this path is open. 
+
+The presence of open backdoor paths introduces bias when comparing educated and less educated workers
+---
+
+## Reading DAGs
+
+.pull-left[
+
+Here is an example of a collider 
+
+In this case, the causal path is the same but the backdoor path arrows both point to X
+]
+
+.pull-right[
+ &lt;img src="https://mixtape.scunning.com/causal_inference_mixtape_files/figure-html/collider-1.png" /&gt;
+]
+
+
+???
+
+Colliders close the backdoor path by their mere presence. As a result, when we condition on a collider we open up a backdoor path. 
+
+We will generally refer to this is as either collider bias or a "bad control" 
+---
+
+## Collider Bias 
+
+&lt;img src="Lecture4_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+
+???
+
+The graph on the left is created by taking two independent random draws from a standard normal distribution. There is no correlation by design from this simulation. Suppose now we condition on a collider X that is just the top 10% of values of the linear combination of these variables. 
+
+Now we get in graph 2 a negative relationship between these two graphs. In effect, we have opened a backdoor path by conditioning on a collider and led to a biased result. 
+
+In graph 3, we see that we have also created a negative relationship between the variables as well by focusing on the bottom 90% percent. We know there is no relationship between these variables, but conditioning on a collider (bad control has introduced bias). 
+---
+
+## Estimators 
+
+An estimator is the procedure that generates a guess about the estimand 
+
+Example: Our estimand is the 
+
+.center[$$ATE =E[Y_i(1)|D_i = 1] - E[Y_i(0)|D_i = 0]$$]
+
+With random sampling the plug-in estimator is the difference in means
+
+`$$\hat{E}_{DM} = \hat{E}[Y_i(1)] - \hat{E}[Y_i(0)$$`
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**
+
+**Unbiasedness**
+
+**Precision**
+
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**
+
+**Precision**
+
+???
+
+As the number of units grows asymptotically holding all other factors constant, the probability of an estimator within an arbitrarily small distance `\(\epsilon\)` from the estimand is 1. 
+
+Consistency is the base property of a good estimator. If we have infinite data and still can't hit the target, we have a bad estimator. The difference in means estimator is a consistent estimator of the ATE under randomization. 
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**: The difference between the expected value of an estimator and the true value of the estimand in 0
+
+**Precision**
+
+???
+
+Unbiasedness is another way of saying there is no systemic error. More formally, an estimator is asymptotically unbiased asymptotically if as the sample size goes to infinity the estimator converges on the true value. 
+
+Unbiasedness is a good property to have, and one that from a procedural standpoint has been given lots of weight. That said, it says little about how well we can expect our estimator to approximate the estimand (the bias-variance trade off) and it does not guarantee that our estimate will usually or even ever come close to the true value. The difference of means estimator is an unbiased procedure. 
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**: The difference between the expected value of an estimator and the true value of the estimand in 0
+
+**Precision** An estimator is more precise than another estimator if it produces estimates closer to the estimand on average
+
+???
+
+Precision is a way to think about variance. If we have two unbiased consistent estimators, we want the one with higher precision. There are ways to improve upon the difference in means estimator's precision, and we will talk about them as we move through the class. 
+
+---
+
+## Estimators 
+
+The most common metric for an estimator's precision is Mean Square Error 
+
+
+Formally for an estimator `\(\hat{\theta}\)`
+
+`$$MSE = E[(\hat{\theta} - \theta)^2] = V[\hat{\theta}] + (E[\hat{\theta}] - \theta)^2$$`
+An estimator with a lower MSE than another estimator is more efficient 
+???
+
+Normally we consider precision in the context of a loss function. The most common loss function is Mean Squared Error. All else equal we prefer estimators we a lower MSE. 
+
+Efficiency is also an information criterion in the sense that an estimator with higher efficiency is using information better than estimator with lower efficiency.
+
+---
+
+## What are we doing on Friday 
+
+Fill in the reason why randomization is great 
+
+Give an overview of common estimators 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

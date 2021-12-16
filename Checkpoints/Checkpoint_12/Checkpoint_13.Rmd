@@ -1,0 +1,28 @@
+---
+title: "Checkpoint 13"
+output: pdf_document
+---
+
+## Instructions 
+
+We have reached the point in the semester where you have seen many examples RMarkdown files to answer Checkpoints. You must create your own file with the title "Checkpoint 13" and your name as the author for this checkpoint. 
+
+
+## Requirements 
+
+
+The questions for this checkpoint are drawn from Lal *et al.* (2021) "How Much Should We Trust Instrumental Variable Estimates in Political Science? Practical Advice based on Over 60 Replicated Studies" available [here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3905329) or on bCourses. The derivations are not that important and can be safely skipped. 
+
+Write each answer as if you were writing a final paper in a class. Since you should not copy and paste from the article, in-line citations are not necessary. 
+
+Question 1: Explain the two critical identifying assumptions in an instrumental variables design for an instrument to be valid. Using your knowledge of randomized control trials, how are these satisfied with an instrument in an experiment with two-sided non-compliance?
+
+
+Question 2: What are two potential pitfalls with IV estimation? Explain how each works in your own words. 
+
+
+Question 3: How does a Zero-first-stage test work?
+
+
+Question 4: The authors provide a checklist when considering applying an IV strategy with observational. Identify each part of the checklist and, for each part, discuss whether you would need to write any code in order to pass.
+

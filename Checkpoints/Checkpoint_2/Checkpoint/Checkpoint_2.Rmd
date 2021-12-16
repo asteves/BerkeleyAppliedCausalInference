@@ -1,0 +1,43 @@
+---
+title: "Checkpoint 2"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Due Date 
+
+This assignment is due on Thursday at 23:59:59. Assignments not turned in by that time without an excused absence are not eligible for a retake. 
+
+## Requirements 
+
+Answer the following questions in a pdf document with your name and the assignment clearly labeled at the top. 
+
+Read Lundberg *et al.* (2021). After reading the article, answer the following questions. Provide page number citations to support your answers.  
+
+## Questions 
+
+**1. According to the article, what is the first step in quantitative empirical research? Give two reasons why being precise about this quantity matters for research.**
+
+**2. Based on the discussion in the article about defining the target population, who is the target population in the following hypothetical study? Why?**
+
+**"We conduct an experiment to estimate the effect of an active learning curriculum on student learning outcomes. To do so, we randomly assign UC Berkeley political science undergraduates to receive either a lecture based course or a flipped learning based course..."**
+
+**3. What are the two types of estimands the article discusses? What is the difference between them?**
+
+**4. Much of this article's vocabulary might be new to you. What parts of the paper were difficult for you to understand or looked scary?**
+
+### Sufficient Work 
+
+An assignment shows sufficient work if all questions are answered, and there is a clear effort for those answers to be correct. 
+
+## Evaluation 
+
+P/NP 
+
+## Retake Policy  
+
+There is one make-up for this assignment. Students must turn in the make-up exam at the beginning of Section on Wednesday. 
+

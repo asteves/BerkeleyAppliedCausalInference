@@ -1,0 +1,33 @@
+---
+title: "Checkpoint 7"
+author: "Fill in your name here" 
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading Requirement 
+
+Read "Hawks, Doves, and Peace: An Experimental Approach" by Mattes and Weeks. Following that, answer the following questions. As a reminder, all articles are available on bCourses, via the Library Proxy, or are free resources via the links in the syllabus. 
+
+## Question 1 
+
+What does this study do experimentally that differs from past studies better to understand the public opinion effects of conciliatory policies? 
+
+
+## Question 2 
+
+Describe as if you are explaining to a roommate what this article is about. 
+
+
+## Question 3 
+
+Describe as if you are explaining to your instructor what the research design of this study is. 
+
+
+## Question 4 
+
+Interpret Table 3 to your friend who has recently become wildly interested in political science research. Make sure to cover the entire table fully. 
+

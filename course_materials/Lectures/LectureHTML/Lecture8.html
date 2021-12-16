@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Regression Lectures 8-10</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture8_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Regression Lectures 8-10
+### Alex Stephenson
+### 9-13-2021
+
+---
+
+
+
+
+
+
+## Announcements 
+
+There **is** a checkpoint due this week. All of the answers for it can be found in the Mixtape Chapter 2 Reading. 
+
+There **is not** a Weekly Practice due this week 
+
+PS1 **is** due this week 
+
+My OH this week and going forward are from 15:10-17:00 in SSB 394. Making an appointment at a different time can be done via email. 
+---
+
+## What did we do last time? 
+
+Covered Blocking and Clustering 
+
+
+---
+
+## What are we doing today? 
+
+Regression 
+
+---
+
+## What's the big deal about Regression?
+
+Regression is a computational device for the estimation of an effect. 
+
+With appropriate assumptions, this estimate has a causal interpretation. 
+
+The second fact (often misused) makes regression the most common estimator into social science research
+
+Regression has close links to other strategies for controlling for confounders 
+
+???
+
+Other strategies include matching estimators. 
+---
+
+## Conditional Expectation Function 
+
+The CEF is a function that characterizes all possible values of `\(E[Y|X = x]\)`
+
+Due to the Law of Iterated Expectations `\(E[Y] = E[E[Y|X]]\)` the unconditional expectation can be expressed as a weighted average of conditional expectations.
+
+The CEF is the Best Predictor of `\(E[Y|X]\)`
+
+???
+
+The weights are proportional to the probability distribution of the variable being conditioned on. 
+
+Here we think of best predictor in the sense of the function that gives us the minimum Mean Square Error. This means there is no better way to approximate Y given X than the CEF
+
+## Properties of Deviations from the CEF 
+
+Let `\(\epsilon = Y - E[Y|X]\)`: 
+
+1. $E[\epsilon] = \E[\epsilon | X]  = 0 
+2. If g is a function of X then `\(Cov[g(X), \epsilon] = 0\)`
+3. `\(V[\epsilon|X] = V[Y|X]\)`
+4. `\(V[\epsilon] = E[V[Y|X]]\)`
+
+???
+
+None of these properties depend on a functional form restrction. The CEF might be very non-linear. 
+
+What if we restrict to just linear functions.
+---
+
+## Best Linear Prediction 
+
+For random variables X,Y, assuming `\(V[X] &gt; 0\)` the Best linear predictor of Y given X is 
+
+`$$g(X) = \alpha + \beta X$$` 
+
+where: 
+
+`$$\alpha = E[Y] - \frac{Cov[X,Y]}{V[X]}E[X]$$` 
+
+`$$\beta = \frac{Cov[X,Y]}{V[X]}$$`
+
+The BLP is also the Best Linear Approximation of the CEF. When the CEF is linear then BLP is the CEF
+
+???
+
+Like the CEF, the BLP is a univariate function of x not a function of the random variable Y. This means that the function that provides us with the BLP of Y|X when inverted will generally not be the BLP of X|Y
+
+Does this derivation look like anything we've seen before?
+
+Some properties of deviations from the BLP 
+`\(E[\epsilon] = 0\)`, `\(E[X\espilon] = 0\)`, `\(Cov[X,\epsilon] = 0\)`
+
+Both the CEF and the BLP properties hold in the multivariate case. 
+---
+
+## Implications of Independence of Random Variables 
+
+If X and Y are independent: 
+
+1. `\(E[Y|X] = E[Y]\)`
+
+2. `\(V[Y|X] = V[Y]\)`
+
+3. The BLP of Y|X = E[Y]
+---
+
+## Regression is a plug-in Estimator for the BLP 
+
+The BLP is `\(E[Y|X] = \alpha + \beta X\)`. We can rewrite the Greek terms to be: 
+
+`$$\alpha = E[Y] - \frac{E[XY]-E[X]E[Y]}{E[X^2]-E[X]^2}E[X] \\
+\beta = \frac{E[XY]-E[X]E[Y]}{E[X^2]-E[X]^2}$$`
+
+
+---
+
+## Regression is a plug-in Estimator for the BLP 
+
+We can *estimate* the BLP using plug-in estimation with sample data 
+
+`$$\hat{\alpha} = \bar{Y} -\frac{\bar{XY} -\bar{X}\bar{Y}}{\bar{X^2}-\bar{X}^2}\bar{X} \\
+\hat{\beta} = \frac{\bar{XY}-\bar{X}\bar{Y}}{\bar{X^2}-\bar{X}^2}$$`
+
+Both of these estimators are consistent estimators for the parameters of interest
+
+---
+
+## Regression and Potential Outcomes 
+
+Consider the PO Model `\(Y_i = Y_{0i} + (Y_{1i} - Y_{0i})D_i\)`
+
+`\(D_i \in \{0,1\}\)`
+
+Assume constant treatment effects. We can rewrite as 
+
+`$$Y_i = \alpha + \beta D_i + \epsilon$$` 
+
+Where: `\(\alpha = E[Y_{0i}]\)`, `\(\beta = Y_{1i} - Y_{0i}\)`, and `\(\epsilon = Y_{0i} - E[Y_{0i}]\)`
+
+---
+## Regression and Potential Outcomes
+
+Consider the conditional expectations at each value of D
+
+`$$E[Y_i|D_i = 1] = \alpha + \beta + E[\epsilon|D_i = 1]$$`
+
+`$$E[Y_i |D_i = 0] = \alpha + E[\epsilon|D_i = 0]$$`
+
+Which implies 
+
+`$$E[Y_i|D_i = 1] - E[Y_i|D_i = 0] = \beta + E[\epsilon|D_i = 1] - E[\epsilon|D_i = 0]$$`
+
+where: 
+
+`$$E[Y_{0i}|D_i = 1] - E[Y_{0i}|D_i = 0]$$`
+
+???
+
+Last equation is the treatment effect plus selection bias. In this case selection bias is the correlation between the regression error term and the treatment assignment. 
+
+The correlation reflects the difference in control potential outcomes between those who are treated and those who are not. Under randomization, we have seen that this term disappears, so regression provides us an unbiased estimator.  
+
+---
+
+## Summary of Regression and the CEF 
+
+1. If the CEF is linear, then our best estimate of the BLP will be the CEF. Regression serves as a plug in estimator for the BLP 
+
+2. If the CEF is nonlinear, then our best linear approximation is the BLP. Regression serves as a plug in estimator for the BLP. 
+
+3. If we have a constant ATE (and in fact if we do not but can model it), regression provides an unbiased estimator of the treatment effect.
+
+???
+
+Regression is the best estimator in terms of minimum mean square error. If we used a different loss function, we would consider a different property. MSE is a useful loss function. 
+
+Regression fits in with the nature of empirical work that we are trying to describe the essential features of a relationship between two variables
+
+---
+
+## Regression in an Experimental Context 
+
+Suppose we now have a pre-treatment covariate `\(X\)`. We can write our model as: 
+
+`$$\begin{aligned}
+Y_i &amp;= Y_i(1)D_i + (1-D_i)Y_i(0) \\
+Y_i &amp;- \alpha + \beta D_i + \gamma X_i + (\epsilon_i - \gamma X_i)
+\end{aligned}$$`
+
+Here the error term is the last term in parenthesis. Note that we are adding and subtracting `\(\gamma X_i\)` in this equation.
+
+???
+
+The regression estimate for gamma has no causal interpretation. The reason to include X as a regressor is that it reduces the amount of unexplained variation in Y which in turn reduces the standard error on Beta. 
+
+In other words, we include X in the model based on the fact that we think it can "predict" outcomes, not whether it "affects" outcomes. 
+
+---
+
+## OLS Regression Estimator 
+
+For iid random vectors `\((Y_i, \textbf{X}_i)\)` the OLS regression estimator is the function: 
+
+`$$\hat{g}(\textbf{X}) = \beta X$$` s.t.
+
+`$$\hat{\beta} = argmin \frac{1}{n}\sum_i^n(Y_i - (b_0 +...+b_kX_{ki}))^2$$`
+???
+
+The quantity that is being subtracted is known as the ith residual. It is the difference between the observed value of Y_i and the value we would have predicted given the observed values of X and our estimate of the BLP
+
+---
+
+## OLS Estimator in Matrix Form (A Preview)
+
+Commit the following to memory: 
+
+`$$\beta = (X'X)^{-1}X'Y$$` 
+
+This is the solution to the least squares problem estimated with OLS. A requirement is that `\((X'X)\)` is invertible, which occurs when that matrix has full rank. 
+
+---
+
+class: inverse, center
+
+# Lecture 9
+
+---
+
+## What did we do last time?
+
+Discussed the justification for using regression 
+
+---
+
+## What are we doing today?
+
+Reminder that Checkpoint 4 and PS1 are due this Friday at 10am
+
+OLS in Matrix Form 
+
+Standard Errors for inference
+
+---
+## OLS Assumptions 
+
+In order for OLS to be considered an estimation of causal effects, we require the following assumptions. 
+
+1. The Population Regression Function is linear in parameters or approximated as such. 
+
+2. We have a random sample of data, or a sample that can be interpreted as such. 
+
+3. The variance of X exists and is not infinite.
+
+4. The Zero conditional mean assumption 
+
+---
+
+## Examples of OLS Regression 
+
+Shoub *et al.* (2021) "Do Female Officers Police Differently? Evidence from Traffic Stops" 
+
+This paper is interested in the question of whether there is an effect of a police officer being a woman on traffic stop outcomes. 
+
+The authors collect data on traffic stops from the Charlotte Police Department and the Florida Highway Patrol 
+
+???
+
+The dependent variable is whether or not a search occurred. The primary independent variable is whether the officer is a woman or not. 
+
+Is this causal? (No, almost certainly not)
+
+What would it take for this to be a causal study
+---
+
+## Examples of OLS Regression 
+.pull-left[
+![](shoub.png)
+]
+
+.pull-right[
+In general: 
+
+The primary coefficient of interest should be listed first. 
+
+Control variables should not be included unless directly relevant. 
+
+The number of observations should be included. 
+
+Standard errors of the estimates should be included.
+]
+???
+
+This is an example of a regression table. The way to read it is as follows 
+
+The first column indicates variables of interest. I've purposely cut this table down. The Columns are the regressions run on the CPD and FHP data respectively. 
+
+The primary coefficient of interest in the female officer, which is their treatment parameter of interest. We understand this as the following "a one unit change in treatment status is associated with a X change in the Y outcome" 
+---
+
+## Conditional Independence Assumption 
+
+In words, conditional on observed characteristics selection bias disappears. 
+
+`$$\{Y_{0i},Y_{1i}\} \perp D_i|X_i$$`
+
+This holds whenever `\(D_i\)` is randomly assigned conditional on `\(X_i\)` 
+
+Often referenced as "Selection on Observables"
+
+???
+
+The CIA is true when randomization holds, at least conditionally along covariates. We can generalize this framework so that the treatment variable could take on multiple values. In this case the avereage causal effect for a one unit increase is E[f_i(S) - f_i(S-1)|X_i] for any value of s where S is the treatment value. 
+
+CIA is another justification to why blocks work as well as why regression is often used in empirical projects. 
+
+---
+## Matrix Algebra Review 
+
+A vector 
+
+
+```r
+vector &lt;- c(1,2,3,4)
+```
+
+A matrix 
+
+
+```r
+mat &lt;- matrix(1:9, nrow = 3, ncol = 3)
+```
+
+Matrix Multiplication 
+
+
+```r
+mat2 &lt;- matrix(10:18, nrow = 3, ncol = 3)
+mat %*% mat2
+```
+
+---
+
+## Matrix Algebra Review 
+
+.pull-left[Matrix Transpose 
+
+```r
+t(mat)
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9
+```
+]
+.pull-right[
+
+Inverting a Matrix 
+
+```r
+vec1 &lt;- sample(c(rep(0,50), 
+                 rep(1,50)),
+               100,
+               replace = F)
+vec2 &lt;- runif(100, 0,1)
+m &lt;- cbind(vec1, vec2)
+solve(t(m)%*%m)
+```
+
+```
+##             vec1        vec2
+## vec1  0.03182076 -0.02315038
+## vec2 -0.02315038  0.04533887
+```
+]
+
+
+---
+
+## Regression with Matrix Algebra 
+
+As mentioned last time the canonical closed form OLS solution is 
+`$$\hat{\beta} = (X'X)^{-1}X'Y$$`
+as long as `\(X'X\)` is invertible. Mechanically, the following are true: 
+
+1. `\(\bar{e} = 0\)` 
+
+2. `\(\overline{eX_k} = 0, \forall k \in \{1,...,K\}\)`
+
+3. `\(\overline{eX_k} - \bar{e}\overline{X_k} = 0, \forall k \in \{1,...,K\}\)`
+
+???
+
+Here bar e is the mean of the residuals and bar eXk is the mean of the residuals times the vector column of interest
+
+This says that the sum of the residuals are equal to 0. It also says that the sample covariance between residuals and variables is 0
+
+
+---
+
+## The Model Matrix 
+
+For i.i.d random vectors `\((Y_i, \textbf{X}_i), i \in \{1,...,n\}\)` The design matrix is 
+
+`$$X = \begin{pmatrix}
+1 &amp; X_{11} &amp; ... &amp;X_{k1}\\
+1 &amp; X_{12} &amp; ... &amp;X_{k2} \\
+... &amp; ... &amp;... &amp; ... \\
+1 &amp; X_{in} &amp; ... &amp; X_{kn}
+\end{pmatrix}$$`
+
+???
+
+Also known as the regressor matrix or the design matrix 
+
+---
+## Regression with Matrix Algebra 
+
+
+```r
+# Beta estimates B = (X'X)^-1 X'Y
+beta_est &lt;- function(data, x, y){
+  d &lt;- data[complete.cases(data[, c(y,x)]),]
+  
+  y &lt;- as.matrix(d[[y]])
+  x &lt;- cbind(rep(1, nrow(d)),as.matrix(d[[x]]))
+  A &lt;- solve(t(x)%*%x)
+  
+  # Beta coefficient estimates 
+  b &lt;- A %*% t(x) %*% y
+  
+  return(b)
+}
+```
+
+---
+
+## Robust Standard Errors for OLS 
+
+1. Heteroskedastic errors are the norm and should be assumed for any application 
+
+2. Without homoskedasticity OLS no longer is BLUE, but this isn't a big problem 
+
+3. We can have a valid estimator of the variance of our OLS estimators that deals with heteroskedasticity of any form.
+
+4. For each coefficient it is possible to derive an estimate of the standard error `\(\sqrt{\hat{V}[\hat{\beta}_k]}\)`
+
+???
+
+Unbiasedness does not depend on the standard errors, but inference does. 
+
+The best we can do is asymptotic guarantees, which means we assume N becomes very large. In small finite samples, regression will be unlikely to give us our best answer. In these cases, it is almost always strictly better to use RI
+
+---
+
+## Robust Standard Errors 
+
+Assume that `\(\epsilon = Y - X\beta\)`: 
+
+Decompose `\(\hat{\beta}\)` as follows 
+
+`$$\begin{aligned}
+\hat{\beta} &amp;= (X'X)^{-1}X'Y \\
+\hat{\beta} &amp;= (X'X)^{-1}X'(X\beta + \epsilon)\\
+\hat{\beta} &amp;= (X'X)^{-1}X'\beta + (X'X)^{-1}X'\epsilon \\
+\hat{\beta} &amp;=  \beta +  (X'X)^{-1}X'\epsilon
+\end{aligned}$$`
+
+???
+
+We see that our estimate of beta is equivalent to the true parameter plus some error. Under the usual plug in regularity conditions, this converges in distribution to a multivariate normal random vector
+
+---
+
+## Robust Standard Errors 
+
+The robust sampling variance estimator for `\(\hat{\beta}\)` is: 
+
+`$$\hat{V}[\hat{\beta}] = (X'X)^{-1}X'diag(e^2_1,...e^2_n)X(X'X)^{-1}$$`
+The middle part is the n by n matrix whose `\(i^{th}\)` diagonal element is `\(e^2_i\)` and whose off-diagonal elements are all zero.
+
+Here `\(\hat{V}[\hat{\beta}]\)` is the covariance matrix where the variances are on the diagonal and the covariances are on the off diagonals. 
+
+???
+
+This is a plug-in estimate of an asymptotic approximation of the standard error, not the true standard error. It is consistent, but a consequence of consistency is that in finite samples it may be less useful. When in doubt, bootstrap. 
+
+Draw a covariance matrix on the board. 
+
+The standard errors work the same for establishing confidence intervals. 
+---
+
+## Robust Standard Errors and Causal Inference 
+
+First the takeaway, then the math: 
+
+In the Neyman model, the value of the error term depends on the realization of treatment status. 
+
+Since the value of the error term depends on the realization of treatment status, the variance of the error term depends on the realization of treatment status. 
+
+The implication is that standard errors are never going to be homoskedastic, and so we should always presume standard errors to heteroskedastic 
+
+???
+
+Note that we can also motivate this whenever we think the CEF might be nonlinear. A linear approximation fit will vary whenever the quality of fit is poor. 
+---
+
+## Robust Standard Errors and Causal Inference
+
+Now the math. 
+
+Let `\(\beta = \overline{Y}_1 - \overline{Y}_0\)` be the ATE and `\(\alpha = \overline{Y}_0\)` be the average PO under control for all units 
+
+`$$\begin{aligned}
+Y_i &amp;= Y_i(1)D_i + (1-D_i)Y_i(0)\\
+Y_i &amp;= Y_i(1)D_i + (1-D_i)Y_i(0) + \overline{Y}_0 + (\overline{Y}_1 - \overline{Y}_0) - (\overline{Y}_0 + (\overline{Y}_1 - \overline{Y}_0)) \\
+Y_i &amp;= \bar{Y}_0 + (\bar{Y}_1 - \bar{Y}_0)D_i + Y_i(0)(1-D_i) + Y_i(1)D_i - \bar{Y}_0 -(\bar{Y}_1 - \bar{Y}_0)D_i \\
+Y_i &amp;= \bar{Y}_0 + (\bar{Y}_1 - \bar{Y}_0)D_i + [Y_i(0) - \bar{Y}_0 + ((Y_i(1)-\bar{Y}_1) - (Y_i(0) - \bar{Y}_0))D_i] \\
+Y_i &amp;= \alpha + \beta D_i + \epsilon_i
+\end{aligned}$$`
+
+where `\(\epsilon = Y_i(0) - \bar{Y}_0 + ((Y_i(1)-\bar{Y}_1) - (Y_i(0) - \bar{Y}_0))D_i\)`
+
+???
+
+What we see here is that the nominal OLS errors do not apply because they assume that V[u|X=1] = V[u|X=0] which does not hold because the variance is not homoskedastic
+
+---
+## Robust Standard Errors in R 
+
+
+```r
+rse &lt;- function(data, x, y, b){
+  # Get residuals 
+  e &lt;- y - x %*% b 
+  # degrees of freedom 
+  df &lt;- nrow(x) - ncol(x)-2
+  u2 &lt;- e^2
+  # Sandwich estimator 
+  XDX &lt;- 0
+  for(i in 1:nrow(x)){
+    XDX &lt;- XDX + u2[i] * x[i,]%*%t(x[i,])
+  }
+  var_cov_m &lt;- solve(t(x)%*%x)
+  return(list(sqrt(diag(varcov_m))),df)
+}
+```
+
+---
+
+## Regression in R in action 
+
+
+```r
+lm_byhand &lt;- function(data,x,y){
+  betas &lt;- beta_est(data,x,y)
+  beta_se &lt;- rse(data, x, y, betas)
+  return(tibble(
+    estimate = betas,
+    std.error = beta_se[1], 
+    t_stat = estimate/std.error,
+    p_v = round(2 *pt(abs(t_val), beta_se[2], lower = F),4)
+  ))
+}
+```
+
+---
+## Regression in R in action 
+.pull-top[
+
+|ID  |         x|        y0|        y1|  z|         y|
+|:---|---------:|---------:|---------:|--:|---------:|
+|001 | 0.9148060| 1.2367313| 1.5867313|  1| 1.5867313|
+|002 | 0.9370754| 0.1532365| 0.5032365|  1| 0.5032365|
+|003 | 0.2861395| 1.8618671| 2.2118671|  1| 2.2118671|
+|004 | 0.8304476| 1.4733469| 1.8233469|  1| 1.8233469|
+
+]
+
+.pull-bottom[
+
+|          |   Estimate|        SE|   t-value|   p-val|   conf.low| conf.high| df|
+|:---------|----------:|---------:|---------:|-------:|----------:|---------:|--:|
+|intercept | -0.1831761| 0.1687923| -1.085216| 0.28052| -0.5181820| 0.1518299| 97|
+|z         |  0.2056310| 0.1828161|  1.124797| 0.26345| -0.1572083| 0.5684703| 97|
+|x         |  1.4386941| 0.2816971|  5.107238| 0.00000|  0.8796033| 1.9977849| 97|
+]
+---
+## Regression and Effective Samples 
+
+Regression is a way to get a weighted average. 
+
+As a consequence: regression gives each data point a weight towards the total weighted average. 
+
+OLS induces a weighting scheme that implies that contributions from units in the sample are used differently. These weights are completely characterized by the regressors. 
+
+More weight goes to units whose treatment values are not well explained by the covariates. They measure the contribution of a unit's effect on the construction of `\(\hat{\beta}\)`
+
+???
+
+This discussion is from Aronow and Samii 2016
+
+---
+
+## Regression and Effective Samples 
+
+Suppose we estimate a regression `\(Y_i = \alpha + \beta D_i + \epsilon_i\)`. 
+
+We might be worried about omitted variable bias to so we attempt to control for a potential confounder. `\(Y_i = \alpha + \beta D_i + \gamma X_i + u_i\)`
+
+Fitting this model via OLS generates a weighting scheme 
+
+`$$\hat{\beta} \overset{p}{\to} \frac{E[w_i\tau_i]}{E[w_i]}$$` 
+where the weights `\(w_i = (D_i - E[D_i|X_i])^2\)`
+
+???
+
+Here the \tau_i are the individual causal effects. We see that there is a weighted average of causal effects divided by the expectation of the weights. 
+
+w_i are the multiple regression weight for unit i. The simple interpretation is that more weight goes to units whose treatment values (D_i) are not well explained by covariance. 
+
+w_i measures only the contribution of unit i's effects to the construction of beta hat. 
+---
+
+## Regression and Effective Samples 
+
+Multiple regression weights characterize the effective sample of a causal effect estimate. In situations where a given `\(X_i\)` confounds our relationship between treatment and outcomes, the effective sample is the most important thing to learn.
+
+The effective sample is the original sample reweighted by the multiple regression weights. 
+
+Learning the effective sample is crucial for understanding to what type of population our effect estimates apply, especially in situations of heterogeneity. 
+
+A weight of zero implies that covariates completely explain treatment condition
+
+???
+
+A weight of zero means they are not represented in the effective sample. 
+---
+
+## Regression and Effective Samples
+
+What happens when we actually have random assignment of `\(D_i\)`? 
+
+Fortunately, in this situation the weights cancel out and our regression coefficient is what we think it is, the unbiased estimate of the ATE 
+
+$$\frac{\sum_i^n \tilde{D_i^2}\tau_i}{\sum_i^n \tilde{D_i^2}} \overset{p}{\to} \frac{E[w_i]E[\tau_i]}{E[w_i]} = E[\tau_i] = \bar{\tau} $$ 
+???
+
+Note that in situation of randomized assignments, this is not a problem if D_i is randomly assigned. In this case, D_i is independent of both the POs and the Xis which implies that the weights would be independent of the treatment effect as well. This means that the weights cancel out, and our estimate converges to the treatment effect.
+
+The proof relies on random assignment which means that we can pull the weights terms out and then by Slutsky's theorem substitute in E[wi]E[ti] for E[wi ti]
+---
+
+## Regression and Effective Samples 
+
+We can calculate summary statistics about the nominal sample by using the weights. For example, we can estimate the mean of a covariate `\(Z_i\)` in the effective sample with 
+
+`$$\hat{\mu}_{Z_i} = \frac{}{} \overset{p}{\to} \frac{E[w_iZ_i]}{E[w_i]} = \mu_{Zi}$$`
+
+For example, suppose we are interested in the effect of IMF agreements on foreign direct investment inflows. `\(Z_i\)` could be an indicator for "country in Europe" to get share of units in the effective sample that are in Europe.
+
+???
+
+Here mu(.) refers to the mean of the effective sample. 
+
+When effects are heterogeneous, characterizing the covariate profile for the effective sample is crucial. It is another way of considering our key initial question of who is the target population. If our design (or regression) is estimating something else, then we are not getting a good estimate of the theoretical estimand of interest. 
+---
+class: center, middle 
+background-image: url("map.png")
+background-size: contain 
+
+???
+
+Here is an example of the difference between a nominal sample and an effective sample. The nominal sample is more or less every country in the world, shaded in on the left. The right is the effective sample. The darkness of the shade indicates relative weight, so countries with a darker fill on the map contribute more.
+
+In this case the findings of this regression are driven primarily by just a few countries
+---
+
+## Saturated Models 
+
+Saturated regression models are regression models with discrete explanatory variables where the model includes a separate parameter for all possible values take on by explanatory variables 
+
+Generically 
+
+`$$Y_i = \alpha + \beta_iD_{ij} + \epsilon_i$$` 
+
+where `\(D_{ji} = 1[S_i = j]\)` is a dummy variable indicating the treatment level and `\(\beta_j\)` is said to be the `\(j^{th}\)` level treatment effect. 
+
+Saturated models perfectly fit the CEF because the CEF is a linear function of the dummy regressors used to saturate them.
+
+???
+
+For example, our research design is interested in the effect of attending college on earnings, the model is saturated by including a single dummy for college graduation and a constant. 
+
+Note that beta j is equal to the difference E[Y_i | S_i = j] - E[Y_i|s_i = 0] while alpha = E[Y_i |S_i = 0]. You can pick any value for the reference group. 
+
+The saturation implications is a special case of the linear CEF theorem. 
+---
+
+## Main Effects 
+
+With two or more explanatory variables a model is saturated by including dummies for both variables, their products and a constant. 
+
+The coefficient on the dummy is the main effect. The product is the interaction term 
+
+???
+
+Imagine again the effect of graduation on earnings. We may think that another variable, say parents income matters. 
+
+Any set of indicators that can be used to identify each value taken on by all covariates produces a saturated model. 
+---
+## Main Effects 
+
+Assume `\(d_{1i}\)` indicates treatment and `\(x_{1i}\)` indicates an additional variable. The CEF takes on four values 
+
+`$$\begin{aligned}
+E[Y_i|d_{1i}=0,x_{1i} = 0] \\ 
+E[Y_i|d_{1i}=1,x_{1i} = 0]\\ 
+E[Y_i|d_{1i}=0,x_{1i} = 1]\\ 
+E[Y_i|d_{1i}=1,x_{1i} = 1]
+\end{aligned}$$`
+---
+
+## Main Effects 
+
+We can label these with parameters 
+
+`$$\begin{aligned}
+E[Y_i|d_{1i}=0,x_{1i} = 0] &amp;= \alpha\\ 
+E[Y_i|d_{1i}=1,x_{1i} = 0] &amp;= \alpha + \beta_1\\ 
+E[Y_i|d_{1i}=0,x_{1i} = 1] &amp;= \alpha + \gamma\\ 
+E[Y_i|d_{1i}=1,x_{1i} = 1] &amp;= \alpha + \beta_1 + \gamma + \delta_1
+\end{aligned}$$`
+
+As one equation in saturated regression form
+
+`$$E[Y_i | d_{1i}, x_{1i}] = \alpha + \beta_1d_{1i} + \gamma x_{1i} + \delta_1 (d_{1i}x_{1i}) + \epsilon_i$$`
+
+???
+
+There are four possible values and four parameters. As a result, the paramaterization does not restrict the CEF (same number of unknowns as values). 
+
+Our single equation has two main effects and one interaction term. The coefficient on the interaction terms tells us how each of the main effects differ by the secondary effect. 
+
+It is a mistake to not include a main effect if you are interested in the interaction effect. The results of that mistaken regression are difficult to interpret conceptually 
+
+---
+## Next Time 
+
+Regression and Bad Controls 
+
+Regression and Heterogeneous Effects 
+
+---
+
+## What we covered last time?
+
+OLS in Matrix Form 
+
+Standard Errors for inference
+---
+
+## What are we doing today?
+
+Checkpoint 4 and PS1 are due today
+
+Regression and Bad Controls 
+
+Regression with a binary outcome variable
+
+---
+
+## Omitted Variable Bias 
+
+OVB formula describes the relationship between regression estimates in models with different sets of controls 
+
+Suppose we have the following regression specifications
+
+`$$\begin{aligned}
+Y_i &amp;= \alpha_s + \beta_sD_i + u_i \\
+Y_i &amp;= \alpha_L + \beta_LD_i + \gamma_LX_i + v_i
+\end{aligned}$$`
+
+Imagine the latter regression is "truth". What is the implication of running the short regression? 
+
+???
+
+Regression specifications often contain sets of controls. We refer to this as being the long regression and the specification without controls as the short regression. 
+
+Omitted Variable Bias describes the relationship between the estimates across the two specifications 
+
+---
+
+## Omitted Variables Bias 
+
+Suppose we leave out `\(X_i\)`. Then the coefficient in the short regression is: 
+
+`$$\beta_s = \frac{Cov[Y_i, D_i]}{V[D_i]} = \beta_L + \gamma'\delta_{X_s}$$` 
+
+Here `\(\delta_{X_s}\)` is the vector of coefficient from regressing the elements of `\(X_i\)` on `\(D_i\)` 
+
+???
+
+The equation on this slide is the omitted variable bias. 
+
+For the board, I can draw this out as X_1i = a + \delta_{X_s}D + e_{1i} etc etc. This vector of coefficients does not have a causal interpretation.
+
+---
+
+## Implications of the Omitted Variables Bias
+
+1. The long and short regression will give the same results if the omitted and included variables are uncorrelated. (Can you think of a situation where this holds mechanically?)
+
+2. The short regression is biased when an omitted variable is correlated with `\(D_i\)`. More generally, the error term is correlated with a variable on the RHS. 
+
+???
+
+The answer to one is in situations where we have randomization or at least randomization conditional on X such that we do not need an additional variable. 
+
+In situations with multiple omitted variables, it is not possible to determine the direction of OVB on the basis of the sign of the parameters only. 
+
+It is also not the case that if there are multiple omitted variables, including some of them will always lead to a reduction in bias. This suggests a reason to be skeptical of the CIA assumption and selection on observables designs. 
+
+--- 
+
+
+## Bad Controls 
+
+We have considered controls as a way to improve the precision of our estimates. Up until now, we have been clear that we are discussing pre-treatment controls. 
+
+It is not the case that more controls is preferable to less controls. 
+
+Bad controls: variables that are themselves outcome variables in the notional experiment at hand. 
+???
+
+From a design perspective, our controls should be clearly informed by values that will be good predictors of outcomes, not simply values that are often used. 
+
+Bad controls should just be outcome variables as well. 
+
+---
+
+## Bad Controls 
+
+What happens when we have a bad control. 
+
+Consider a PO model 
+
+`$$\begin{aligned}
+Y_i = D_iY_{1i} + (1-D_i)Y_{0i} \\
+X_i = D_iX_{1i} + (1 - D_i)X_{0i}
+\end{aligned}$$`
+
+Functionally we have two different dependent variables `\(Y_i, X_i\)` in this example 
+
+Due to independence 
+`$$\begin{aligned}
+E[Y_{1i} - Y_{0i}] = E[Y_i|D_i = 1] - E[Y_i|D_i = 0]\\
+E[X_{1i} - X_{0i}] = E[X_i|D_i = 1] - E[X_i|D_i = 0]
+\end{aligned}$$`
+
+???
+
+Here D_i = 1 is our usual treatment vector, Potential outcomes are denoted as usual and the Xs denote another post treatment variable. Assume that D_i is randomly assigned such that it is independent of POs. 
+
+In practice we can estimate these ATEs by regression Y_i and W_i on C_i 
+
+---
+
+## Bad Controls 
+
+Consider now the difference of means estimated by a regression on `\(Y_i\)` on `\(D_i\)` conditional on `\(X_i\)` 
+
+`$$\begin{aligned}
+E[Y_i | D_i = 1, X_i = 1] - E[Y_i|X_i = 1, D_i = 0] = \\ E[Y_{1i}|X_{1i}=1, D_i = 1] - E[Y_i|X_{0i} = 1, D_i = 0 ]
+\end{aligned}$$`
+
+By joint independence of `\(\{Y_{ji}, X_{ji}\}\)` and `\(D_i\)` 
+
+`$$E[Y_{1i}-Y{0i}|X_{1i} = 1] + (E[Y_{0i}|X_{1i} = 1]-E[Y_{0i}|X_{1i} = 0])$$`
+
+???
+Bad control means that a comparison of effects conditional on a post treatment control does not have a causal interpretation. The second expression illustrates that a bad control has now added selection bias into our estimation of causal effects. Here it is the causal effect of D_i on those with X_1i = 1 plus a selection bias term that reflects the fact X changes the composition of the population in some way
+
+---
+
+
+## Bad Controls Example 1
+
+Consider the following example. Here by construction there is no treatment effect of d on y. There is an effect of d on x. 
+
+Both y and x can be thought of as different independent variables
+
+```r
+# Bad Controls Example 
+stacked &lt;- tibble(
+  y = c(rep(0, 200), rep(1,200),
+        rep(1, 200), rep(0, 200), 
+        rep(1, 200), rep(1, 200)),
+  d = c(rep(0, 600), rep(1, 600)),
+  x = c(rep(0,400), rep(1,200), 
+        rep(0, 200), rep(1, 400))
+)
+```
+
+---
+
+## Bad Controls Example 1
+
+&lt;img src="Lecture8_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+
+???
+
+Here we run the regression listed in the header. Note that there is an effect of d on x but no effect for y on d. The estimate is precise as well. 
+
+---
+## Bad Controls Example 1
+
+&lt;img src="Lecture8_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
+
+???
+
+Here is the graphical problem of a bad control. Not only is the estimate off, it's also highly significantly negative. This is a world in which by construction we know that the treatment effect is 0 for all units. 
+
+---
+
+## Bad Controls Example 2: Knox, Lowe, Mummolo (2020) 
+
+There is much concern (correctly) over racial bias in policing in the US. 
+
+Most research uses large administrative data sets on police-civilian interactions 
+
+Normally the ATE of interest is the effect of race on the outcome of a stop, e.g. whether a search is conducted. 
+
+Question for the room: What happens if stop decisions are influenced by the perceived race of a civilian?
+
+???
+
+It is generally a risky endeavor to condition on post-treatment variables. This is logically equivalent to do "mediation analysis" or conditioning on a mediator. 
+---
+## Bad Controls Example 2 
+
+Administrative records do not have data on all civilians that could be stopped by police, but only those who have been stopped by the police 
+
+We actually hope this is discriminatory in the sense that stopping people at random would be a problem. The worry is that police stop individuals for reasons that are not justified (racially discriminatory)
+
+If perceived race affects whether officers choose to stop an individuals then analyzing administrative records now amounts to conditioning on a variable affected by an individual's race
+
+???
+
+If we imagine that officers exhibit racial bias such that they detain one group only when the group member does something seriously wrong, but stop another group always regardless then our usual estimator will observe force used against a greater proportion of stopped group a members because of the differential threat. This will mean that the estimator will suggest bias exists incorrectly against group A
+
+---
+
+## Regression with Binary Outcome variables 
+
+Our theoretical estimand is often binary (survive/not survive, did vote/did not vote, won/lost)
+
+OLS outcome predictions are not limited to `\([0,1]\)`. Since it is impossible to have more than 1 or less than 0 as an outcome, OLS could make an impossible prediction. Is this a problem for regression? 
+
+--
+
+No.
+
+???
+
+The same discussion here holds for regressions with a limited number of values on the dependent variable. We focus on the binary case because it comes up a lot. 
+
+---
+
+## Regression with Binary Outcome variables 
+
+Consider our model `\(Y_i = \alpha + \beta D_i + \epsilon\)` 
+
+We have shown that the ATE is equal to `\(\beta\)` directly expressed in terms of probability. OLS always provides an unbiased estimate of the casual effect of `\(D_i\)` on `\(Y_i\)` provided our assumptions hold 
+
+In this context, our regression is often referred to as the Linear Probability Model 
+???
+
+i denotes the unit. 
+
+---
+
+## Regression with Binary Outcome variables 
+
+The benefits of just running the usual regression: 
+
+1. The parameter is directly interpretable 
+
+2. Interaction terms make sense and are directly interpretable 
+
+3. LPMs do better if we include "fixed effects" which practically occur a lot as a design choice 
+
+4. The LPM and most standard non-linear models give the same general answer anyway 
+
+???
+
+Coefficients of a linear model are partial derivatives. A one unit change in the value of x is associated with a Beta change in X. If assumptions are met, this is the estimate of the casual effect. In nonlinear models, coefficients are never directly interpretable, but must be scaled in some way. For example the log odds ratio in a logit model. 
+
+Interactions in a linear regression function just like partial derivatives. In nonlinear settings, the interactions are conditional on other RHS variables, and they may have different signs for different values of the treatment variables. They also cannot be tested in the same way as we test for significance with a linear regression. 
+
+Nonlinear models drop all observations that do not vary in an outcome variable. In situations where fixed effects account for nested nature of the data (e.g. same country, same classroom) nonlinear models can be biased due to the resulting ignorance of the structure of the data. OLS avoids this problem
+
+Practically, linear models and non linear models will end up with similarly substantive estimates. This is because you can actually write the effective weights we discussed earlier in the same way for both models. As a consequence, using the simpler model makes more sense. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

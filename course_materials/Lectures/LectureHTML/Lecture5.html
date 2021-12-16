@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 5</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture5_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 5
+### Alex Stephenson
+### 9-3-2021
+
+---
+
+
+
+
+
+
+## What did we do last time?
+
+- Continued our discussion of SUTVA
+
+- Discussed DAGs
+
+- Began discussing what makes a good estimator
+---
+
+## What are we doing today? 
+
+Announcing that PS1 is due on **9/17**
+
+Announcing that Checkpoint 3 will be online by Sunday and due **9/10**
+
+Finishing our explanation of how to evaluate estimators 
+
+Filling in the reasons why randomization is great 
+
+---
+## Estimators 
+
+An estimator is the procedure that generates a guess about the estimand 
+
+Example: Our estimand is the 
+
+.center[$$ATE =E[Y_i(1)|D_i = 1] - E[Y_i(0)|D_i = 0]$$]
+
+With random sampling the plug-in estimator is the difference in means
+
+`$$\hat{E}_{DM} = \hat{E}[Y_i(1)] - \hat{E}[Y_i(0)$$`
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**
+
+**Unbiasedness**
+
+**Precision**
+
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. `$$\lim_{h \to \infty} P(\hat{\theta}(D,Y) \in (\hat{\theta} - \epsilon, \hat{\theta}+\epsilon) = 1, \forall \epsilon &gt; 0$$`
+
+**Unbiasedness**
+
+**Precision**
+
+???
+
+As the number of units grows asymptotically holding all other factors constant, the probability of an estimator within an arbitrarily small distance `\(\epsilon\)` from the estimand is 1. 
+
+Consistency is the base property of a good estimator. If we have infinite data and still can't hit the target, we have a bad estimator. The difference in means estimator is a consistent estimator of the ATE under randomization. 
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**: The difference between the expected value of an estimator and the true value of the estimand in 0
+
+`$$E[\hat{\theta}] -\theta = 0$$`
+
+**Precision**
+
+???
+
+Unbiasedness is another way of saying there is no systemic error. More formally, an estimator is asymptotically unbiased asymptotically if as the sample size goes to infinity the estimator converges on the true value. 
+
+Unbiasedness is a good property to have, and one that from a procedural standpoint has been given lots of weight. That said, it says little about how well we can expect our estimator to approximate the estimand (the bias-variance trade off) and it does not guarantee that our estimate will usually or even ever come close to the true value. The difference of means estimator is an unbiased procedure. 
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**: The difference between the expected value of an estimator and the true value of the estimand in 0
+
+**Precision** An estimator is more precise than another estimator if it produces estimates closer to the estimand on average
+
+???
+
+Precision is a way to think about variance. If we have two unbiased consistent estimators, we want the one with higher precision. There are ways to improve upon the difference in means estimator's precision, and we will talk about them as we move through the class. 
+
+---
+
+## Estimators 
+
+The most common metric for an estimator's precision is Mean Square Error 
+
+
+Formally for an estimator `\(\hat{\theta}\)`
+
+`$$MSE = E[(\hat{\theta} - \theta)^2] = V[\hat{\theta}] + (E[\hat{\theta}] - \theta)^2$$`
+An estimator with a lower MSE than another estimator is more efficient 
+???
+
+Normally we consider precision in the context of a loss function. The most common loss function is Mean Squared Error. All else equal we prefer estimators we a lower MSE. 
+
+Efficiency is also an information criterion in the sense that an estimator with higher efficiency is using information better than estimator with lower efficiency.
+
+---
+
+## Randomization
+
+To this point we have been hand-wavy on how randomization eliminates selection bias. 
+
+We will see that randomization is more than simple chance, but also imminently related to the treatment assignment scheme.
+
+When we say "randomized" we are therefore using a short-hand for how either.  
+  - A mechanism that ensures `\(P[D_i = 1] = p, \forall i\)`
+  - A mechanism that ensures `\(P[D_i = 1|X =x] = f(x), \forall i\)`
+
+???
+
+Also implied and we know the mechanism 
+---
+## An English Definition of Random
+
+A random procedure is a physical or electronic procedure by which randomization is conducted to ensure that assignment to the treatment group is statistically independent off all observed and unobserved variables
+
+Formally 
+
+`$$Y_i(0), Y_i(1) \perp \!\!\! \perp D_i, \forall i$$`
+
+or in the conditional independence assumption 
+
+`$$Y_i(0), Y_i(1) \perp \!\!\! \perp D_i|\textbf{X}_{i}, \forall i$$`
+---
+
+## Randomized Experimental Design
+
+
+1. `\(P[D|X, Y(0), Y(1)]\)` is controlled by the researcher and has a known functional form. 
+
+2. `\(P[D|X, Y(0), Y(1)]\)` is probabilistic meaning that: `\(0 &lt; p_i(X, Y(0), Y(1)) &lt; 1\)` for every i and for each `\(X, Y(0), Y(1)\)`
+
+3. `\(P(D|X,Y(0), Y(1))\)` is probabilistic by means of a randomization device whose physical features ensure that the assignment mechanism is unconfoundeded. 
+
+4. Unless stated otherwise we require that assignment is one of the class of "regular assignment mechanisms" (Imbens and Rubin 2015)
+
+???
+
+This definition comes from Titiunik (2020).
+
+In an RCT, the assignment mechanism is probabilistic, designed, implemented and known by the researcher, and not a function of potential outcomes. The last condition means that the probability of treatment assignment is unrelated to the unit's potential outcomes. It is this feature that allows us to to eliminate selection bias in our expectations. 
+
+The math notation is a way of saying assignment mechanism. It is a function that gives the probability of occurrence of each possible value of the treatment vector Z 
+
+A propensity score is the probability that a sample observation with a certain covariate value is treated.
+
+Unconfoundedness means that there is full independence between both potential outcomes and treatment, potentially conditional on covariates. 
+---
+
+## Two common types of randomization 
+
+Simple Random Assignment: a procedure that gives each unit an identical probability of being in treatment 
+
+Complete Random Assignment: a procedure that guarantees that exactly m of N total units are assigned to treatment with equal probability. 
+---
+
+## Randomization is more than chance 
+
+.pull-left[&lt;img src="https://upload.wikimedia.org/wikipedia/commons/6/61/Paul_the_Octopus_picks_Spain_over_Holland_in_World_Cup_final_2010-07-09.jpg" width = 500px/&gt;]
+
+.pull-right[
+
+1. Arbitrary or inscrutable `\(\neq\)` randomized
+2. Assignment mechanism here is not known 
+]
+
+???
+Paul the octopus here predicted the 2010 Euro Soccer Tournament. While a physical being, Paul is not a physical randomization device. A physical randomization device is a a device and set of rules that allow a research to introduce randomness with a known probability distribution function and thus in a controlled way. 
+
+Controlled is important and is usually what we mean we say something is "design based." Some other strategies to introduce probabilistic treatment assignment might be to stack a set of papers with units on them and let a fan blow them into treatment and control groups. Such a strategy is not unconfounded because we do not know anything about the stack of paper. If the names are sorted in an order, we might have more early names in one group than another. We also have introduced a new problem in that we do not know the functional form the assignment mechanism takes.
+
+Balanced designs are a special case because we know both the functional form and probabilities and are forcing assignments to be equal across groups. 
+---
+
+## Randomized Experimental Design
+
+.pull-left[
+
+```r
+D &lt;- tibble(
+  d1 = c(0,0,0),
+  d2 = c(0,0,1),
+  d3 = c(0,1,0),
+  d4 = c(0,1,1),
+  d5 = c(1,0,0),
+  d6 = c(1,0,1),
+  d7 = c(1,1,0),
+  d8 = c(1,1,1)
+)
+```
+]
+.pull-right[
+
+```
+## Rows: 3
+## Columns: 8
+## $ d1 &lt;dbl&gt; 0, 0, 0
+## $ d2 &lt;dbl&gt; 0, 0, 1
+## $ d3 &lt;dbl&gt; 0, 1, 0
+## $ d4 &lt;dbl&gt; 0, 1, 1
+## $ d5 &lt;dbl&gt; 1, 0, 0
+## $ d6 &lt;dbl&gt; 1, 0, 1
+## $ d7 &lt;dbl&gt; 1, 1, 0
+## $ d8 &lt;dbl&gt; 1, 1, 1
+```
+]
+---
+## Why Randomize? 
+
+The benefits of randomization is not in the uncertainty, but in the mechanism. 
+
+The mechanism is what ensures knowledge of the probability distribution of the assignment mechanism. 
+
+The power of a randomized assignment mechanism is that ensures that estimators we use in applied work are unbiased for the ATE no matter:
+  - what the treatment probabilities are
+  - how they were decided
+---
+
+## Block Random Assignment 
+
+Definition: A procedure where units are partitioned into sub-groups (blocks) and complete random assignment occurs within each block.
+
+Blocking reduces sampling variability and esures that certain subgroups are available for separate analysis
+
+As a general rule of thumb, block on what you can randomize on what you can't
+
+???
+
+Say we are looking at an experiment on test scores and we know that age matters. If we have a set of units of different ages, We reduce variability by guaranteeing that we avoid a randomization where more young people are in treatment than older people.
+
+---
+
+## Block Random Assignment
+
+
+```r
+set.seed(123)
+vec &lt;- c(rep(0,5),rep(1,5))
+ta &lt;- sample(vec, 10, replace = F)
+tb &lt;- sample(vec, 10, replace = F)
+block_df &lt;- tibble(id = 1:20,block = c(rep(0,10),rep(1,10)),
+             treat = c(ta, tb))
+```
+---
+
+## Block Random Assignment 
+
+
+```
+## # A tibble: 6 × 3
+##      id block treat
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1    15     1     0
+## 2    13     1     0
+## 3     3     0     0
+## 4     1     0     0
+## 5    11     1     1
+## 6     5     0     1
+```
+---
+
+## Cluster Random Assignment
+
+All units in the same cluster are placed as a group into either the treatment or control conditions. 
+
+Cluster assignment rules out possible allocations where individuals in the same cluster are assigned to different experimental conditions. 
+
+Analysis of these experiments will depend on the size and number of clusters.
+---
+
+## Cluster Random Assignment 
+
+
+```r
+cluster &lt;- tibble(
+  school = c(rep("Berkeley",3), rep("Stanford",3)),
+  student = c(1,2,3, 1,2,3),
+  score = rnorm(n = 6, mean = 0, sd = 1),
+  assign = c(rep(1,3), rep(0,3))
+)
+```
+
+---
+
+## Cluster Random Assignment 
+
+
+```
+## # A tibble: 6 × 4
+##   school   student   score assign
+##   &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Berkeley       1  0.826       1
+## 2 Berkeley       2 -0.0557      1
+## 3 Berkeley       3 -0.784       1
+## 4 Stanford       1 -0.734       0
+## 5 Stanford       2 -0.216       0
+## 6 Stanford       3 -0.335       0
+```
+
+Even though we have six students, we only have two groups. Each group has three students.
+---
+## No Class on Monday 
+
+Read the Probability and Statistics Review from the Mixtape
+
+We will pick back up on Wednesday with Randomization Inference
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

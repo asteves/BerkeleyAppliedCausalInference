@@ -1,0 +1,54 @@
+---
+title: "Checkpoint 8"
+output: pdf_document
+---
+
+## Reading Assignment 
+
+Read the appropriately noted sections of the Handbook chapter by Gerber and Green. It's a good chapter, so you are certainly encouraged to read all of it, but this assignment only requires the sections on the syllabus. 
+
+## Question 1 
+
+i) Define, both from the chapter and in your own words the following: 
+
+a) *Exclusion Restriction* 
+
+
+b) *SUTVA* 
+
+
+c) *Monotonicity* 
+
+
+ii) Explain for each term above why they matter when running an experiment. A complete answer is not simply pulled from the chapter, but is rather how you would describe these to a friend in class during a study session. 
+
+
+## Question 2 
+
+Explain why it is sometimes impossible to determine which units are compliers in an experiment. Relate this in your own words to a study discussed in the chapter. 
+
+
+## Question 3 
+
+Define attrition in your own words. What are situations in which attrition is an issue for experiments? 
+
+
+## Question 4 
+
+Based on the reading, consider the following dataset. Here $R_i$ is an indicator whether the outcome $Y_i$ was observed by an experimenter. 
+
+|Unit|$Y^*_i$| $R_i$|
+|----|------|-------|
+| 1|1|1|
+| 2|NA|0|
+|3|1|1|
+|4|0|1|
+|5|1|1|
+|6|NA|0|
+
+Estimate the appropriate interval for which the expected value of Y lies within. Provide your answer in interval notation. 
+
+## Question 5 
+
+What is the common name for the bounds that you defined in Q4? Do you think these bounds are useful? Why or why not? 
+

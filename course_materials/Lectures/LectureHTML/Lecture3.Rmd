@@ -1,0 +1,385 @@
+---
+title: "Applied Causal Inferece"
+subtitle: "Lecture 3"  
+author: 
+  - "Alex Stephenson"
+date: '8-30-2021'
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "30px")
+```
+
+## What did we do last time?
+
+- Covered a framework for research design 
+- Set up our five questions to describe research 
+- Discussed some basic ways to think about research ethics
+
+???
+
+These questions are the following: 
+
+1. What is the estimand I care about? 
+
+2. What is the target population of interest? 
+
+3. Why is learning this quantity useful? 
+
+4. What is the empirical estimator that best approximates the estimand of interest? 
+
+5. What is the strategy to estimate the empirical estimator? 
+---
+
+## What are we doing today?
+
+- Defining Causal Inference 
+- Introducing Potential Outcomes 
+- Introducing our first estimand 
+
+???
+
+No Notes for this slide
+---
+
+## Our avatar for Causal Inference
+
+.center[<img src="https://news.berkeley.edu/wp-content/uploads/2016/09/Oskicupcake750.jpg" height = 400px/>]
+
+???
+
+No Notes for this slide 
+---
+
+## Framework for Causal Inference 
+
+We follow a basic framework (Neyman 1923; Imbens and Rubin 2015) for thinking about causal questions. As a dictum, "No causation without manipulation." 
+
+Causality is tied to an action applied to a unit. 
+
+  - "active" action is the treatment 
+  - "passive" action is the control 
+  
+???
+
+A unit could be a physical object, like an atom, a firm, individual people or groups like a classroom or a market at a particular point in time. 
+
+The same unit measured at a different point in time is a different unit. For example, this class today is not the same as this class on Wednesday. 
+
+Manipulation is also important. This follows from our dictum to ask what experiment we could conduct if we could conduct any experiment we wanted. If something cannot be manipulated, we cannot consider it a cause.
+
+For example, the causal effect of "race" is a challenging question because race is usually considered to be assigned at conception. It is also unstable, in this sense that because race is a social construction the boundaries change across groups and time. However, this does not mean we cannot study the causal effects of "perceived racial identity." Most fruitful audit studies on discrimination take this tack. 
+
+The requirement of manipulability also means that some questions are simply ill defined in terms of a theoretical estimand. This is fine. Many things in life are unknowable. 
+---
+
+## Binary Treatments 
+
+.pull-left[
+
+- We will be concerned for much of the class with binary treatments
+
+- The framework generalizes to multi-valued treatments and continuous treatments 
+]
+.pull-right[
+
+<img src ="https://upload.wikimedia.org/wikipedia/en/a/a8/The_Dress_%28viral_phenomenon%29.png" width = 250 height = 300/>
+
+Is this dress black and blue or white and gold?
+]
+ 
+???
+
+Multi-valued treatments generate added complexity without providing much additional clarity]
+
+---
+
+## Framework for Causal Inference 
+
+The framework has three parts: 
+
+1. Potential outcomes 
+
+2. Knowledge of the assignment mechanism 
+
+3. Stability of multiple observable units
+
+???
+
+No Notes for this slide
+---
+
+## Potential Outcomes 
+
+Each unit has a fixed potential response to an action 
+
+Only one outcome will actually be observed, which is the action relative to treatment status. 
+
+The unrealized outcome is a counterfactual. 
+
+  - Think Frost's "The Road not taken." 
+
+???
+
+Any causal effect involves a comparison, also known as a contrast, between two potential outcomes. Any treatment must occur temporally before the observation of an associated potential outcome is possible. 
+
+For example "My headache went away because I took an aspirin" implies the question "What is the effect of taking an aspiring on my headache?" The action is taking an aspirin. The potential outcomes are the outcome when I take an aspirin and the outcome when I do not take an aspirin. 
+---
+
+## Potential Outcomes 
+
+Our notation for Potential Outcomes is: $Y_i(0)$, $Y_i(1)$
+
+While there is no formal meaning:
+
+  - Conventionally $Y_i(0)$ is called the "control" outcome
+  - Conventionally $Y_i(1)$ is called the "treatment" outcome
+
+A causal effect is a comparison of potential outcomes. 
+  - Individual Causal Effect (ICE): $\tau_i = Y_i(1) - Y_i(0)$
+  - We could think of other ICE like ratios
+  
+???
+
+Notation is something that you should commit to memory. 
+
+A causal effect does not depend on which outcome is actually observed. From the Lundberg *et al.* piece you read this week, this is what is meant by separating the theoretical estimand from the statistical model. 
+
+Note that there is nothing about time here because the causal effect is not defined in terms of comparisons of outcomes as different times.
+---
+
+## Potential Outcomes 
+
+Summarizing two facts about causal effects: 
+
+1. Causal effects do not depend on which outcome is actually observed
+
+2. Causal effects is the comparison for the same unit at the same moment in time after treatment 
+
+An immediate implication of (2) is that $\tau_i$ cannot be identified, even with infinite data. 
+
+???
+
+Identification is a critical question in causal inference. What it means intuitively is that a theoretical estimand of interest can be uniquely determined from the observable population that generates the data. 
+
+Here the unit level individual causal effect is not identifiable because even with infinite data we never observe both potential outcomes for a unit. 
+
+---
+
+## Fundamental Problem of Causal Inference (Holland 1986)
+
+- There is no way to ever observe the ICE. 
+
+- We only ever observe one outcome because we can only ever assign one treatment 
+
+- In other words, causal inference is fundamentally a missing data problem. 
+
+???
+
+An implication of the Fundamental Problem of Causal Inference is that we are always in a second best world. The first best world we want to be in is the effect of a treatment for an individual. Imagine for example you want to put on muscle. It may be the case that the best program on average to do so is a program built around heavy compound lifts like a back squat, deadlift, and power cleans. However, if you personally have a broken leg, that's an unhelpful workout program. 
+
+A second implication for causal effects is that we need multiple units. This is why we will speak of groups when considering estimands. The presence of multiple units does not solve the problem of causal inference, but it is a necessary condition to identify some theoretical estimand. 
+---
+
+## Only Oski Knows Potential Outcomes
+
+.pull-left[<img src="https://news.berkeley.edu/wp-content/uploads/2016/09/Oskicupcake750.jpg"/>]
+
+.pull-right[Oski the terrifying demon has access to the full potential outcomes schedule. 
+
+As observers of Oski's machinations, we do not. When we conduct research, it is important to keep that in mind.]
+
+
+???
+
+On checkpoints, problem sets, or simulations, when we think about the schedule of potential outcomes, we have to generate them. This is useful for thinking about estimators and different designs. 
+---
+
+## Potential Outcomes Example 
+
+```{r, echo = F}
+data <- tibble(
+  County = c(1,2,3,4,5),
+  Y_0 =c(10,15,10, 20, 15),
+  Y_1 = Y_0 - 5
+)
+knitr::kable(data,
+             col.names = c("County", "$Y_0$", "$Y_1$"),
+             )
+```
+
+???
+
+Imagine that we are considering the effect of coal industries on local government. 
+
+The Potential Outcomes Schedule granted to us by Oski lets us see the outcomes for each unit under treatment and control. 
+
+Some points about this schedule. First, do you notice anything about the difference between treatment and control outcomes? [Answer: They are 5 less for all units. This an example of a constant treatment effect]. 
+
+The other point to notice is that they are not all the same. Some units have smaller absolute numbers than others. When we talk about the effect, we are talking about the difference between potential outcomes, not the absolute totals. 
+---
+
+## Assignment Mechanisms
+
+The second part of our framework is the treatment. 
+
+Notation for binary case: $D \in \{0, 1\}$ 
+
+  - D is a random variable because it refers to treatment that could be administered hypothetically. 
+  - We'll use $d$ to represent the observed treatment
+  
+For example, $Y_i(1)|D_i = 1$ refers to a hypothetical treated unit. 
+
+The assignment mechanism is what puts units into either the *treatment group* or *control group*
+
+???
+
+There is some greek on this page. The symbol that looks a bit like a capital E means "in" and the numbers in the brackets are a set of elements. 
+
+The straight line between the Y and D means "conditioned" which we read as saying the treatment outcome of unit i when the treatment for i is 1. 
+---
+## The Potential Outcomes Model 
+
+### .center[ $$Y_i = (D)Y_i(1) + (1 - D)Y_i(0)$$ ]
+
+
+This little equation is probably the most important equation that hasn't made its way into pop culture. 
+
+???
+
+For now, not that outcomes here depend only on treatment. No matter what, for every unit i, when D_i = 1, we observe the treatment outcome and when D_i = 0 we observe the control outcome. 
+---
+## Average Treatment Effect 
+
+The main *causal estimand* we consider is the Average Treatment Effect (ATE).
+
+- The ATE is defined as $E[Y_i(1) - Y_i(0)]$
+
+- When we go to data, the expected potential outcomes of treatment of treated units are $E[Y_i(1)|D_i = 1]$ and the expected potential outcomes of treatment of control units are $E[Y_i(1)|D_i = 0]$. 
+
+- Similarly the expected potential outcomes of control of the treatment units is $E[Y_i(0)|D_i(1)]$ and the expected potential outcomes of control of the control units is $E[Y_i(0)|D_i = 0]$
+
+???
+
+The ATE is the most common causal effect. I'd bet a lot of money that more than 90% of all causal research is interested in this parameter. 
+
+Notation here introduces the E[] which means expectation. The expectation can be read as the average or value we obtain of a variable. The expected value is an operator which takes as an input a (random) variable and returns a number. 
+---
+
+## Average Treatment Effect (ATE)
+
+Although the ICE is fundamentally unknowable we can use experiments to learn about the Average Treatment Effect (ATE)
+
+We can define the ATE as follows: 
+
+$$\begin{aligned}
+ATE &= E[\pi_i] \\
+ATE &= E[Y_i(1)|D_i = 1] - E[Y_i(0)|D_i = 0] \\
+ATE &= E[Y_i(1) - Y_i(0)|D_i = 1] + E[Y_i(0)|D_i = 1]-E[Y_i(0)|D_i=0]
+\end{aligned}$$
+
+The first term in the third line is the ATE among the treated. The second term is **Selection Bias**
+
+???
+
+The second line is the expected difference between treatment and untreated outcomes. Since we only treat a subset, the ATE among the treated is the first term in the third line. The second term is Selection bias, which is the baseline differences between the treatment and control groups. 
+
+We get to the third line by a trick of adding and subtracting $E[Y_i(0)|D_i = 1]$ from the second line and then rearranging terms. 
+
+What do we mean by selection bias? Think about this class. Presumably all of you self selected into this class because you think it is useful in some way. If we evaluate the effect of this class on your knowledge of causal inference and compare that to a group of students who didn't take the class we run the risk that receiving treatment is associated with higher baseline levels of knowledge and interest, which would exaggerate how good this class is. 
+
+To foreshadow, the reason we like randomization and randomized experiments is that they eliminate the second term from this equation because in expectation those terms will be equal. 
+---
+
+## Stability Assumptions 
+
+In order to get a situation where we have two potential outcomes, it must be the case that potential outcomes depend **solely** on whether a unit **itself** receives a singular **treatment**. 
+
+Solely is an *exclusion* restriction assumption
+
+Itself is a *non-interference* assumption 
+
+Treatment here means that there are not different levels or different kind of treatments. 
+
+???
+
+These assumptions are more or less plausible depending on the scenario we are considering
+
+The third part about the framework are a set of assumptions about how treatment affects units. In order to speak about estimands like the ATE, they have to hold as well. 
+---
+
+## Stability Assumptions: Excludability 
+
+The point of a causal research design is to isolate the causal effect of treatment. 
+
+That means that the treatment received $d_i$ must be separated from the treatment group assigned. We call the latter $z_i$ where $z_i \in {0,1}$ is the observed group. 
+
+Formally: $Y_i(z_i = 1, d_i) = Y_i(z_i = 0, d_i)$
+
+In words: The value of z is irrelevant to the potential outcomes. Potential outcomes only respond to the treatment. 
+
+???
+
+Here's an example of a failure of the excludability restrictions. Everyone in this room has access to the NYT and the WSJ through the university. Suppose we were interested generally in the effect of receiving a free newspaper subscription on students' interest in politics. We conduct an experiment, but prior to the actual treatment, we send a letter around informing the students in our treatment group that they are in our treatment group. 
+
+Since this letter is only distributed to the treatment group, the assignment groups are now related to both the actual treatment of interest (newspaper subscription) and the letter. If we think that the letter matters, which we should, the excludability condition is violated. 
+
+Another example where excludability is violated is asymmetries in measurement. Suppose the value of treatment is measure differently than the value of control. When we compare the groups, we know also have the combination of the true effect and measurement procedures. Since we only want to know the first part, we have a problem. 
+
+This assumption is also the reason why double-blind experiments are preferred in medical trials. 
+---
+
+## No interference 
+
+No interference means that a unit's potential outcomes are not affected by the treatment applied to a different unit. It also means that the treatment is the same for all units that receive treatment. 
+
+Consider our example about the effect of the coal industry on local government. If the coal industry in one county affects the decisions made by a local government in a different county $\rightarrow$ interference is present. 
+
+Formally $Y_i(\textbf{d}) = Y_i(d)$ where $\textbf{d}$ describes all treatments administered to every unit
+
+???
+
+This assumption is also known as the Stable Unit Treatment Value Assumption (SUTVA). 
+
+A violation of the same dose may occur if the treatment requires some kind of knowledge. For example, in studies of teaching some teachers may be better than others, and so the treatment is the curriculum + teacher. The treatment is therefore no longer stable. 
+
+A classic challenge of SUTVA are studies of networks. One of the most common areas are studies of crime interventions. Because crime is spatially related, crackdowns in one area may shift crime to a different area. In this case, untreated areas are affected by the treatment of other units, and so these untreated villages no longer constitute an untreated control group. 
+
+Another general equilibrium point that has salience to our existence is the causal effect of immunization, which crucially depends on how many others are immunized. If everyone else is immunized, then the causal effect of immunization is the different in potential outcomes + the level of immunization. 
+
+This assumption is also jeopardized when subjects are aware of the treatments other subjects receive. In this case, units may change their behavior as a result. 
+---
+
+## Where are doing on Wednesday? 
+
+- Explain DAGs
+
+- Dive more in depth into estimands
+  
+  - Read the Testa piece for Wednesday 

@@ -1,0 +1,340 @@
+---
+title: "Lecture 5"
+author: "Alex Stephenson"
+date: "9-3-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "30px")
+```
+
+## What did we do last time?
+
+- Continued our discussion of SUTVA
+
+- Discussed DAGs
+
+- Began discussing what makes a good estimator
+---
+
+## What are we doing today? 
+
+Announcing that PS1 is due on **9/17**
+
+Announcing that Checkpoint 3 will be online by Sunday and due **9/10**
+
+Finishing our explanation of how to evaluate estimators 
+
+Filling in the reasons why randomization is great 
+
+---
+## Estimators 
+
+An estimator is the procedure that generates a guess about the estimand 
+
+Example: Our estimand is the 
+
+.center[$$ATE =E[Y_i(1)|D_i = 1] - E[Y_i(0)|D_i = 0]$$]
+
+With random sampling the plug-in estimator is the difference in means
+
+$$\hat{E}_{DM} = \hat{E}[Y_i(1)] - \hat{E}[Y_i(0)$$
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**
+
+**Unbiasedness**
+
+**Precision**
+
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. $$\lim_{h \to \infty} P(\hat{\theta}(D,Y) \in (\hat{\theta} - \epsilon, \hat{\theta}+\epsilon) = 1, \forall \epsilon > 0$$
+
+**Unbiasedness**
+
+**Precision**
+
+???
+
+As the number of units grows asymptotically holding all other factors constant, the probability of an estimator within an arbitrarily small distance $\epsilon$ from the estimand is 1. 
+
+Consistency is the base property of a good estimator. If we have infinite data and still can't hit the target, we have a bad estimator. The difference in means estimator is a consistent estimator of the ATE under randomization. 
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**: The difference between the expected value of an estimator and the true value of the estimand in 0
+
+$$E[\hat{\theta}] -\theta = 0$$
+
+**Precision**
+
+???
+
+Unbiasedness is another way of saying there is no systemic error. More formally, an estimator is asymptotically unbiased asymptotically if as the sample size goes to infinity the estimator converges on the true value. 
+
+Unbiasedness is a good property to have, and one that from a procedural standpoint has been given lots of weight. That said, it says little about how well we can expect our estimator to approximate the estimand (the bias-variance trade off) and it does not guarantee that our estimate will usually or even ever come close to the true value. The difference of means estimator is an unbiased procedure. 
+---
+
+## Estimators 
+
+There are three properties of an estimator that we care about when considering whether it is good. 
+
+**Consistency**: If we had enough data, the probability of our estimate would be far from the estimand goes to 0. 
+
+**Unbiasedness**: The difference between the expected value of an estimator and the true value of the estimand in 0
+
+**Precision** An estimator is more precise than another estimator if it produces estimates closer to the estimand on average
+
+???
+
+Precision is a way to think about variance. If we have two unbiased consistent estimators, we want the one with higher precision. There are ways to improve upon the difference in means estimator's precision, and we will talk about them as we move through the class. 
+
+---
+
+## Estimators 
+
+The most common metric for an estimator's precision is Mean Square Error 
+
+
+Formally for an estimator $\hat{\theta}$
+
+$$MSE = E[(\hat{\theta} - \theta)^2] = V[\hat{\theta}] + (E[\hat{\theta}] - \theta)^2$$
+An estimator with a lower MSE than another estimator is more efficient 
+???
+
+Normally we consider precision in the context of a loss function. The most common loss function is Mean Squared Error. All else equal we prefer estimators we a lower MSE. 
+
+Efficiency is also an information criterion in the sense that an estimator with higher efficiency is using information better than estimator with lower efficiency.
+
+---
+
+## Randomization
+
+To this point we have been hand-wavy on how randomization eliminates selection bias. 
+
+We will see that randomization is more than simple chance, but also imminently related to the treatment assignment scheme.
+
+When we say "randomized" we are therefore using a short-hand for how either.  
+  - A mechanism that ensures $P[D_i = 1] = p, \forall i$
+  - A mechanism that ensures $P[D_i = 1|X =x] = f(x), \forall i$
+
+???
+
+Also implied and we know the mechanism 
+---
+## An English Definition of Random
+
+A random procedure is a physical or electronic procedure by which randomization is conducted to ensure that assignment to the treatment group is statistically independent off all observed and unobserved variables
+
+Formally 
+
+$$Y_i(0), Y_i(1) \perp \!\!\! \perp D_i, \forall i$$
+
+or in the conditional independence assumption 
+
+$$Y_i(0), Y_i(1) \perp \!\!\! \perp D_i|\textbf{X}_{i}, \forall i$$
+---
+
+## Randomized Experimental Design
+
+
+1. $P[D|X, Y(0), Y(1)]$ is controlled by the researcher and has a known functional form. 
+
+2. $P[D|X, Y(0), Y(1)]$ is probabilistic meaning that: $0 < p_i(X, Y(0), Y(1)) < 1$ for every i and for each $X, Y(0), Y(1)$
+
+3. $P(D|X,Y(0), Y(1))$ is probabilistic by means of a randomization device whose physical features ensure that the assignment mechanism is unconfoundeded. 
+
+4. Unless stated otherwise we require that assignment is one of the class of "regular assignment mechanisms" (Imbens and Rubin 2015)
+
+???
+
+This definition comes from Titiunik (2020).
+
+In an RCT, the assignment mechanism is probabilistic, designed, implemented and known by the researcher, and not a function of potential outcomes. The last condition means that the probability of treatment assignment is unrelated to the unit's potential outcomes. It is this feature that allows us to to eliminate selection bias in our expectations. 
+
+The math notation is a way of saying assignment mechanism. It is a function that gives the probability of occurrence of each possible value of the treatment vector Z 
+
+A propensity score is the probability that a sample observation with a certain covariate value is treated.
+
+Unconfoundedness means that there is full independence between both potential outcomes and treatment, potentially conditional on covariates. 
+---
+
+## Two common types of randomization 
+
+Simple Random Assignment: a procedure that gives each unit an identical probability of being in treatment 
+
+Complete Random Assignment: a procedure that guarantees that exactly m of N total units are assigned to treatment with equal probability. 
+---
+
+## Randomization is more than chance 
+
+.pull-left[<img src="https://upload.wikimedia.org/wikipedia/commons/6/61/Paul_the_Octopus_picks_Spain_over_Holland_in_World_Cup_final_2010-07-09.jpg" width = 500px/>]
+
+.pull-right[
+
+1. Arbitrary or inscrutable $\neq$ randomized
+2. Assignment mechanism here is not known 
+]
+
+???
+Paul the octopus here predicted the 2010 Euro Soccer Tournament. While a physical being, Paul is not a physical randomization device. A physical randomization device is a a device and set of rules that allow a research to introduce randomness with a known probability distribution function and thus in a controlled way. 
+
+Controlled is important and is usually what we mean we say something is "design based." Some other strategies to introduce probabilistic treatment assignment might be to stack a set of papers with units on them and let a fan blow them into treatment and control groups. Such a strategy is not unconfounded because we do not know anything about the stack of paper. If the names are sorted in an order, we might have more early names in one group than another. We also have introduced a new problem in that we do not know the functional form the assignment mechanism takes.
+
+Balanced designs are a special case because we know both the functional form and probabilities and are forcing assignments to be equal across groups. 
+---
+
+## Randomized Experimental Design
+
+.pull-left[
+```{r, echo=T}
+D <- tibble(
+  d1 = c(0,0,0),
+  d2 = c(0,0,1),
+  d3 = c(0,1,0),
+  d4 = c(0,1,1),
+  d5 = c(1,0,0),
+  d6 = c(1,0,1),
+  d7 = c(1,1,0),
+  d8 = c(1,1,1)
+)
+```
+]
+.pull-right[
+```{r, echo=F}
+glimpse(D)
+```
+]
+---
+## Why Randomize? 
+
+The benefits of randomization is not in the uncertainty, but in the mechanism. 
+
+The mechanism is what ensures knowledge of the probability distribution of the assignment mechanism. 
+
+The power of a randomized assignment mechanism is that ensures that estimators we use in applied work are unbiased for the ATE no matter:
+  - what the treatment probabilities are
+  - how they were decided
+---
+
+## Block Random Assignment 
+
+Definition: A procedure where units are partitioned into sub-groups (blocks) and complete random assignment occurs within each block.
+
+Blocking reduces sampling variability and esures that certain subgroups are available for separate analysis
+
+As a general rule of thumb, block on what you can randomize on what you can't
+
+???
+
+Say we are looking at an experiment on test scores and we know that age matters. If we have a set of units of different ages, We reduce variability by guaranteeing that we avoid a randomization where more young people are in treatment than older people.
+
+---
+
+## Block Random Assignment
+
+```{r,echo = T, eval = F}
+set.seed(123)
+vec <- c(rep(0,5),rep(1,5))
+ta <- sample(vec, 10, replace = F)
+tb <- sample(vec, 10, replace = F)
+block_df <- tibble(id = 1:20,block = c(rep(0,10),rep(1,10)),
+             treat = c(ta, tb))
+```
+---
+
+## Block Random Assignment 
+
+```{r, echo = F}
+set.seed(123)
+vec <- c(rep(0,5),rep(1,5))
+ta <- sample(vec, 10, replace = F)
+tb <- sample(vec, 10, replace = F)
+block_df <- tibble(id = 1:20,block = c(rep(0,10),rep(1,10)),
+             treat = c(ta, tb))
+head(block_df[sample(seq(1,20,2),6,replace=F),])
+```
+---
+
+## Cluster Random Assignment
+
+All units in the same cluster are placed as a group into either the treatment or control conditions. 
+
+Cluster assignment rules out possible allocations where individuals in the same cluster are assigned to different experimental conditions. 
+
+Analysis of these experiments will depend on the size and number of clusters.
+---
+
+## Cluster Random Assignment 
+
+```{r, eval = F, echo = T}
+cluster <- tibble(
+  school = c(rep("Berkeley",3), rep("Stanford",3)),
+  student = c(1,2,3, 1,2,3),
+  score = rnorm(n = 6, mean = 0, sd = 1),
+  assign = c(rep(1,3), rep(0,3))
+)
+```
+
+---
+
+## Cluster Random Assignment 
+
+```{r, echo = F}
+cluster <- tibble(
+  school = c(rep("Berkeley",3), rep("Stanford",3)),
+  student = c(1,2,3, 1,2,3),
+  score = rnorm(n = 6, mean = 0, sd = 1),
+  assign = c(rep(1,3), rep(0,3))
+)
+head(cluster)
+```
+
+Even though we have six students, we only have two groups. Each group has three students.
+---
+## No Class on Monday 
+
+Read the Probability and Statistics Review from the Mixtape
+
+We will pick back up on Wednesday with Randomization Inference

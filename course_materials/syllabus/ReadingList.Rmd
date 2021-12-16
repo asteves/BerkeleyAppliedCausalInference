@@ -1,0 +1,81 @@
+---
+title: "Readings"
+author: "Alex Stephenson"
+date: "Fall 2021"
+output: 
+  pdf_document:
+    keep_tex: true
+urlcolor: blue
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Readings 
+
+### Week 1: Research Design 
+
+Lundberg, Ian, Rebecca Johnson, and Brandon M Stewart. 2021. “What Is Your Estimand? Defining the Target Quantity Connects Statistical Evidence to Theory.” American Sociological Review: 34. https://doi.org/10.1177/00031224211004187
+
+### Week 2: Potential Outcomes and Estimands 
+
+Testa, Paul. 2021. “10 Types of Treatment Effect You Should Know About.” EGAP. https://egap.org/resource/10-types-of-treatment-effect-you-should-know-about/ (August 8, 2021).
+
+### Week 3: Why Randomize/Statistical Review 
+
+Cunningham, Scott. 2021. Causal Inference: The Mixtape Chapter 2. New Haven: Yale University Press. https://mixtape.scunning.com/probability-and-regression.html
+
+### Week 4: Regression 
+
+Morgan, Stephen L., and Christopher Winship. 2014. Counterfactuals and Causal Inference: Methods and Principles for Social Research Chapter 6. 2nd ed. Cambridge: Cambridge University Press. http://ebooks.cambridge.org/ref/id/CBO9781107587991 (September 8, 2020).
+
+### Week 5: Regression 
+
+Wilfahrt, Martha. 2018. “Precolonial Legacies and Institutional Congruence in Public Goods Delivery: Evidence from Decentralized West Africa.” World Politics 70(2): 239–74.
+
+### Week 6: Field Experiments  
+
+Kalla, Joshua L., and David E. Broockman. 2020. “Reducing Exclusionary Attitudes through Interpersonal Conversation: Evidence from Three Field Experiments.” American Political Science Review 114(2): 410–25.
+
+### Week 7: Survey Experiments
+
+Mattes, Michaela, and Jessica L. P. Weeks. 2019. “Hawks, Doves, and Peace: An Experimental Approach.” American Journal of Political Science 63(1): 53–66.
+
+### Week 8: Spillovers and non-compliance 
+
+Banerjee, Abhijit, Arun G Chandrasekhar, Esther Duflo, and Matthew O Jackson. 2019. “Using Gossips to Spread Information: Theory and Evidence from Two Randomized Controlled Trials.” The Review of Economic Studies 86(6): 2453–90. https://web.stanford.edu/~arungc/BCDJ_gossip.pdf
+
+Gerber, Alan S., and Donald P. Green. 2011. “Field Experiments and Natural Experiments. Parts 5-6” The Oxford Handbook of Political Science. https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199604456.001.0001/oxfordhb-9780199604456-e-050 (August 8, 2021).
+
+### Week 9: Selection on Observables 
+
+Imai, Kosuke, and James Lo. 2021. “Robustness of Empirical Evidence for the Democratic Peace: A Nonparametric Sensitivity Analysis.” International Organization 75(3): 901–19. https://imai.fas.harvard.edu/research/files/dempeace.pdf
+
+### Week 10: Fixed Effects 
+
+Kropko, Jonathan, and Robert Kubinec. 2020. “Interpretation and Identification of Within-Unit and Cross-Sectional Variation in Panel Data Models.” PLOS ONE 15(4): e0231349.
+
+### Week 11: What is a "Natural" Experiment 
+
+Titiunik, Rocio. 2020. “Natural Experiments.” arXiv:2002.00202 [econ, stat]. http://arxiv.org/abs/2002.00202 (February 16, 2020).
+
+Sekhon, Jasjeet S., and Rocío Titiunik. 2012. “When Natural Experiments Are Neither Natural nor Experiments.” American Political Science Review 106(1): 35–57. https://www.cambridge.org/core/journals/american-political-science-review/article/abs/when-natural-experiments-are-neither-natural-nor-experiments/E8A67829C2EEBC429CDD671B4C9313F9
+
+Hyde, Susan D. 2007. “The Observer Effect in International Politics: Evidence from a Natural Experiment.” World Politics 60(1): 37–63. https://www.cambridge.org/core/journals/world-politics/article/abs/observer-effect-in-international-politics-evidence-from-a-natural-experiment/B72409C4FB717F72CAB765024468511F
+
+### Week 12: Regression Discontinuity Designs 
+
+Cattaneo, Matias D., Nicolás Idrobo, and Rocío Titiunik. 2019. A Practical Introduction to Regression Discontinuity Designs: Foundations. 1st ed. Cambridge University Press. https://www.cambridge.org/core/product/identifier/9781108684606/type/element (December 11, 2019).
+
+### Week 13: Instrumental Variables 
+
+van der Windt, Peter. 2021. “10 Things to Know About the Local Average Treatment Effect.” EGAP. https://egap.org/resource/10-things-to-know-about-the-local-average-treatment-effect/ (August 8, 2021).
+
+### Week 14: Difference in Differences 
+
+Wing, Coady, Kosali Simon, and Ricardo A. Bello-Gomez. 2018. “Designing Difference in Difference Studies: Best Practices for Public Health Policy Research.” Annual Review of Public Health 39(1): 453–69.
+

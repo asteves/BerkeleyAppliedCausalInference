@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Section 7</title>
+    <meta charset="utf-8" />
+    <script src="Section7_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Section 7
+### 10-20-2021
+
+---
+
+
+
+
+
+
+## Sensitivity Analysis in Practice 
+
+We spent time on sensitivity analysis in lecture. 
+
+Today we're going to see an approach with software in R called `sensemakr` 
+
+---
+
+## What Question are we answering?
+
+How strong would an unobserved confounder (or a group of confounders) have to be change a research conclusion?
+
+In a worst-case scenario, how robust our our results to all unobserved confounders acting together?
+
+How strong would confounding need to be relative to the strength of observed covariates to change the answer by a certain amount?
+
+---
+
+## Why does this matter?
+
+First we should more or less never expect there is no unobserved confounders. 
+
+As a consequence, we always have to make an argument that what is left out is trivial in an observational study. 
+
+Sensitivity analysis provides a quantitative way to discuss the fragility of an estimate.
+
+???
+
+Incidentally, we have to do this too in a regular experiment, but our design gives us substantial plausibility the gravitational effect of Neptune probably isn't doing much. 
+
+---
+
+## sensemakr    
+
+`sensemakr` is an R package that implements a particular type of sensitivity analysis based on an omitted variable bias framework. 
+
+Note that there are other sensitivity frameworks. Here we are considering the effect of unobserved variables. 
+
+Other methods like we discussed in lecture we can usually implement from scratch. 
+
+---
+
+## Motivating Example: Violence in Darfur 
+
+The data comes from a survey 
+
+"Did direct exposure to violence make individuals more likely to ask for peace or ask for revenge?" 
+
+???
+
+In 2003 and 2004, the Darfurian government orchestrated a horrific campaign of violence against civilians, killing an estimated two hundred thousand people. This application asks whether, on average, being directly injured or maimed in this episode made individuals more likely to feel “vengeful” and unwilling to make peace with those who perpetrated this violence. Or, might those who directly suffered such violence be motivated to see it end, supporting calls for peace?
+
+Assumption: government bombings and attacks by militias known as the Janjaweed were indiscriminate within village, except that gender will have a possible differential effect due to sexual violence targeted towards women 
+---
+
+## The Argued Design 
+
+
+```r
+lm_robust(peacefactor ~ directlyharmed + female, 
+          fixed_effects = village, 
+          data = darfur)
+```
+
+
+|term           |   estimate| std.error|  statistic|  p.value|   conf.low|  conf.high|  df|outcome     |
+|:--------------|----------:|---------:|----------:|--------:|----------:|----------:|---:|:-----------|
+|directlyharmed |  0.0975753| 0.0244891|   3.984436| 7.39e-05|  0.0495037|  0.1456469| 788|peacefactor |
+|female         | -0.2287302| 0.0227348| -10.060789| 0.00e+00| -0.2733581| -0.1841022| 788|peacefactor |
+
+???
+
+What's the problem here?
+
+Well there are lots of possible other variables we could have looked at. What about differential effects of bombings? Bombs might be more likely to be targeted at the centers of villages. People do not live in villages at random and so individuals closer to the center may be affected differently than individuals on the periphery. 
+
+Further, perhaps support for peace is also based on social position. Wealth and political attitudes might affect whether someone supports peace. We could imagine that these are moderators, such that different values imply different sub groups. There might be interaction effects. Maybe rich people support peace even more because they're rich. 
+
+Of course, like any omitted variable these are not measured, what would have been the effect if they were?
+---
+
+## Assessing the Design 
+
+
+```r
+dm &lt;- lm(peacefactor ~ directlyharmed + female + village, data = darfur)
+dm.sense &lt;- sensemakr(model = dm, 
+                      treatment = "directlyharmed",
+                      benchmark_covariates = "female",
+                      kd = 1:3)
+ovb_minimal_reporting(dm.sense)
+```
+
+???
+
+Here we need a model. For this package, it's a lm() object 
+
+Second we need to tell what the treatment is 
+
+Third we need the covariates to bound plausible confounders. 
+
+Fourth we tell sensemakr how many more times stronger the confounder is to the treatment in explaining outcomes 
+---
+## Assessing the Design
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+	&lt;th style="text-align:left;border-bottom: 1px solid transparent;border-top: 1px solid black"&gt; &lt;/th&gt;
+	&lt;th colspan = 6 style="text-align:center;border-bottom: 1px solid black;border-top: 1px solid black"&gt; Outcome: peacefactor&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+	&lt;th style="text-align:left;border-top: 1px solid black"&gt; Treatment &lt;/th&gt;
+	&lt;th style="text-align:right;border-top: 1px solid black"&gt; Est. &lt;/th&gt;
+	&lt;th style="text-align:right;border-top: 1px solid black"&gt; S.E. &lt;/th&gt;
+	&lt;th style="text-align:right;border-top: 1px solid black"&gt; t-value &lt;/th&gt;
+	&lt;th style="text-align:right;border-top: 1px solid black"&gt; `\(R^2_{Y \sim D |{\bf X}}\)` &lt;/th&gt;
+	&lt;th style="text-align:right;border-top: 1px solid black"&gt;  `\(RV_{q = 1}\)` &lt;/th&gt;
+	&lt;th style="text-align:right;border-top: 1px solid black"&gt; `\(RV_{q = 1, \alpha = 0.05}\)` &lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+ &lt;tr&gt;
+	&lt;td style="text-align:left; border-bottom: 1px solid black"&gt;&lt;i&gt;directlyharmed&lt;/i&gt;&lt;/td&gt;
+	&lt;td style="text-align:right;border-bottom: 1px solid black"&gt;0.098 &lt;/td&gt;
+	&lt;td style="text-align:right;border-bottom: 1px solid black"&gt;0.023 &lt;/td&gt;
+	&lt;td style="text-align:right;border-bottom: 1px solid black"&gt;4.197 &lt;/td&gt;
+	&lt;td style="text-align:right;border-bottom: 1px solid black"&gt;2.2\% &lt;/td&gt;
+	&lt;td style="text-align:right;border-bottom: 1px solid black"&gt;13.9\% &lt;/td&gt;
+	&lt;td style="text-align:right;border-bottom: 1px solid black"&gt;7.6\% &lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tr&gt;
+&lt;td colspan = 7 style='text-align:right;border-top: 1px solid black;border-bottom: 1px solid transparent;font-size:11px'&gt;Note: df = 788; Bound ( 1x female ):  `\(R^2_{Y\sim Z| {\bf X}, D}\)` = 13.2\%, `\(R^2_{D\sim Z| {\bf X} }\)` = 0.7\%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+ 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

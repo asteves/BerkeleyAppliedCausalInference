@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Section 4</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Section4_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Section 4
+### Alex Stephenson
+### 9-15-2021
+
+---
+
+
+
+
+
+
+## What are we doing today?
+
+Demonstrating how to do Regression in R (not by hand) 
+
+???
+
+Learning by hand is useful, and for some problems we will have to code by hand. In general though, we should make use of smart peoples' work. Today, I am going to show you how to do just that. 
+---
+## Packages we need for today 
+
+
+```r
+library(estimatr)
+library(fabricatr)
+library(randomizr)
+library(tidyverse)
+```
+
+If you do not have these packages, install them.
+---
+
+## Regression in R base way 
+
+Without loading any packages, it is possible to run regressions in R. 
+
+For OLS, the command is `lm()`
+---
+
+## Example 
+
+
+```r
+set.seed(42)
+dat &lt;- fabricate(
+  N = 100,                        # sample size
+  x = runif(N, 0, 1),             # pre-treatment covariate
+  y0 = rnorm(N, mean = x),        # control potential outcome
+  y1 = y0 + 0.35,                 # treatment potential outcome
+  z = complete_ra(N),             # complete random assignment to treatment
+  y = ifelse(z, y1, y0),          # observed outcome
+
+  # We will also consider clustered data
+  clust = sample(rep(letters[1:20], each = 5)),
+  z_clust = cluster_ra(clust),
+  y_clust = ifelse(z_clust, y1, y0)
+)
+```
+
+---
+## The dataset for today 
+
+```r
+kable(head(dat))
+```
+
+
+
+|ID  |         x|        y0|        y1|  z|         y|clust | z_clust|   y_clust|
+|:---|---------:|---------:|---------:|--:|---------:|:-----|-------:|---------:|
+|001 | 0.9148060| 1.2367313| 1.5867313|  1| 1.5867313|s     |       1| 1.5867313|
+|002 | 0.9370754| 0.1532365| 0.5032365|  1| 0.5032365|q     |       0| 0.1532365|
+|003 | 0.2861395| 1.8618671| 2.2118671|  1| 2.2118671|b     |       1| 2.2118671|
+|004 | 0.8304476| 1.4733469| 1.8233469|  1| 1.8233469|k     |       1| 1.8233469|
+|005 | 0.6417455| 0.7315062| 1.0815062|  0| 0.7315062|b     |       1| 1.0815062|
+|006 | 0.5190959| 0.7956467| 1.1456467|  0| 0.7956467|o     |       0| 0.7956467|
+
+---
+
+## Regression the base way 
+
+
+```r
+m &lt;- lm(y~z + x, data = dat)
+kable(tidy(m)) 
+```
+
+
+
+|term        |   estimate| std.error| statistic|   p.value|
+|:-----------|----------:|---------:|---------:|---------:|
+|(Intercept) | -0.1831761| 0.2074911| -0.882814| 0.3795194|
+|z           |  0.2056310| 0.1855039|  1.108499| 0.2703871|
+|x           |  1.4386941| 0.3087272|  4.660082| 0.0000101|
+
+What's wrong with these errors?
+
+???
+
+As we explained in lecture, by default R calculates homoskedastic errors. That's wrong for anything that we think matters. 
+
+---
+
+## The estimatr package 
+
+`estimatr` is a package dedicated to providing estimators commonly used by social scientists. 
+
+The package provides estimators tuned for design-based inference. 
+
+There are other packages that do this as well, but I personally like `estimatr` hence why I'm teaching it. 
+
+The package also has some [handy mathematical notes](https://declaredesign.org/r/estimatr/articles/mathematical-notes.html) for explaining calculations.
+
+---
+
+## lm_robust()
+
+The function we should use instead as a default is `lm_robust()`
+
+This function lets us quickly fit linear models with the most common variance estimators and degrees of freedom corrections used in social science 
+
+We can easily fit heteroskedastic standard errors, clustered standard errors, and "stata" standard errors 
+
+???
+
+The latter is quite useful if you happen to be working with someone who uses stata or want to replicate a project that was originally done in stata 
+
+---
+
+## Regression the correct way 
+
+
+```r
+m &lt;- lm_robust(y~z + x, data = dat, se_type = "HC0")
+kable(tidy(m)) 
+```
+
+
+
+|term        |   estimate| std.error| statistic|   p.value|   conf.low| conf.high| df|outcome |
+|:-----------|----------:|---------:|---------:|---------:|----------:|---------:|--:|:-------|
+|(Intercept) | -0.1831761| 0.1687923| -1.085216| 0.2805158| -0.5181820| 0.1518299| 97|y       |
+|z           |  0.2056310| 0.1828161|  1.124797| 0.2634507| -0.1572083| 0.5684703| 97|y       |
+|x           |  1.4386941| 0.2816971|  5.107238| 0.0000016|  0.8796033| 1.9977849| 97|y       |
+
+---
+
+## Regression with Cluster Assignment 
+
+To include cluster information, pass the cluster variable to the clusters argument
+
+
+```r
+m2 &lt;- lm_robust(
+  y_clust ~ z_clust + x,
+  data = dat,
+  clusters = clust
+)
+kable(tidy(m2))
+```
+
+
+
+|term        |   estimate| std.error| statistic|   p.value|   conf.low| conf.high|       df|outcome |
+|:-----------|----------:|---------:|---------:|---------:|----------:|---------:|--------:|:-------|
+|(Intercept) | -0.2961247| 0.1982991| -1.493323| 0.1573090| -0.7210042| 0.1287547| 14.15262|y_clust |
+|z_clust     |  0.4470588| 0.1820699|  2.455423| 0.0244914|  0.0644865| 0.8296310| 17.96232|y_clust |
+|x           |  1.4238885| 0.2653906|  5.365255| 0.0000571|  0.8626182| 1.9851588| 16.48145|y_clust |
+
+---
+
+## `lm_lin()`
+
+Adjusting for pre-treatment covariates is common practice. We have seen how it can increase precision
+
+However, under certain condition (Freedman 2008) covariate adjustment via regression can bias our estimate of the ATE when we have groups of unequal size.  
+
+If we take the concern seriously, there is an alternative estimator that reduces bias and improves precision (Lin 2013)
+
+???
+
+As a simplified overview, Freedman argues that because the regression model assumes linear additive effects, we run into problems. Given the treatment assignments, the outcome is taken to be a linear combination of treatment dummies and covariates with an additive random error and covariates are assumed to be constant across units. This is different than the Neyman PO model which makes no assumptions. If we write the expected response given assignments as a linear combination of treatment dummies, coefficients will vary across units which is the source of bias. 
+
+Regression makes inferences conditional on assignments. The stochastic element is the error term not the randomization. Freedman's critique has real bite in small samples, but in sufficiently large samples the problem is minor or fixed. It also isn't a problem in the world where units are assigned via complete random assignment of equal size arms. 
+
+Lin shows that OLS adjustment cannot hurt asymptotic precision when a full set of treatment-covariate interactions are included and asymptotic confidence intervals are constructed with robust standard sandwich errors. 
+
+Lin's solution is to center all pre-treatment covariates, interact them with the treatment variable, and regress the outcome on treatment, the centered pre-treatment variables, and all the interaction terms. 
+
+
+---
+
+## `lm_lin()`
+
+
+```r
+m3 &lt;- lm_lin(
+  y~z,
+  covariates = ~x,
+  data = dat
+)
+
+kable(tidy(m3))
+```
+
+
+
+|term        |   estimate| std.error|  statistic|   p.value|   conf.low| conf.high| df|outcome |
+|:-----------|----------:|---------:|----------:|---------:|----------:|---------:|--:|:-------|
+|(Intercept) |  0.5719507| 0.1194132|  4.7896781| 0.0000061|  0.3349174| 0.8089839| 96|y       |
+|z           |  0.2056204| 0.1861152|  1.1048015| 0.2720069| -0.1638154| 0.5750562| 96|y       |
+|x_c         |  1.5904821| 0.4143589|  3.8384164| 0.0002219|  0.7679861| 2.4129780| 96|y       |
+|z:x_c       | -0.3007169| 0.5771479| -0.5210395| 0.6035391| -1.4463464| 0.8449127| 96|y       |
+
+---
+
+## Plotting Regression Coefficients 
+
+Regression tables tend to be lengthy and unhelpful for presenting results, experimental or otherwise. 
+
+It is preferable to make a coefficient plot to directly show coefficients
+
+The output of `lm_robust()` makes that easy to plug into ggplot2 
+
+---
+
+## Plotting Regression Coefficients
+
+
+```r
+m %&gt;%
+  tidy %&gt;%
+  filter(term != "(Intercept)")%&gt;%
+  ggplot(aes(x = term, y = estimate))+
+  geom_point()+
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high))+
+  geom_hline(yintercept = 0)+
+  coord_flip()
+```
+
+???
+
+Here we have a chain pipe of our model, which we tidy into a data frame, filter out the intercept because we never care about it as a default, plot our points and add error bars for confidence intervals. The coord_flip() command transposes our plots
+---
+
+## Plotting Regression Coefficients
+&lt;img src="Section4_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+---
+
+## What do I do for my assignments?
+
+Unless explicitly instructed to conduct regression by hand or with `lm()`, use `lm_robust()` as a default. 
+
+Alternative estimators that we will cover in class also are implemented in `estimatr` 
+
+If I ask on a problem set for a coefficient plot, it is wrong to present regression output in a table.
+
+???
+
+That includes difference in means, instrumental variables, and Horvitz Thompson estimators
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

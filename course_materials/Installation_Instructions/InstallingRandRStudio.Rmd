@@ -1,0 +1,40 @@
+---
+title: "Installing R and RStudio"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## First Install R 
+
+Go to https://mirror.las.iastate.edu/CRAN/
+
+![What you should see](img/R.png)
+
+
+## Click on the link for your machine in the Download and Install Section 
+
+![](img/R.png)
+
+## For Mac Users Install R 4.1.1 
+
+![Click on your computer architecture](img/RMac.png)
+
+
+## For Windows Users Install R 4.1.1.
+
+![Click the Install R for the first time link](img/RWindows.png)
+
+## Install RStudio after Installing R 
+
+Go to https://www.rstudio.com/products/rstudio/download/
+
+## Download RStudio Desktop 
+
+Make sure to download the right one for your machine 
+
+![Click the Download Button](img/Rstudio.png)
+
+

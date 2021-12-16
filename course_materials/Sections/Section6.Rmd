@@ -1,0 +1,244 @@
+---
+title: "Section 6"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+library(estimatr)
+library(ri2)
+library(here)
+library(randomizr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+## What are we doing in section today? 
+
+Compliance with R and an Attrition Example
+
+
+Packages needed 
+
+```{r, eval = F}
+library(tidyverse)
+library(estimatr)
+```
+---
+## Example 
+
+"Guan and Green report the results of a canvassing experiment conducted in Beijing on the eve of a local election. Students on the campus of Peking University were randomly assigned to treatment or control groups. Canvassers attempted to contact students in their dorm rooms and encourage them to vote. No contact with the control group was attempted. Of the 2,688 students assigned to the treatment group, 2,380 were contacted. A total of 2,152 students in the treatment group voted; of the 1,334 students assigned to the control group, 892 voted. One aspect of this experiment threatens to violate the exclusion restriction. At every dorm room they visited, even those where no one answered, canvassers left a leaflet encouraging students to vote"
+
+
+---
+
+## Dataset 
+
+```{r, message = F, warning = F, echo = F, eval = F}
+data2 <- read_csv(here("~/Desktop/Guan_Green_CPS_2006.csv"))%>%
+  rename(Z = treat2,
+         Y = turnout, 
+         D = contact,
+         cluster = dormid)%>%
+  na.omit()
+```
+
+```{r, message = F, warning = F}
+data <- read_csv(here("~/Desktop/section6.csv"))%>%
+  mutate(cluster = as.character(cluster))
+head(data)
+```
+
+---
+
+## Estimate the ITT 
+
+What is the ITT? 
+
+What variables do we need for the ITT in this dataset? 
+
+
+???
+
+The ITT is the causal effect of treatment assignment. All we care about is a difference in means here. 
+
+We need the outcome Y and the treatment assignment status Z. The ITT is the conditional expectation of the difference between treatment outcomes and control outcomes
+
+---
+
+## Estimate the ITT
+
+```{r}
+itt <- data %>% 
+  group_by(Z)%>%
+  summarise(across(Y, mean))%>%
+  mutate(Z = if_else(Z == 1, "T", "C"))%>%
+  pivot_wider(names_from = Z, values_from = Y)%>%
+  mutate(ITT = T-C)%>%
+  pull(ITT)
+itt 
+```
+
+???
+
+
+We put everything here into a pipeline. Certainly we could also do this with base as mean(data$Y[data$Z == 1]) - mean(data$Y[data$Z == 0])
+
+across() allows us to apply the same transformation to multiple columns. Here we are summarizing across all the conditional Y values. 
+---
+
+## CACE Estimation 
+
+Assume the leaflet has no effect on turnout. What is the CACE? 
+
+
+```{r}
+# Use a ratio estimate 
+ittd <- data %>% 
+  group_by(Z)%>%
+  summarise(across(D, mean))%>%
+  mutate(Z = if_else(Z == 1, "T", "C"))%>%
+  pivot_wider(names_from = Z, values_from = D)%>%
+  mutate(ITT_D = T-C)%>%
+  pull()
+ittd
+```
+
+---
+
+## CACE Ratio Estimator
+```{r}
+cace <- itt/ittd 
+cace
+```
+
+---
+## CACE Estimation 
+
+Assume the leaflet has no effect on turnout. What is the CACE? 
+
+```{r}
+## Use an IV estimator 
+cace <- iv_robust(Y~D|Z, data = data, cluster = cluster)%>%
+  tidy()%>%
+  filter(term == "D")%>%
+  select(estimate)%>%
+  pull()
+cace
+```
+
+---
+
+## Attrition and IPW 
+
+```{r}
+data_a <- read_csv(here("~/Desktop/attritonEx.csv"))
+head(data_a)
+```
+
+---
+## Step 1: Model of missingness 
+
+
+```{r}
+modelData <- data_a %>% 
+  mutate(observed = 1 - (read == 0),
+         probobs = glm(observed~(D*sex)+(D*phone)+(D*age),
+                        family = binomial(link = "logit"))$fitted,
+         weights = 1/probobs)%>%
+  select(D, read, sex, observed, phone, age, probobs, weights)
+  
+
+```
+
+---
+## Step 1: Model of missingness 
+
+```{r, echo = F}
+kable(head(modelData))
+
+```
+
+---
+
+## Step 2: Run a weighted regression 
+
+```{r}
+weightedModel <- lm_robust(read ~ D, 
+                           data = modelData%>%
+                             filter(observed==1),
+                           weights = weights)%>%
+  tidy()%>%
+  mutate(model = "w")
+
+```
+
+???
+
+We're filtering to the observed variables because we just want to know what observations we actually see, e.g. those that are not missing. 
+---
+
+## Step 3: Compare to unweighted Regression 
+
+```{r}
+unweightedModel <- lm_robust(read~D, 
+                             data = modelData %>% 
+                               filter(observed ==1))%>%
+  tidy()%>%
+  mutate(model = "u")
+
+```
+
+---
+
+## Step 4: Coefficient Plots 
+
+```{r}
+cpData <- bind_rows(weightedModel, unweightedModel)%>%
+  filter(term == "D")%>%
+  ggplot(., aes(x = estimate, y = model))+
+  geom_point()+
+  geom_errorbarh(aes(xmin = conf.low, 
+                     xmax = conf.high, 
+                     height = 0.1))+
+  theme_xaringan()+
+  geom_vline(xintercept = 0, linetype = 2)
+
+```
+
+---
+## Step 4: Coefficient Plots 
+
+```{r, echo = F}
+cpData
+```
+
+???
+
+It turns out that in this example, despite substantial attrition the weighted data produce an estimate ATE that is basically identical to the estimate generated by the DM estimator. We also barely miss statistical significance here in the weighted estimator. 
+
+---

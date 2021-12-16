@@ -1,0 +1,175 @@
+---
+title: "Regression"
+author: "Alex Stephenson"
+date: "5/7/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(patchwork)
+```
+
+```{r}
+X <- c(1.37, 0.3, 1.57, -.69, -.64, .08, .47, 1.33, .13, .59, -.44, .76, .73, -3.54, -0.05)
+
+Y <- c(6.88, 1.17, 16.16, -4.84, -6.17, 0.67, 3.36, -.69, 8.03, -3.35, 1.87, 13.54, 4.06, 6.72, 7.20)
+
+X_real <- seq(-4,4,by=c(8/14))
+CEF <- 1 + 2*X_real
+df <- tibble(X = X,
+             Y = Y,
+             CEF = CEF,
+             X_real = X_real)
+
+```
+
+Graph CEF, points, and regression line 
+
+```{r, message = FALSE}
+df %>%
+  ggplot(aes(X_real, Y))+
+  geom_point(aes(x=X, y = Y))+
+  geom_line(aes(y=CEF))+
+  geom_smooth(method = "lm", se = F, color = "red")+
+  ylim(-20,20)
+```
+
+Note that while not exactly correct, the two are reasonably close. Suppose we had 1000 observations. 
+
+```{r}
+X <- rnorm(1000)
+U <- rnorm(1000)
+Y <- 1 + 2*X + 5*U
+CEF <- 1 + 2*X
+df <- tibble(X = X,
+             Y = Y,
+             CEF = CEF)
+
+df %>%
+  ggplot(aes(X, Y))+
+  geom_point(aes(x=X, y = Y))+
+  geom_line(aes(y=CEF), color = "blue")+
+  geom_smooth(method = "lm", se = F, color = "red")+
+  ylim(-20,20)
+```
+
+The lines are basically on top of each other. Since the CEF is linear, the BLP is the CEF. 
+
+## Best Quadratic Predictor 
+
+Suppose the same setup as the micronumerosity example. 
+
+```{r}
+X <- runif(1000)
+Y <- 10*X^2 + rnorm(1000)
+CEF <- 10*X^2 
+BLP <- -5/3 + 10*X
+
+quad <- tibble(
+  X = X,
+  Y = Y,
+  CEF = CEF,
+  BLP = BLP
+)
+
+quad %>% 
+  ggplot(aes(X,BLP))+
+  geom_line(color = "red")+
+  geom_line(aes(x = X,y=CEF), color = "black")+
+  ylab("Y")
+```
+Not bad, but we might be able to do better if we could make a curved BLP. Fortunately, we can add a new explanatory predictor $X^2$ and plug that into the model. 
+
+$$\begin{aligned}
+Y &= \beta_0 + \beta_1X + \beta_2X^2
+\end{aligned}$$
+
+In this example, the BLP of $Y|X,X^2$ is 
+
+$$\begin{aligned}
+g(X,X^2) &= E[Y|X,X^2]\\
+g(X,X^2) &= E[Y|X]\\
+g(X,X^2) &= \beta_0+ \beta_1X + \beta_2X^2 \\
+g(X,X^2) &= 0 + 0X + 10X^2 \\
+g(X,X^2) &= 10X^2
+\end{aligned}$$
+
+Once again if the CEF is linear in this specification, then the BLP is the CEF. To interpret the coefficients, we find the slope of the line of a nonlinear function by taking the partial derivative of the CEF with respect to X. 
+
+$$\begin{aligned}
+\frac{\partial E[Y|X]}{\partial X} &= \frac{\beta_0 + \beta_1X + \beta_2X^2}{\partial X}\\
+\frac{\partial E[Y|X]}{\partial X} &= \beta_1 + 2\beta_2X
+\end{aligned}$$
+
+In general as long as the CEF is continuous and the support of X is on the interval, we can use polynomials to get the MSE as small as we'd like. Here is another example. 
+
+```{r}
+# TODO Fill in this example 
+cef <- function(x){
+  # A function to create a nonlinear CEF 
+  # x = a numeric value
+  if(x >= -1 & x <=0){
+    return(0)
+  }
+
+  if(x > 0 & x < 1){
+    return(x^2)
+  }
+  if(x >=1 & x <= 3){
+    return(2-x)
+  }
+}
+
+x <- seq(-1,3, by = 0.01)
+CEF <- unlist(lapply(x, cef))
+
+df <- tibble(
+  x = x,
+  CEF = CEF, 
+)
+
+df %>% 
+  ggplot(aes(x, CEF))+
+  geom_line()
+```
+
+## Overfitting Example 
+
+```{r, message = F, warning = F}
+overfit_plot <- function(N){
+  set.seed(42)
+  p<-tibble(
+    x = runif(N, -10, 10),
+    e = rnorm(N, 0, 25),
+    y = x + 5 + e,
+    CEF = x + 5)%>% 
+    ggplot(aes(x = x, y))+
+    geom_point(aes(y=y))+
+    geom_line(aes(y=CEF,color = "CEF"), size = 1)+
+    stat_smooth(aes(color = "Linear Fit"),method = "lm", formula = y~x, size = 1, se = F)+
+    stat_smooth(aes(color = "5th Order Polynomial"),method = "lm", formula = y~poly(x, 5, raw = TRUE), 
+                size = 1,se = F)+
+    ggthemes::theme_clean()+
+    scale_color_manual(name = "Fit", 
+                     values = c("CEF" = "black", "Linear Fit" = "blue", "5th Order Polynomial"="red"),
+                     guide = "legend")+
+    theme(legend.position = "bottom")+
+    ylim(-45,100)+
+    ggtitle(paste0("Fit with N = ", N))
+  p
+}
+
+plots <- map(list(10,100,1000), ~overfit_plot(.x))
+
+plots[[1]] + (plots[[2]] / plots[[3]])+
+  plot_layout(widths = c(4,4))
+
+```
+

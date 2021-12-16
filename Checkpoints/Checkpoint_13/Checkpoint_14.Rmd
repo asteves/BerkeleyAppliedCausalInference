@@ -1,0 +1,32 @@
+---
+title: "Checkpoint 14"
+output: pdf_document
+---
+
+## Instructions 
+
+We have reached the point in the semester where you have seen many examples RMarkdown files to answer Checkpoints. You must create your own file with the title "Checkpoint 14" and your name as the author for this checkpoint. 
+
+
+## Requirements 
+
+Read the article "Designing Difference in Difference Studies: Best Practices for Public Health Policy Research" by Wing, Simon, and Bello-Gomez available on the course website or [here](https://www.annualreviews.org/doi/pdf/10.1146/annurev-publhealth-040617-013507)
+
+Answer the following questions 
+
+### Question 1 
+
+Explain in your own words with an example how to think about the parallel trends assumption (also known as the commond trends assumption) in a DiD design. 
+
+
+### Question 2 
+
+Define strict exogeneity and give some reasons why it may fail in a given design. 
+
+
+### Question 3 
+
+Explain why simply graphing mean outcomes by group and time period may be less compelling in some applications. 
+
+
+

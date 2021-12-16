@@ -1,0 +1,89 @@
+---
+title: "WP6"
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(scales)
+library(tidyverse)
+library(estimatr)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Prerequisite. 
+
+Read "Segregation, Integration, and Death: Evidence from the Korean War" by Connor Huff and Robert Schub
+
+The original replication file is [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/SVMFIQ). You are allowed to look at it, but you are not allowed to do the same operations. 
+
+## Tasks 
+
+### Replicate Figures 2 and 3 
+
+Use the tidyverse to replicate Figures 2 and 3. A complete replication must have the following: 
+
+1) A title clearly labeling what figure is being replicated 
+2) The same axis labels. It is not a requirement to have the same tick mark labels. 
+3) Both points and lines that are delineated to show which kind of battalions they represent. 
+4) The points and lines must be correct. 
+5) After each figure, explain how the article describes the figures. 
+
+Figure 2 uses the the Segregation_HS dataset 
+
+You will need to do some data wrangling on this dataset, which will require you to make another data frame from the original dataset. Here are some hints for this process. 
+
+[n()](https://dplyr.tidyverse.org/reference/context.html) will be necessary. 
+
+You can summarise multiple objects in the same [summarise()](https://dplyr.tidyverse.org/reference/summarise.html) command. 
+
+You will need to [group](https://dplyr.tidyverse.org/articles/grouping.html?q=group) the data by two variables. 
+
+The lines in the graph are the average fatality rate. 
+
+To get the points on the graph, you'll pass the original dataset separately to geom_point as well as a new set of aesthetics. The process looks like the following. 
+
+```{r, eval = F}
+example <- ggplot(newdata, aes(x = x, y = y, group = grouping_var,
+                               linetype = linetype_var))+
+  GEOM_THAT_MAKES_A_LINE + 
+  geom_point(data = origData, aes(x = x, y = y, color = color_var), alpha = 0.5)
+
+```
+
+```{r}
+
+
+```
+
+Figure 3 uses the Integration_HS dataset 
+
+You will need to perform a similar set of steps on the Integration_HS dataset as you did in Figure 2. 
+
+```{r}
+
+
+```
+
+
+### Replicate Tables 1 and 3 as coefficient plots
+
+A complete answer will have the correct coefficient and confidence interval (use HC3 standard errors). The coefficient plot must clearly label which Table is being replicated. 
+
+In order to fully replicate the table, you will need to look up how to include fixed effects in `lm_robust()`. 
+
+Table 1 uses the Segregation_HS dataset. Table 2 uses the Integration_HS dataset 
+
+```{r}
+### Coefficient plot for Table 1
+
+```
+
+For Table 3, only replicate the Average Personnel models. 
+
+```{r}
+### Coefficient plot for Table 3
+
+
+```

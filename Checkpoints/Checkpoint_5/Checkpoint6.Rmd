@@ -1,0 +1,33 @@
+---
+title: "Checkpoint 6"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment Details 
+
+Read Kalla and Broockman (2020). After finishing the article, answer the following questions. 
+
+
+## Question 1 
+
+Describe the central question of interest in this article briefly. 
+
+FILL IN YOUR ANSWER HERE 
+
+## Question 2
+
+For the first experiment, what is the theoretical estimand of interest? What is the estimator? Be specific. 
+
+FILL IN YOUR ANSWER HERE 
+
+## Question 3 
+
+For study 2: Explain the steps taken to measure the effects of the intervention protocol. 
+
+## Question 4 
+
+Consider Figure 3. Explain to someone who has not taken this class how to read the figure. Would you say that this graph shows uniformly positive effects? 

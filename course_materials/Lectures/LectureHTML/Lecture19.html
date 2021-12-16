@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 19</title>
+    <meta charset="utf-8" />
+    <script src="Lecture19_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 19
+### 11-01-2021
+
+---
+
+
+
+
+
+
+## What did we do last week? 
+
+We discussed fixed effects 
+
+We clarified the point of including fixed effects from a design perspective 
+
+We saw that TWFE can present some challenges for interpretation and estimation of causal effects
+
+---
+
+## What are we covering this week? 
+
+Natural Experiments 
+
+There is a checkpoint and WP due this week. 
+
+PS4 is due *next* Friday (11/12). This is a change from the syllabus. 
+
+---
+
+## What is a natural experiment? 
+
+A natural experiment (Titiunik 2020) is a study in which the assignment mechanism satisfies the following properties: 
+
+`\(Pr(Z|X, Y(O), Y(1))\)` is neither designed nor implemented by the researcher 
+
+`\(Pr(Z|X, Y(0), Y(1))\)` is unknown to the researcher 
+
+`\(Pr(Z|X, Y(0), Y(1))\)` is probabilistic by virtue of an external event outside of the experimental units' direct control
+
+
+
+???
+
+Our discussion this week will be drawn mostly from the Titiunik readings. Importantly: A natural experiment is a special case of an observational study not a special case of an experiment
+
+Common definitions of the term natural experiment include the researcher's lack of control over the treatment assignment as an integral feature. We do this because a natural experiment is first and foremost an observational study. 
+
+---
+
+## Natural Experiments vs Experiments
+
+Loosely: an experiment is a study in which the researcher executes a direct controlled intervention over some process in order to test a hypothesis
+
+A natural experiment claims that the assignment mechanism based on an external factor. 
+
+This condition is not directly verfiable or falsifiable. 
+
+???
+
+Note that experiments do not need to be randomized. We tend to prefer randomized experiment, but plenty of hard science experiments do not have a random component because we can plausibly control for all factors in order to achieve unconfoundedness. 
+
+Classifying an observational study as a natural experiments requires assuming the external forces of nature that intervened in the assignment of treatment did so in such a way as to produce a probabilistic assignment. 
+
+---
+
+## Natural Experiments v. Observational Studies 
+
+The difference in ex ante risk of taking treatment
+
+In both the exact probabilities with which each possible treatment allocation could have occurred are fundamentally unknown 
+
+The timing of treatment is clearer in a natural experiment than a regular observation study. 
+
+???
+
+In a standard observational study it is often impossible for the researcher to know which if any units that took treatment were ex ante at risk of not taking it. 
+
+In a natural experiment there is an external factor that serves as the basis of making that assumption. 
+
+Although the probability of receiving treatment is still possibly a function of potential outcomes, it is also affected by an external factor over which the units have no precise control. For example, even though families can choose to invest on more durable construction materials to protect against earthquakes or floods, the severity of natural disasters is not under any family’s control and thus it is impossible for a family to precisely and perfectly guarantee that their house will not be destroyed by a natural disaster, which introduces an element of chance to which houses are in fact destroyed. The distinction is similar to that introduced by Lee (2008) between “systematic or predictable components that can depend on individuals’ attributes and/or actions” and a “random chance component” that is uncontrollable from the point of view of the unit (Lee, 2008, p. 681).
+
+## Natural Experiments v. Observational Studies 
+
+Natural experiments allow the researcher to establish when treatment assignment occurred because they can record when the intervention was initiated. 
+
+Unadjusted covariate balance is a useful tool to establish the probability of equiprobable assignment assumptions 
+
+???
+
+Knowledge of when treatment occurred is crucial for falsification purposes. The period before the treatment is commonly referred to as the pre-treatment period. If we can collect info on a set of covariates in this period we know that the intervention should have no effect on these by construction. Thus we can run a placebo test discussed two weeks ago to test whether the treatment in fact has no effect on the covariates. 
+
+The most convincing falsification tests will be those where variables are strongly correlated with both the outcome and the factors that affect the propensity score. 
+
+The main difference between RCTs and natural experiments is that balance tests depend on the assignment probabilities. This is fundamentally unknown in a natural experiment so we have to assume equiprobable assignment. If the treatment assignment probabilities are different for subgroups, this test will be incorrect because it does not adjust for the weights of these probabilities. 
+
+---
+
+## Verifying the Externality of Treatment Assignment 
+
+From a design based perspective, without equiprobable treatment assignments we cannot identify the causal effect of treatment. 
+
+The most credible natural experiments will offer a clear justification for the assumption that assignment is unconfounded given some observable predetermined covariates. 
+
+We can test the equiprobability assumption. We cannot test the unconfoundedness assumption. 
+
+???
+
+If the empirical evidence shows that the distribution of relevant predetermined covariates differ between treatment and control groups, then the assumption of equiprobability is implausible. 
+
+The credibility of the justification is based directly on the externality of the treatment assignment that characterizes natural experiments. If we have enough information about the variables on which the external intervention depended, we can credibly assume that after we condition on these variables the treatment assignment probabilities are unconfounded. 
+
+Because covariate balance is an implication of an equiprobable assignment mechanism, we can use covariate balance tests to falsify the assumption that the assignment mechanism is equiprobable. However, in the absence of additional assumptions, the unconfoundedness assumption is fundamentally untestable. This means that a justification for it has to rely more heavily on the qualitative information about the assignment mechanism, and stands on weaker evidentiary ground.
+
+---
+
+## What Questions should we ask about a natural experiment? 
+
+1. Is the assignment probabilistic? 
+
+2. Is the assignment equiprobable? 
+
+3. Is the assignment unconfounded? 
+
+4. Is the natural experiment of substantive interest? 
+
+---
+
+## Is the assignment probabilistic? 
+
+Researchers must establish this first. A natural experiment is not plausible if it does not clear this bar. 
+
+There must be an external event that is outside of units' direct control. 
+
+There must be overlap in the "treatment" assignment. 
+
+???
+
+The researcher should establish whether it is in fact the case that all units to be included in the study had a probability of receiving treatment strictly between zero and one. If some units were certain to either be affected or not affected by the intervention, they should be excluded from the study, as the usual causal parameters will not be identifiable. If some units are excluded, the researcher should redefine the parameter of interest and clarify in the
+analysis that the reported effects are estimating the effect of the intervention only for units whose probability of being treated was neither zero nor one. The researcher should carefully
+characterize this new parameter.
+
+The caveat is that the assumption of probabilistic treatment assignment is not directly verifiable or testable, because untreated units could be untreated either because their ex ante treatment assignment probability is zero or because it is positive but the realization of the assignment is the control condition. For this reason, researchers should use prior scientific knowledge and/or qualitative and quantitative information regarding the external process that assigned the treatment to justify the probabilistic assignment assumption
+
+---
+
+## Is the assignment equiprobable? 
+
+Researchers should then test the hypothesis that relevant pre-treatment covariates are equal in the treatment and control group 
+If we clear the covariate balance test, then we can analyze the research exactly like we analyze RCTs 
+
+???
+
+the caveat that in natural experiments, unlike in RCEs or
+RTPEs, this assumption is not known to be true and its credibility might be disputed by other analyses. If the hypothesis of covariate balance is rejected, then the assumption of equiprobable
+assignment is unsupported by the data. Of course, researchers should ensure that their tests have enough statistical power to avoid mistakenly interpreting the failure to reject a false null hypothesis of covariate balance as supportive of the equiprobable assignment assumption.
+---
+
+## Is the assignment unconfounded? 
+
+If we clear the equiprobable assumptions then we are fine. 
+
+If not, researchers should explore whether it is plausible to assume that there exists a covariate based adjustment that renders treated and control groups comparable. 
+
+The justification should be based on objective and verifiable information about the treatment assignment mechanism that identifies covariates that were explicitly used in the assignment scheme. 
+
+---
+
+## Do we care about the natural experiment? 
+
+Natural experiments are not controlled by the researcher, which means that treatment is not exactly what we would have liked if we had been in charge. 
+
+The treatment effect that we can identify might not be an effect that we substantively care about. 
+
+All research, observational or experimental, should be able to clear this hurdle. Otherwise, don't do it. 
+
+???
+
+Sekhon and Titiunik (2012) illustrate this point with a redistricting natural experiment. Several researchers have used the periodic re-drawing of district boundaries to study the incumbency advantage, comparing the vote share received by the same incumbent legislator in areas that are new to her district versus areas that have been part of the district for a long time. Even if precincts are randomly moved to new districts according to a known probability distribution, this assignment would never achieve comparability between new and old voter areas in terms of their prior history (e.g. party or race of prior incumbent), because new voters are coming from a different incumbent by construction. In terms of the prior discussion, this occurs because the probability of old voters of being selected as new voters is zero, and thus the overall assignment is not probabilistic. The natural experiment externally introduces variation in the voters that an incumbent receives in her/his district. Whether this variation is useful to study the incumbency advantage of interest to scholars of American politics is a separate matter.
+
+---
+
+## Snow on Cholera 
+
+Cholera was epidemic in mid nineteenth century London (and elsewhere)
+
+John Snow hypothesized in contrast that cholera was a water or waste-born disease 
+
+His primary evidence came from a natural experiment 
+
+???
+
+At the time, the germ theory of disease was only one of many theories. Miasmas (foul odors, especially from decaying organic material) were often said to cause epidemics. Imbalance in the humors of thebody—black bile, yellow bile, blood, phlegm—was an older theory. Poison in the ground was an explanation that came into vogue slightly later.Snow was a physician in London. By observing the course of the disease, he concluded that cholera was caused by a living organism which entered the body with water or food, multiplied in the body, and made the body expel water containing copies of the organism. The dejecta then contaminated food or reentered the water supply, and the organism proceeded to infect other victims. Snow explained the lag between infection and disease—a matter of hours or days—as the time needed for the infectious agent to multiply in the body of the victim. This multiplication is characteristic of life: inanimate poisons do not reproduce themselves. (Of course, poisons may take some time to do their work: the lag is not compelling evidence.)
+
+Snow developed a series of arguments in support of the germ theory. For
+instance, cholera spread along the tracks of human commerce. Furthermore, when a ship entered a port where cholera was prevalent, sailors contracted the disease only when they came into contact with residents of the port. These facts were easily explained if cholera was an infectious disease, but were hard to explain by the miasma theory.
+
+---
+
+## Snow on Cholera 
+
+Water came from the Thames River, and was provided by private contractors. 
+
+One (The Lambeth water company) moved their intake pipe upstream to a pure water source 
+
+The Southwark and Vauxhall company left their intake pipe in place. 
+
+The Broad Street pump of the S&amp;V company was the source of much of the cholera outbreak 
+
+Rates of death per 10,000 between the S&amp;V and Lambeth pipe were 315 to 37 
+???
+
+“The pipes of each Company go down all the streets...A few
+houses are supplied by one Company and a few by the other,
+according to the decision of the owner or occupier at that time
+when the Water Companies were in active competition. In
+many cases a single house has a supply different from that on
+either side. Each company supplies both rich and poor, both
+large houses and small; there is no difference either in the
+condition or occupation of the persons receiving the water of
+either company...”
+“It is obvious no experiment could have been designed which
+would more thoroughly test the effect of water supply on the
+progress of cholera than this.”
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

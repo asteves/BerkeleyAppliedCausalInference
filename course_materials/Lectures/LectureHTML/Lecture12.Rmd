@@ -1,0 +1,270 @@
+---
+title: "Lecture 12"
+author: "Alex Stephenson"
+date: "10-4-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+library(estimatr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+
+## What did we cover last time? 
+
+For the last two weeks we have covered the mechanics of regression. 
+
+The big takeaways from that discussion are: 
+
+1) We can use regression to analyze experiments 
+
+2) If we do not have a good design, a regression will give us wonky results. 
+---
+
+## What are we doing today? 
+
+Today we are going to talk about two sided non-compliance
+
+New groups: Always-Takers and Defiers 
+
+New assumption: Monotonicity
+
+---
+
+## Notation Review 
+
+We are now writing potential outcomes as a function of $d_i(z)$
+
+What does $d_i$ represent? 
+
+--
+
+- Indicates whether a subject was actually treated. 
+
+What does $z$ represent? 
+
+--
+
+- Indicates whether a subject was assigned to treatment 
+
+
+???
+
+---
+
+## Two-Sided Non-complinance 
+
+I'll abbreviate this as 2SNC
+
+???
+
+That is not a standard abbreviation. It's just a pain to type out each time on a slide
+---
+
+## Classification of Subject Types 
+
+We now have four possible groups: 
+
+1) Compliers: $d_i(z) = z$
+
+2) Never-Takers: $d_i(1) = 0, d_i(0) = 0$ 
+
+**3) Always-takers: $d_i(1) = 1, d_i(0) = 0$**
+
+**4) Defiers: $d_i(1) = 0, d_i(0) = 1$**
+
+---
+
+## Monotonicity Assumption 
+
+Informally, we have no defiers. 
+
+More formally: 
+
+For all $i \in \{1,...,n\}$, $d_i(1) \geq d_i(0)$. 
+
+This rules out defiers because we can characterize their potential outcomes as $d_i(1) < d_i(0)$
+
+???
+
+Monotonicity says that whenever a subject moves from the control group to the treatment condition, d remains unchanged or increases. 
+---
+
+## ITT, $ITT_D$ and CATE under 2SNC 
+
+Fortunately, if we're willing to assume monotonicity nothing changes about the CACE Theorem
+
+We just have to adapt the definition of Compliers to deal with 2SNC. 
+
+Compliers: $d_i(1) - d_i(0) = 1$. Using this definition 
+
+$$CACE = E[Y_i(d = 1) - Y_i(d = 0)|d_i(1) - d_i(0) = 1]$$ 
+
+???
+
+This theorem goes back to Angrist Imbens and Rubin 1996 and it is extremely profound. It tells us not only that we can identify the CATE in experiments, but also that we can apply this to non-experimental contexts. 
+
+IV designs rely on this assumption. 
+
+---
+
+## Example of the Role of Monotonicity 
+
+```{r, echo = F}
+m <- tibble(
+  Unit = 1:10, 
+  `Y_i(d=0)` = c(24,18,19,19,18,22,10,11,8,11),
+  `Y_i(d=1)` = c(34,28,32,26,22,28,20,12,15,18),
+  `d_i(z=0)` = c(0,0,0,0,1,1,1,0,0,0),
+  `d_i(z=1)` = c(1,1,1,1,0,0,1,0,0,0),
+  Type = c("C","C","C","C", "D","D","A","NT","NT","NT"),
+  `Y_i(z=0)` = c(24,18,19,19,22,28,20,11,8,11),
+  `Y_i(z=1)` = c(34,28,32,26,18,22,20,11,8,11)
+)
+kable(m)
+```
+
+???
+
+Here is a table of Potential Outcomes. We are in Oski the Bear land here because we can observe both. 
+
+How many compliers are there? 4 
+How many defiers are there? What does that mean in this context? 2 
+How many always takers are there? What does that mean in this context? 1 
+
+
+---
+## CACE 
+
+What is the CACE here? 
+
+--
+
+ATE for the compliers. $$\frac{1}{n}\sum_i^nY_i(C) = 10$$
+
+--
+
+In R 
+
+```{r}
+m %>% 
+  filter(Type == "C")%>%
+  summarise(CACE = mean(`Y_i(d=1)`-`Y_i(d=0)`))%>%
+  pull()
+```
+---
+
+## Can we Recover the CACE with the usual formula 
+
+First we need the ITT 
+```{r}
+ITT <- mean(m$`Y_i(z=1)` - m$`Y_i(z=0)`)
+ITT
+```
+Now get $ITT_D$
+
+```{r}
+ITT_D <- mean(m$`d_i(z=1)`-m$`d_i(z=0)`)
+ITT_D
+```
+
+Plug into formula 
+```{r}
+ITT/ITT_D
+
+```
+???
+Hmm, that's not right. Why? 
+
+The ITT_d is the difference between the average of d_i(1) and d_i(0). In this case we have defiers, or a violation of monotonicity. Because the ITT is for the sample as a whole, it is a weighted average of each of the 4 types of subjects. 
+
+Among compliers, we saw it was 10. Among defiers the ITT is -5. Always takers and Never-takers the difference is always 0. Consequently we have 10(.4) + (-5)*.2 = 3 for the ITT 
+
+---
+
+## Can we Recover the CACE with the usual formula 
+
+Let's remove the defiers and run the calculations again. 
+
+```{r}
+m %>% 
+  filter(Type != "D")%>%
+  summarise(ITT =mean(`Y_i(z=1)` - `Y_i(z=0)`),
+            ITT_D =  mean(`d_i(z=1)`-`d_i(z=0)`),
+            CACE = ITT/ITT_D)%>%
+  select(CACE)%>%
+  pull()
+
+```
+???
+
+Removing the defiers is the implication of the monotonicity assumption. There's a few things happening in this code. First, we see that we can in fact summarise multiple things at the same time, and once we've defined them we can also use a column in a new computation. Second, just want to get back the CACE. Note that we could do all of this in one line, but this is easier to read for pedagogical purposes. 
+
+---
+
+## The Bias of the Defiers 
+
+When will Defiers really hurt our estimates? 
+
+Rewrite $ITT_D = (\pi_c + \pi_{AT})-(\pi_D + \pi_{AT}) = \pi_c - \pi_D$
+
+Divide the ITT by difference in proportion: 
+
+$$\frac{ITT}{ITT_D} = \frac{(ATE|Compliers)\pi_c - (ATE|Defiers)*\pi_D}{\pi_c - \pi_D}$$
+???
+
+This is the ratio when monotonicity is violated. Here, the pi's represent proportions of compliers and defiers respectively. We know that the ITT is a weighted average of all the groups, but the AT and NT groups drop out mechanically because their POs are the same for either treatment arm. 
+
+The ratio we get will only equal the CACE when either the defiers and compliers have the same ATE or when there are no defiers. The latter is true mechanically because the second term in the numerator drops out and we get back our usual definition. 
+
+We will get bias when the ATEs for the compliers and defiers are different and the ratio of defiers to compliers is growing large. 
+
+A design point here is that maximizing compliance reduces the consequences of monotonicity failing to hold because there is a greater share of compliers in the sample 
+
+---
+
+## Summarizing 2SNC 
+
+1) 2SNC occurs when some units in the control group are treated and some units in treatment are not treated. 
+
+2) Comparing average outcomes among units that do and do not receive treatment is a non-experimental strategy prone to bias. We should always avoid doing this. 
+
+3) 2SNC changes the interpretation of experimental estimates. We no longer get the ATE, but we can get the ITT (always) and the CACE (under appropriate assumptions)
+
+4) We do not know who the compliers are. This gives rise to caution when generalizing results to other contexts. 
+
+5) Monotonicity is required to rule out defiers and obtain an unbiased estimate of the CACE
+
+???
+
+2SNC is common when units have access to treatments and discretion about whether to take them. Naturally occurring randomizations such as school lotteries that change the probability that a student will attend a certain kind of school often give rise to 2SNC
+
+Again, if you take nothing else from this class it should be to be skeptical on non-experimental work, or bad analysis of experimental work. Selection bias is a heck of a drug and in the real world we have no good way of knowing its size and magnitude. 
+

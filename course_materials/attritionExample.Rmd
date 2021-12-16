@@ -1,0 +1,99 @@
+---
+title: "Attrition Example"
+
+---
+
+```{r}
+options(htmltools.dir.version = FALSE)
+library(tidyverse)
+
+```
+
+## Data
+
+```{r}
+data <- tibble(
+  unit = 1:8,
+  y0 = c(3,3,8,7,6,5,6,6),
+  y1 = c(8,7,10, 8,6,8,6,7),
+  r0 = c(0,0,1,1,0,1,1,1),
+  r1 = c(1,1,1,1,0,1,0,1),
+  y0_r0 = c(NA, NA, 8,7, NA, 5,6,6),
+  y1_r1 = c(8,7,10,8,NA, 8, NA, 7)
+)
+
+```
+
+## What is the attrition here 
+
+In this data, subject 5 is always missing. Subjects 1,2 are missing if they are in the control arm, and Subject 7 is missing if they are in the treatment arm. 
+
+## ATE 
+
+Oski the Bear land lets us just compare potential outcomes to get the true value here. 
+
+```{r}
+data %>% 
+  summarise(ATE = mean(y1) - mean(y0))%>%
+  pull()
+
+```
+
+The True ATE is 2. An unbiased estimator should give us this number back. 
+
+
+## Comparing Non-Missing Values 
+
+```{r}
+data %>% 
+  summarise(ATE = mean(y1_r1, na.rm = T)- mean(y0_r0, na.rm = T))%>%
+  pull()
+
+```
+
+If we randomly assign units to treatment and control and compare average observed Y values, we would find on average a difference of 1.6, not 2. Hence this procedure is biased when attrition is not random. 
+
+Here attrition is correlated with the control group. More subjects want to take the treatment and more precisely lower values of $Y_i(z)$ are missing. 
+
+
+## ATE Generalizing 
+
+The ATE can be defined as 
+
+$$E[R_i(1)]E[Y_i(1)|R_i(1)=1] + (1-E[R_i(1)])E[Y_i(1)|R_i(1)=0]) - \\
+E[R_i(0)]E[Y_i(0)|R_i(0)=1] - (1 - E[R_i(0)])E[Y_i(0)|R_i(0)=0])$$ 
+
+Let's calculate this equation with our data 
+
+```{r}
+## First part of equation for treatment group 
+r1 = mean(data$r1)
+y1r1 = mean(data$y1_r1, na.rm = T) # Only observed 
+r1_complement = 1 - r1
+y1r10 = data %>% 
+  filter(is.na(y1_r1))%>%
+  summarise(avg = mean(y1))%>%
+  pull()
+```
+
+
+```{r}
+## Second part for control group 
+r0 = mean(data$r0)
+y0r0 = mean(data$y0_r0, na.rm = T) # Only observed 
+r0_complement= 1 - r0
+y0r00 = data %>% 
+  filter(is.na(y0_r0))%>%
+  summarise(avg = mean(y0))%>%
+  pull()
+```
+
+We see that if we know everything about the problem, we can get the appropriate weights back. However, if we only view the observed values then we will get a different value. 
+
+```{r}
+# put it all together 
+part1 = r1 * y1r1 + r1_complement*y1r10 
+part2 = r0 *y0r0 + r0_complement*y0r00
+part1 - part2
+```
+

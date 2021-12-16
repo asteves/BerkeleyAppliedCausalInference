@@ -1,0 +1,77 @@
+---
+title: "Imbens and Rubin Chapter 3"
+author: "Alex Stephenson"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Notation 
+
+We have a population of N units, where each unit in the population has a set of pre-treatment covariates. In this section, Imbens and Rubin are setting up a matrix. Here is an example of what they mean with a constant treatment effect of 1. 
+
+```{r}
+set.seed(42)
+N <- 100 # number of units in the population 
+x1 <- rnorm(100) # pretreatment covariate 1 
+x2 <- rnorm(100) # pretreatment covariate 2 
+x3 <- rnorm(100) # pretreatmetn covariate 3
+Yi0 <- runif(100) # potential outcome under control
+Yi1 <- Yi0 + 1 # potential outcome under treatment 
+
+# column binding
+covariate_matrix <- cbind(N, Yi0, Yi1, x1, x2, x3)
+covariate_matrix[1:5,]
+```
+
+We will see representations like this a lot in applied work. Now, we need a column vector for treatment assignment. Imbens and Rubin denote treatment assignment by W. For each unit W can be either 0 or 1, where 0 means control and 1 means treated. The authors also provide a way to sum up the number of units in treatment ($N_t$) and in control ($N_c$). 
+
+```{r}
+W <- sample(c(rep(0,50), rep(1,50)), 100, replace = F)
+
+# Add our Treatment assignment to our data matrix 
+cov_treat_matrix <- cbind(N, Yi0, Yi1, W, x1, x2, x3)
+```
+
+The fundamental problem of causal inference is that we can only observe one outcome. This is Equation 3.1 in Imbens and Rubin. The outcomes we observe are the outcomes based on treatment assignment. 
+
+```{r}
+Y_obs <- ifelse(W == 1, Yi1, Yi0)
+
+all_data <- cbind(N, Yi0, Yi1, W, Y_obs, x1, x2, x3)
+observed_dataset <- cbind(N, W, Y_obs, x1, x2, x3)
+```
+
+If we conducted an experiment, the result would be the data contained in `observed_dataset`. We print the first four rows for reference. 
+
+```{r}
+knitr::kable(head(observed_dataset,n = 4))
+
+```
+
+## Assignment Probabilities 
+
+The authors use the phrase row exchangeable in the definition of the assignment mechanism. They note this mean that we can change the rows in our dataset without changing the meaning of the assignment mechanism function. 
+
+```{r}
+# Add a row number to our dataset so we can see what row exchangeability does 
+row_number <- 1:100
+observed_dataset <- cbind(row_number, observed_dataset)
+```
+
+If we reorder the rows of the data to be in reverse order\footnote{More generally, this holds for any ordering system we choose.}, this does not change any of the underlying quantities. What will change is what rows are at the top.  
+```{r}
+# Reverse the order of the dataset 
+knitr::kable(head(observed_dataset[100:1,],4))
+```
+
+There is some set notation in this paragraph. $W = {0,1}^N$ is the set of all N-vectors with all elements equal to 0 or 1. To ease computation, imagine we only have 2 units\footnote{The idea scales to arbitrarily large N, but space on our computer screens do not.}. Here are all the treatment assignment possibilities we could have. 
+
+```{r}
+W_set <- expand.grid(treat = c(0:1), unit = c(0,1))
+W_set
+```
+It seems rather strange to put every unit in treatment or control (Assignments 1 and 4), so the Assignment Mechanism function could be made to put 0 probability on those assignment. We might further want to make sure that the second and third assignments are equally likely, so the Assignment Mechanism function could be made to put a probability of 1/2 on each. Such a function corresponds to Example 2 in the chapter (Equation 3.5). 
+

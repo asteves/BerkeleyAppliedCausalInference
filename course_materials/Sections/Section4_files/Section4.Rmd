@@ -1,0 +1,252 @@
+---
+title: "Section 4"
+author: "Alex Stephenson"
+date: "9-15-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(estimatr)
+library(fabricatr)
+library(randomizr)
+library(tidyverse)
+library(broom)
+library(knitr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px",
+                 link_color = "red")
+```
+
+## What are we doing today?
+
+Demonstrating how to do Regression in R (not by hand) 
+
+???
+
+Learning by hand is useful, and for some problems we will have to code by hand. In general though, we should make use of smart peoples' work. Today, I am going to show you how to do just that. 
+---
+## Packages we need for today 
+
+```{r, eval = F}
+library(estimatr)
+library(fabricatr)
+library(randomizr)
+library(tidyverse)
+```
+
+If you do not have these packages, install them.
+---
+
+## Regression in R base way 
+
+Without loading any packages, it is possible to run regressions in R. 
+
+For OLS, the command is `lm()`
+---
+
+## Example 
+
+```{r}
+set.seed(42)
+dat <- fabricate(
+  N = 100,                        # sample size
+  x = runif(N, 0, 1),             # pre-treatment covariate
+  y0 = rnorm(N, mean = x),        # control potential outcome
+  y1 = y0 + 0.35,                 # treatment potential outcome
+  z = complete_ra(N),             # complete random assignment to treatment
+  y = ifelse(z, y1, y0),          # observed outcome
+
+  # We will also consider clustered data
+  clust = sample(rep(letters[1:20], each = 5)),
+  z_clust = cluster_ra(clust),
+  y_clust = ifelse(z_clust, y1, y0)
+)
+```
+
+---
+## The dataset for today 
+```{r}
+kable(head(dat))
+```
+
+---
+
+## Regression the base way 
+
+```{r}
+m <- lm(y~z + x, data = dat)
+kable(tidy(m)) 
+```
+
+What's wrong with these errors?
+
+???
+
+As we explained in lecture, by default R calculates homoskedastic errors. That's wrong for anything that we think matters. 
+
+---
+
+## The estimatr package 
+
+`estimatr` is a package dedicated to providing estimators commonly used by social scientists. 
+
+The package provides estimators tuned for design-based inference. 
+
+There are other packages that do this as well, but I personally like `estimatr` hence why I'm teaching it. 
+
+The package also has some [handy mathematical notes](https://declaredesign.org/r/estimatr/articles/mathematical-notes.html) for explaining calculations.
+
+---
+
+## lm_robust()
+
+The function we should use instead as a default is `lm_robust()`
+
+This function lets us quickly fit linear models with the most common variance estimators and degrees of freedom corrections used in social science 
+
+We can easily fit heteroskedastic standard errors, clustered standard errors, and "stata" standard errors 
+
+???
+
+The latter is quite useful if you happen to be working with someone who uses stata or want to replicate a project that was originally done in stata 
+
+---
+
+## Regression the correct way 
+
+```{r}
+m <- lm_robust(y~z + x, data = dat, se_type = "HC0")
+kable(tidy(m)) 
+```
+
+---
+
+## Regression with Cluster Assignment 
+
+To include cluster information, pass the cluster variable to the clusters argument
+
+```{r}
+m2 <- lm_robust(
+  y_clust ~ z_clust + x,
+  data = dat,
+  clusters = clust
+)
+kable(tidy(m2))
+```
+
+---
+
+## `lm_lin()`
+
+Adjusting for pre-treatment covariates is common practice. We have seen how it can increase precision
+
+However, under certain condition (Freedman 2008) covariate adjustment via regression can bias our estimate of the ATE when we have groups of unequal size.  
+
+If we take the concern seriously, there is an alternative estimator that reduces bias and improves precision (Lin 2013)
+
+???
+
+As a simplified overview, Freedman argues that because the regression model assumes linear additive effects, we run into problems. Given the treatment assignments, the outcome is taken to be a linear combination of treatment dummies and covariates with an additive random error and covariates are assumed to be constant across units. This is different than the Neyman PO model which makes no assumptions. If we write the expected response given assignments as a linear combination of treatment dummies, coefficients will vary across units which is the source of bias. 
+
+Regression makes inferences conditional on assignments. The stochastic element is the error term not the randomization. Freedman's critique has real bite in small samples, but in sufficiently large samples the problem is minor or fixed. It also isn't a problem in the world where units are assigned via complete random assignment of equal size arms. 
+
+Lin shows that OLS adjustment cannot hurt asymptotic precision when a full set of treatment-covariate interactions are included and asymptotic confidence intervals are constructed with robust standard sandwich errors. 
+
+Lin's solution is to center all pre-treatment covariates, interact them with the treatment variable, and regress the outcome on treatment, the centered pre-treatment variables, and all the interaction terms. 
+
+
+---
+
+## `lm_lin()`
+
+```{r}
+m3 <- lm_lin(
+  y~z,
+  covariates = ~x,
+  data = dat
+)
+
+kable(tidy(m3))
+
+```
+
+---
+
+## Plotting Regression Coefficients 
+
+Regression tables tend to be lengthy and unhelpful for presenting results, experimental or otherwise. 
+
+It is preferable to make a coefficient plot to directly show coefficients
+
+The output of `lm_robust()` makes that easy to plug into ggplot2 
+
+---
+
+## Plotting Regression Coefficients
+
+```{r, eval = F}
+m %>%
+  tidy %>%
+  filter(term != "(Intercept)")%>%
+  ggplot(aes(x = term, y = estimate))+
+  geom_point()+
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high))+
+  geom_hline(yintercept = 0)+
+  coord_flip()
+```
+
+???
+
+Here we have a chain pipe of our model, which we tidy into a data frame, filter out the intercept because we never care about it as a default, plot our points and add error bars for confidence intervals. The coord_flip() command transposes our plots
+---
+
+## Plotting Regression Coefficients
+```{r, echo = F}
+m %>%
+  tidy %>%
+  filter(term != "(Intercept)")%>%
+  ggplot(aes(x = term, y = estimate))+
+  geom_point()+
+  geom_hline(yintercept = 0, size = 3)+
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high))+
+  coord_flip()+
+  ylab("Variable")+
+  xlab("Estimate")+
+  theme_xaringan()
+```
+---
+
+## What do I do for my assignments?
+
+Unless explicitly instructed to conduct regression by hand or with `lm()`, use `lm_robust()` as a default. 
+
+Alternative estimators that we will cover in class also are implemented in `estimatr` 
+
+If I ask on a problem set for a coefficient plot, it is wrong to present regression output in a table.
+
+???
+
+That includes difference in means, instrumental variables, and Horvitz Thompson estimators

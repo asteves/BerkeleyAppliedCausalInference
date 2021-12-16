@@ -1,0 +1,77 @@
+---
+title: "Weak Law of Large Numbers"
+author: "Alex Stephenson"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The following is a graphical demonstration of the Weak Law of Large Numbers. In the process, we will work with some of the basics tools of simulation. 
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+
+```{r}
+generate_sequence <- function(N){
+  # Function to generate coin flip sequences
+  # N = length of sequence 
+  seq <- rbinom(N, 1, p = 0.5)
+  # We want the index to be able to keep track of the cumulative proportion.
+  # for example, assume we get the sequences HTH. The cumulative proportion 
+  # is 1, .5, 2/3
+  index <-c(1:N)
+  return(cumsum(seq)/index)
+}
+
+```
+
+Due to how R works, if we know ahead of time what we want to do we should preallocate memory. This just means that we make an object ahead of our simulation and then update that object. For language reasons, the code will run much faster. It is a good habit to get into as soon as possible. 
+
+```{r}
+N <- 10000
+samples <- matrix(0, N, 9) # Make a 100x9 matrix with all zeros
+```
+
+Now for our actual simulation, we will simply loop over each column of the samples matrix, and replace the values with our generated sequence. 
+
+```{r}
+set.seed(42)
+for(i in 1:9){
+  samples[,i] <- generate_sequence(N)
+}
+```
+
+We have an updated matrix. To make a pretty graph, we need to turn our matrix into a data frame (`as_tibble` here), make sure that we have a column for the draw id for our X variable (the `mutate` call), turn our data into long form to save lines of code for different lines (`pivot_longer`) and then appropriately specify the aesthetics. 
+
+```{r, warning = FALSE, message= FALSE}
+samples %>% 
+  as_tibble(.,.name_repair = "universal")%>%
+  # this line of code takes the result of the .name_repair
+  # replaces the ... with the string run-
+  rename_with(~(gsub("...", "run-", .x, fixed =TRUE)))%>%
+  mutate(flips = row_number())%>%
+  pivot_longer(
+    cols = -flips,
+    names_to = "run",
+    values_to = "values"
+  ) %>%
+  ggplot(aes(flips, values, group= run, color = run))+
+  geom_line()+
+  ylab("Proportion of Heads")+
+  xlab("Flips")+
+  geom_hline(yintercept = 0.5)+
+  scale_color_brewer()+
+  ggtitle("Weak Law of Large Numbers Simulation")
+  
+
+
+```
+

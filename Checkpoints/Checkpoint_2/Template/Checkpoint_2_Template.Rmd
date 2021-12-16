@@ -1,0 +1,48 @@
+---
+title: "Checkpoint 2 Template"
+output: pdf_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What is this template?
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r, eval = F, echo = F}
+# If you have not installed rmarkdown, do so by running this line of code. 
+install.packages(c("rmarkdown"))
+```
+
+If you use this template before you turn in your assignment, delete this entire section. Your knitted pdf document should begin with the Requirements section. 
+
+## Requirements 
+
+Answer the following questions in a pdf document with your name and the assignment clearly labeled at the top. 
+
+Read Lundberg *et al.* (2021). After reading the article, answer the following questions. Provide page number citations to support your answers.  
+
+## Questions 
+
+**1. According to the article, what is the first step in quantitative empirical research? Give two reasons why being precise about this quantity matters for research.**
+
+FILL IN YOUR ANSWER HERE. DELETE THIS LINE WHEN FINISHED.
+
+**2. Based on the discussion in the article about defining the target population, who is the target population in the following hypothetical study? Why?**
+
+**"We conduct an experiment to estimate the effect of an active learning curriculum on student learning outcomes. To do so, we randomly assign UC Berkeley political science undergraduates to receive either a lecture based course or a flipped learning based course..."**
+
+FILL IN YOUR ANSWER HERE. DELETE THIS LINE WHEN FINISHED.
+
+**3. What are the two types of estimands the article discusses? What is the difference between them?**
+
+FILL IN YOUR ANSWER HERE. DELETE THIS LINE WHEN FINISHED.
+
+**4. Much of this article's vocabulary might be new to you. What parts of the paper were difficult for you to understand or looked scary?**
+
+FILL IN YOUR ANSWER HERE. DELETE THIS LINE WHEN FINISHED.
+

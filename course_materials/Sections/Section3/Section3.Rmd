@@ -1,0 +1,456 @@
+---
+title: "Section 3: Functions and Simulations"
+author: "Alex Stephenson"
+date: "9-8-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "22px")
+```
+
+## What have we covered so far?
+
+Data Frames 
+
+Visualization 
+
+Functions 
+
+---
+
+## What are we doing today?
+
+Showing how to subset a data frame 
+
+Explaining for loops 
+
+Put this pieces today to show how to conduct Randomization Inference 
+
+---
+
+## Materials for today 
+
+On bCourses, download the riExample.csv file 
+.pull-left[
+Import it into R as df 
+
+```{r, eval = F}
+df <- read_csv("YOUR FILE PATH")
+
+df <- read_csv("~/Desktop/riExample.csv")
+```
+
+]
+
+```{r, echo = F}
+df <- tibble(
+  id = 1:7,
+  y0 = c(NA,15,20,20,10,15,NA),
+  y1 = c(15,NA,NA,NA,NA,NA,30),
+  assign = c(1,0,0,0,0,0,1)
+)
+kable(df)
+```
+---
+
+## Subsetting a data frame 
+
+.pull-left[
+To get a single column of a data frame 
+
+```{r, eval = F}
+df$id
+df[["id"]]
+df[,1]
+```
+
+```{r, echo =F}
+df$id
+```
+
+]
+
+.pull-right[
+To get elements conditional on another column in our data frame 
+
+```{r, eval = F}
+df$id[df$assign == 1]
+df[["id"]][df[["assign"]]==1]
+df[,1][df[,4]==1]
+```
+
+```{r}
+df$id[df$assign == 1]
+```
+
+
+]
+
+---
+## Subsetting a data frame based on a separate Vector
+
+Imagine we have a separate vector of the same size as the number of rows in our data frame
+
+```{r, eval = F}
+example_vec <- c(0,0,0,1,1,0,0)
+```
+
+We can subset our data frame in similar ways
+
+```{r,eval = F}
+df$id[example_vec == 1]
+df[["id"]][example_vec==1]
+df[,1][example_vec==1] # will fail with tibbles 
+
+```
+
+```{r, echo = F}
+example_vec <- c(0,0,0,1,1,0,0)
+df[["id"]][example_vec==1]
+```
+---
+  
+## For Loops 
+
+.pull-left[
+
+Suppose we want to run the same computation repeatedly
+
+We could type out the line each time, but this is error prone 
+
+A better way is to have the computer do the job 
+]
+
+.pull-right[
+
+For loop 
+
+```{r, eval = F}
+# General pattern 
+
+for(i in 1:length(NUM_RUNS)){
+  DO CONDITION 
+}
+
+```
+]
+---
+
+## For Loop Example 
+
+.pull-left[
+
+```{r, eval = F}
+for(i in 1:10){
+  print(i)
+}
+```
+]
+
+.pull-right[
+```{r, echo = F}
+for(i in 1:10){
+  print(i)
+}
+```
+]
+---
+## For Loop Example 
+
+.pull-left[
+We can also store a value by making a NULL vector 
+
+```{r, eval = F}
+val <- NULL 
+for(i in 1:10){
+  val[i] <- i
+}
+val
+```
+
+```{r, eval = F}
+val <- NULL 
+for(i in 1:10){
+  val[i] <- i
+}
+sum(val)
+```
+]
+
+.pull-right[
+```{r, echo = F}
+val <- NULL 
+for(i in 1:10){
+  val[i] <- i
+}
+val
+```
+```{r, echo = F}
+val <- NULL 
+for(i in 1:10){
+  val[i] <- i
+}
+sum(val)
+```
+
+]
+---
+## Randomization Inference 
+
+
+1. Run an experiment. Here we already have treatment and control so let's get the ATE 
+
+```{r, eval = F}
+treat <- mean(df[["y1"]][df[["assign"]]==1], na.rm = T)
+control <- mean(df[["y0"]][df[["assign"]]==0], na.rm = T)
+est_ATE <- treat - control
+
+```
+
+The estimated ATE for this experiment is 
+```{r, echo = F}
+treat <- mean(df[["y1"]][df[["assign"]]==1], na.rm = T)
+control <- mean(df[["y0"]][df[["assign"]]==0], na.rm = T)
+est_ATE <- treat - control
+kable(est_ATE)
+```
+
+---
+## Randomization Algorithm 
+
+1. Run an experiment. *We got an estimated ATE of 6.5*
+
+2. Decide the test statistic of interest. $T(D, Y^{obs}, \textbf{X})$: $\hat{\theta} = E[Y_1] -E[Y_0]$
+
+3. State the null hypothesis of interest: $Y_i(0) = Y_i(1), \forall i$
+
+4. State a randomization procedure: $7 \choose 2$
+
+R shows there are 21 unique combinations of assigning 2 units to treatment and 5 to control 
+
+```{r}
+choose(7,2)
+```
+---
+
+## Getting all possible assignments 
+
+Let's use a for loop to get all of the possible treatment assignments
+
+```{r}
+set.seed(42)
+all_possible_assign <- matrix(nrow = 100, ncol = 7)
+
+for(i in 1:100){
+  all_possible_assign[i,] <- sample(c(rep(1,2), rep(0,5)), 7, 
+                                    replace = F)
+}
+
+# Cut down to just the unique rows 
+unique_treats <- unique(all_possible_assign)
+
+# Confirm that we have 252 assignments 
+dim(unique_treats)[1] == 21
+```
+
+???
+all_possible_assign is a matrix. A matrix is another data structure and is similar to a data frame, though with more restrictions. It's exactly like a matrix that you have seen in a math class before. 
+
+Here we are initializing an empty data frame because we just tell R the number of rows and columns we want. The number of columns is equal to the total number of units. The number of rows is equal to the number of runs we want to do in the for loop. 
+
+The unique() function is a base R function that removes all duplicate rows from the matrix.
+
+---
+
+## Getting all possible assignments 
+
+```{r, echo = F}
+t(unique_treats)
+```
+
+???
+
+When we know we have a small number of treatment assignments, this method always works. As we get larger, we will simply want to do a random sampling of assignments. 
+---
+
+## Decide the Test Statistic of Interest 
+
+.pull-left[
+```{r}
+get_ate <- function(df, y1, 
+                    y0, d){
+  ## Get groups 
+  y1 <- df[[y1]][d == 1]
+  y0 <- df[[y0]][d == 0]
+
+  ## Conditional Expected Values 
+  E_Y1 <- mean(y1, na.rm = T)
+  E_Y0 <- mean(y0, na.rm = T)
+  
+  # Return 
+  #the difference in means 
+  return(E_Y1 - E_Y0)
+}
+```
+]
+
+.pull-right[
+Example of running this function. Note that we pass strings to name the variables in the data frame
+
+```{r}
+example_vec <- c(0,0,0,0, 1,1,1,1)
+ex_df <- tibble(
+  id = 1:8,
+  y0 = seq(from = 1, to = 15, by =2),
+  y1 = y0 + 2
+)
+get_ate(df = ex_df, y1= "y1", 
+        y0="y0", d = example_vec)
+```
+]
+
+???
+
+Note that the subsetting in the function could theoretically subset down to NA values without being careful. This will lead to the function returning 'NaN'
+
+---
+
+## State the Null Hypothesis 
+
+Let's return to our original experiment. The null hypothesis is that there is no treatment effect for any group. This allows us to fill in our missing values. There are several ways to do this. One way is to just make a new data frame. 
+
+```{r, eval = F}
+ex1 <- tibble(
+  id = 1:7,
+  y0 = c(15,15,20,20,10,15,30),
+  y1 = y0
+)
+```
+
+This quickly gets annoying 
+---
+## Two ways to change variables 
+
+.pull-left[
+I prefer the tidyverse way. `mutate()` is a function from dplyr. It can make new variables, or change variables in place.  
+
+```{r}
+ex2 <- df %>% 
+  mutate(y0 = ifelse(is.na(y0), 
+                      y1, 
+                      y0),
+         y1 = ifelse(is.na(y1), 
+                      y0, 
+                      y1))
+
+```
+]
+
+.pull-right[
+The base R way. Using other subsetting syntax also works
+
+```{r, eval = F}
+ex3 <- df 
+
+ex3$y0 <- ifelse(is.na(ex3$y0), 
+                 ex3$y1, ex3$y0)
+ex3$y1 <- ifelse(is.na(ex3$y1), 
+                 ex3$y0, ex3$y0)
+```
+]
+
+---
+
+## State the Null Hypothesis 
+
+Create our null hypothesis data frame 
+
+.pull-left[
+```{r}
+null_df <- df %>% 
+  mutate(y0 = ifelse(is.na(y0), 
+                      y1, 
+                      y0),
+         y1 = ifelse(is.na(y1), 
+                      y0, 
+                      y1))%>%
+  # remove the assign column
+  select(-assign) 
+```
+]
+
+.pull-right[
+```{r, echo = F}
+kable(null_df)
+
+```
+]
+
+---
+
+## Get the Randomization distribution 
+
+Now we can put it all together and get our p-value 
+
+```{r}
+obs_ate <- 6.5 # our experiment
+dm <- NULL 
+## Randomize over all possible assignments 
+for(i in 1:nrow(unique_treats)){
+  dm[i] <- get_ate(null_df, "y1", "y0", d=unique_treats[i,])
+}
+## one sided p-value 
+sum(dm >= obs_ate)/nrow(unique_treats) 
+
+## two sided p-value
+sum(abs(dm) >= obs_ate)/nrow(unique_treats)
+```
+
+???
+
+Like a dataframe, a matrix is two dimensional. Each row is a unique assignment, so we use bracket notation to get that assignment. 
+
+We see that in our simulations at least 23% of our runs get a value at least as big, even if there were no difference. We fail to reject the null at the 5% level.
+
+---
+
+## Visualize Absolute Difference in Means Across Simulations 
+
+
+```{r, echo = F}
+tibble(dm = abs(dm),
+       x = 1:21)%>%
+  ggplot()+
+  geom_point(aes(x = x,y=dm))+
+  geom_hline(yintercept = obs_ate)+
+  xlab("Simulation Run")+
+  ylab("Estimated ATE")+
+  theme_xaringan()
+```

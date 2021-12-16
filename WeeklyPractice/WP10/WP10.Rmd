@@ -1,0 +1,34 @@
+---
+title: "Weekly Practice 10"
+output: pdf_document
+---
+
+## Instructions 
+
+Like last week, you are responsible for making your own RMarkdown template. Follow the same aesthetic requirements as WP9. Assignments that do not follow these requirements will not be graded. 
+
+## Requirements 
+
+
+1. Read Card (1995). There are three parts to this requirement. 
+
+- What is the question that Card is interested in asking? 
+
+- Why is the treatment variable that Card would like to use biased?
+
+- What is the instrument that Card proposes to solve the problem?
+
+2. Load the `card` dataset.
+
+
+3. Subset the data frame to include the following variables: lwage, educ, exper, black, south, married, smsa, nearc4 
+
+
+4. Run an OLS regression of lwage on educ and all controls other than nearc4. Report the estimate and explain whether we should trust it. 
+
+
+5. Run an instrumental variables analysis. Use nearc4 as the instrument for treatment. Report your results and analyze what this result means and who it applies to. 
+
+
+
+

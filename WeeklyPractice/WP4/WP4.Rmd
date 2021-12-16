@@ -1,0 +1,89 @@
+---
+title: "WP4"
+author: "Fill in your name here" 
+output: pdf_document
+---
+
+Consider the following table 
+
+|Treatment Assignment| Treated | N|Turnout|
+|--------------------| --------| -|-------|
+| Baseline | No|2572|0.3122|
+| Treatment | Yes|486|0.3909|
+| Treatment |No| 2086|0.3274|
+| Placebo | Yes| 470|0.2979|
+|Placebo|No|2109|0.3215|
+
+## Question 1 
+
+Turn this into a data frame with the variables: 
+
+Z: a variable that represents the condition of each unit 
+D: a variable that represents for each unit whether the unit actually received treatment. 
+Y: An outcome variable that is 1 or a 0 for each category based on turnouts.
+
+```{r,message=F, warning=F}
+library(tidyverse)
+## Put code for data frame here
+data <- tibble(
+  Z = c(rep("baseline", 2572), rep("treatment", 486+2086), rep("placebo", 470+2109)),
+  D = c(rep(0,2572), rep(1, 486), rep(0, 2086), rep(1,470),
+        rep(0,2109)),
+  Y = c(rep(1, round(2572*0.3122)), rep(0, round(2572*(1-0.3122))),
+         rep(1, round(486*0.3909)), rep(0, round(486*(1-0.3909))),
+         rep(1, round(2086*0.3274)), rep(0, round(2086*(1-0.3274))),
+         rep(1, round(470*0.2979)), rep(0, round(470*(1-.2979))),
+         rep(1, round(2109*0.3215)), rep(0, round(2109*(1-0.3215)))
+         )
+)
+```
+
+
+## Question 2 
+
+Estimate the proportion of compliers based on subjects' response to the treatment. 
+
+```{r}
+mean(data$D[data$Z == "treatment"])
+
+```
+
+## Question 3 
+
+Estimate the proportion of compliers based on subjects responses to the placebo. 
+
+```{r}
+
+mean(data$D[data$Z == "placebo"])
+```
+
+## Question 4 
+
+Assuming that units are randomly assigned to the treatment and placebo groups are these rates of compliance consistent with the null hypothesis that both groups have the same proportion of compliers? 
+
+*The difference is going to be negligible either way you choose to run this. The rates are consistent with a null hypothesis.* 
+
+## Question 5 
+
+Estimate the CACE of receiving the treatment. 
+
+```{r}
+itt <- mean(data$Y[data$Z=="treatment"])-mean(data$Y[data$Z =="baseline"])
+cace <- itt/ mean(data$D[data$Z == "treatment"])
+cace
+```
+
+*The CACE estimate is about .14 with the ratio estimator*
+
+If did it by subtracting off just the compliers explicitly
+
+```{r}
+cace_2 <- mean(data$Y[data$Z == "treatment" & data$D == 1]) - mean(data$Y[data$Z == "placebo" & data$D == 1])
+```
+
+
+Another estimation strategy would be to run tha 2SLS, a la iv_robust. This is going to be close to the cace_2 but not quite the same. However, both round to 0.09.  
+
+```{r}
+estimatr::iv_robust(Y~D|Z, data = data)
+```

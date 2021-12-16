@@ -1,0 +1,625 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[]{mathpazo}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={PS133: Special Topics in Quantitative Methods: Applied Computational Tools and Techniques for Causal Research},
+  pdfauthor={Alex Stephenson},
+  colorlinks=true,
+  linkcolor=Maroon,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{PS133: Special Topics in Quantitative Methods: Applied
+Computational Tools and Techniques for Causal Research}
+\author{Alex Stephenson}
+\date{Fall 2021}
+
+\begin{document}
+\maketitle
+
+\hypertarget{class-information}{%
+\subsection{Class Information}\label{class-information}}
+
+\textbf{Instructor}: Alex Stephenson
+
+\textbf{Instructor Email}: alexander {[}\_{]} stephenson {[}at{]}
+berkeley {[}dot{]} edu
+
+\textbf{Course Site}: bCourses
+
+\textbf{Class Room}: Lewis Hall 9
+
+\textbf{Class Hours}: MWF 1000-1100
+
+\hypertarget{course-description}{%
+\subsection{Course Description}\label{course-description}}
+
+This course will focus on the practical application of research methods
+for political science. In this course, we will take on two major tasks:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  How can we implement standard research designs found in political
+  science research? The research aims of scholars are varied, but all
+  research requires a strong research design. This class will examine
+  several topics in research design and causal inference, emphasizing
+  how to implement these techniques in practice.
+\item
+  How can we communicate our results so that others can reproduce what
+  we have done? Successful research programs rely on the ability of
+  others to scrutinize claims. This course will cover methods to explain
+  our results to others in a transparent manner and strategies for
+  visualizing research results.
+\end{enumerate}
+
+By the end of the course, students will feel comfortable with the
+foundational tools of causal inference. They will also learn how to code
+these techniques in their research.
+
+\hypertarget{objectives}{%
+\subsection{Objectives}\label{objectives}}
+
+By the end of this course, students should be able to meet the following
+conceptual objectives:
+
+\begin{itemize}
+\item
+  Describe the essential elements of and primary threats to causal
+  inference and identify how these threats could change the conclusion
+  of a research project.
+\item
+  Demonstrate the ability to evaluate the credibility of a modern
+  empirical paper's research design.
+\item
+  Demonstrate competence in writing code to replicate core research
+  designs.
+\end{itemize}
+
+This course heavily makes use of R to implement all of the topics that
+we discuss. That said, this is not a computer science or data science
+course. We recognize that not everyone has the same programming
+background or familiarity with R. The course is designed to be as
+self-contained as possible. The use of code is to solidify our
+understanding of conceptual topics. That means if you have never
+programmed before, we will teach you what you need to be successful in
+this course. We hope that this class will make you excited to further
+expand your skills on your own or through future coursework.
+
+Each conceptual topic in class will be paired with computational
+implementation by students. By the end of the semester, students will be
+able to meet the following computational objectives:
+
+\begin{itemize}
+\item
+  Demonstrate familiarity working with common data structures (such as a
+  data frame or a matrix) in R.
+\item
+  Demonstrate the capability to implement different research designs
+  using simulated and actual data in R.
+\item
+  Demonstrate understanding of typical data wrangling workflows in R for
+  research projects.
+\end{itemize}
+
+\hypertarget{grading}{%
+\subsection{Grading}\label{grading}}
+
+Grades in this course are earned by \textbf{demonstrating evidence of
+skill on the main concepts in the course} and showing appropriate
+engagement throughout the semester. Students demonstrate evidence of
+skill by completing the assignments outlined here at a reasonably high
+level of quality.
+
+Your instructor has long been flummoxed by the fact that learning comes
+through mistakes, but most course grading systems do not allow for
+errors. Your instructor has also observed that such a state of affairs
+means that students often avoid challenging themselves because doing so
+usually results in a lower grade than playing it safe.
+
+To that end, evaluation in this course is likely different from other
+courses you have had at Berkeley. In our class, \textbf{there are no
+points} on any items. Instead, we will evaluate the work you turn in
+against rubric standards made clear for each assignment. If work meets
+the standard, that work gets full credit. If work does not meet the
+standard, the student will receive clear feedback from the instructors
+and, unless specified otherwise, the chance to reflect on that feedback,
+revise your work, and then resubmit the assignment for re-grading.
+
+We assume, and frankly hope, that students make mistakes because only
+through making mistakes, reflecting on those mistakes, and then
+correcting them do we learn. We learn new skills, retain that
+information, and transfer what we know to new domains through deliberate
+effort. Therefore, \textbf{students can make mistakes without penalty}
+as long as they eventually demonstrate evidence of the evaluated skill.
+\newpage Assignments in this course as marked as follows:
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+Assignment & Marks \\
+\midrule
+\endhead
+Weekly Practice & EMRN \\
+Problem Sets & EMRN \\
+Check-ins & P/NP \\
+\bottomrule
+\end{longtable}
+
+The criteria for each mark are explained in
+\protect\hyperlink{evaluation}{Evaluation Schemes}. If any of this
+changes during the course, I will do it to favor students.
+
+The following table determines students' final grades for the course.
+Grades are given for the highest grade level for which \emph{all} the
+requirements in a row of the table have been met or exceeded. In other
+words, to earn a grade, a student needs to meet \emph{all} the
+requirements in the row for that grade.
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+Grade & Weekly Practice & Problem Sets & Check-ins (P) \\
+\midrule
+\endhead
+A & 10 + with at least 7 E & 5 (\(\geq 3 E\)) & 13 \\
+B & 9 with at least 5 E & 4 & 10 \\
+C & 8 & 3 & 7 \\
+D & 5 & 2 & 5 \\
+\bottomrule
+\end{longtable}
+
+A grade of F is given if \emph{none} of the rows have been fully
+completed.
+
+Plus/Minus grades within grade bands will be assigned at the
+instructor's discretion based on how close a student is to the next
+highest grade level. For students concerned about this at the outset of
+the semester, the best way to get the next half grade up is to show up
+and put forth a good-faith effort. Students that make other students'
+experiences better will be rewarded.
+
+\hypertarget{work-revision-policy}{%
+\subsubsection{Work Revision Policy}\label{work-revision-policy}}
+
+The revision must be turned back in with seven days of receiving an
+initial grade for all work revision eligible assignments. Work revisions
+will be specific to the assignment. This includes the number of total
+resubmits allowed. In general, P/NP assignments will require students to
+submit a self-assessment with corrected solutions and explanations for
+each problem that they missed. In general, EMRN work will require the
+same self-assessment as before and that the student solve a new but
+similar type of problem that the student missed. For section
+assignments, the same holds true, except that students can choose to
+submit individually or as a team.
+
+\hypertarget{evaluation}{%
+\subsubsection{Evaluation Schemes}\label{evaluation}}
+
+There are two grading schemes in this class.
+
+\hypertarget{emrn}{%
+\subsubsection{EMRN}\label{emrn}}
+
+All assignments with EMRN grading have individual rubrics for acceptable
+work. EMRN grading follows the flowchart below.
+
+\includegraphics{grades/EMRN.png}
+
+EMRN assignments are not eligible for revision if the work demonstrates
+clearly insufficient effort or if the work misses a deadline. Students
+are welcome to clarify with the instructor what clearly insufficient
+effort looks like if they are unsure.
+
+\hypertarget{pnp}{%
+\subsubsection{P/NP}\label{pnp}}
+
+A Passing grade (P) is given if the work is turned in by its deadline
+and if each part of the assignment has a response and the responses are
+correct. A No Pass (NP) is given if some part of the assignment is
+incorrect. P/NP assignments are not eligible for revision if the work
+demonstrates clearly insufficient effort or if the work misses a
+deadline. Students are welcome to clarify with the instructor what
+clearly insufficient effort looks like if they are unsure.
+
+\hypertarget{course-policies}{%
+\subsection{Course Policies}\label{course-policies}}
+
+\hypertarget{attendance}{%
+\subsubsection{Attendance}\label{attendance}}
+
+While conceptually possible to do well in this course without attending
+a single meeting, it is highly improbable. Students should plan to
+attend all classes and participate actively in each class meeting to get
+the most out of the course. Attendance will be noted but not graded.
+Students with an excessive number of absences will struggle to get a
+good grade in this class.
+
+\hypertarget{religious-observances}{%
+\subsubsection{Religious Observances}\label{religious-observances}}
+
+This fall has a large number of religious holidays. If you plan to
+observe a religious holiday, even if it is not typically one in the
+course schedule, please see me as soon as possible.
+
+\hypertarget{deadlines}{%
+\subsubsection{Deadlines}\label{deadlines}}
+
+As stated policy: Deadlines are strictly enforced absent a University
+exception. We will not accept late work in part because of the revision
+policy stated above.
+
+As subtext: students have many legitimate exceptions for completing an
+assignment on time that may not be a University exception. Suppose a
+student believes they qualify for an exemption on an assignment. In that
+case, it is the student's responsibility to reach out to the instructor
+ASAP (preferably far before the deadline) to discuss. Exemptions in this
+regard are granted on a case-by-case basis.
+
+\hypertarget{academic-success}{%
+\subsubsection{Academic Success}\label{academic-success}}
+
+My goal for this class is to help each student get the grade they want
+to earn in this class. I firmly believe that all students are capable of
+high achievement, but I will respect each student's choice in the level
+of effort they choose to exert in my class. If there is something that a
+student needs to succeed, please let me know in a format that feels
+comfortable to you.
+
+\hypertarget{email-policy}{%
+\subsubsection{Email Policy}\label{email-policy}}
+
+I will endeavor to answer all emails within 72 hours. If I have not
+responded to an email in that interval, please send me a follow-up
+email. If your query is answered in this syllabus, my reply will simply
+direct you to the syllabus.
+
+Students often send email communication that is overly formal or
+unnecessarily informal. In the spirit of unsolicited advice for
+communicating with your instructors, when in doubt, use the email
+template below:
+
+Dear \emph{Professor X}/\emph{How the person you're emailing you
+instructs you to begin salutations},
+
+\emph{Insert line recognizing our common existence if you so choose}
+
+\emph{One sentence specifying what class you're in and section if
+relevant}. \emph{Insert your specific question here}. \emph{Insert a
+sentence indicating what resources you've consulted if the question is
+administrative}.
+
+\emph{Insert a sentence letting me know what action you'd like me to
+take}.
+
+\emph{Some form of salutation. Best and/or Thanks tend to be the norm.}
+\emph{Insert your name as you'd prefer to be called.}
+
+An example of this template in action:
+
+\emph{Dear Professor X},
+
+\emph{I hope this email finds you well.}
+
+\emph{I'm in PSXXX Section 1. Would you be willing to write me a letter
+of recommendation for a scholarship opportunity on campus? I consulted
+the syllabus and did not see if you had a specific policy about letters
+of rec.}
+
+\emph{Could you please let me know if you are willing to do so, and if
+so, what information I will need to provide.}
+
+\emph{Thanks,}
+
+\emph{{[}Your name{]}}
+
+\hypertarget{office-hours}{%
+\subsubsection{Office Hours}\label{office-hours}}
+
+Office hours are a chance for students to engage one-on-one or in
+smaller groups with the professor or GSI. Students can use this time to
+clarify class materials, ask questions about challenging parts of the
+course or inquire about future opportunities such as graduate schools,
+jobs, or internships. While not causal, your instructor has observed a
+strong positive correlation between students who regularly attend office
+hours and academic success. To get the most out of office hours, consult
+the link
+\href{https://lsc.cornell.edu/wp-content/uploads/2015/10/What-Are-Office-Hours.pdf}{here}.
+
+\hypertarget{academic-integrity}{%
+\subsubsection{Academic Integrity}\label{academic-integrity}}
+
+Students are expected to know and abide by the University's policies on
+Academic Integrity. Should a student be uncertain about this policy,
+consult university resources. Any cases of documented plagiarism will
+result in a failing grade for the course.
+
+\hypertarget{academic-accomodations}{%
+\subsubsection{Academic Accomodations}\label{academic-accomodations}}
+
+We are committed to creating a learning environment that meets the needs
+of all students. Students who have or think they may have a disability
+can work with the Disabled Students' Program (DSP) to request an
+official accommodation. DSP (dsp.berkeley.edu) is the campus office
+responsible for authorizing disability-related accommodations. DSP's
+on-campus office is located at 260 César Chávez Student Center.
+
+Please see me as soon as possible for all other accommodation questions.
+
+Berkeley offers additional student resources for students needing
+additional support. See the links below:
+
+Basic Needs Center (Food and Housing):
+\url{http://basicneeds.berkeley.edu/}
+
+Counseling and Psychological Services:
+\url{https://uhs.berkeley.edu/counselingD}
+
+Student Technology Equity Program:
+\url{https://technology.berkeley.edu/STEP}
+
+\hypertarget{course-schedule}{%
+\subsection{Course Schedule}\label{course-schedule}}
+
+Below is a living schedule. We will not cover more than what is listed,
+but we may cover much less if the material is too fast-paced.
+
+\hypertarget{part-1-foundations}{%
+\subsubsection{Part 1: Foundations}\label{part-1-foundations}}
+
+Week 1: Research Design
+
+Week 2: Potential Outcomes and Estimands
+
+\emph{No class on Monday, September 6}
+
+Week 3: Why Randomize/Statistical Review
+
+Week 4: Regression
+
+Week 5: Regression
+
+\hypertarget{part-2-experiments}{%
+\subsubsection{Part 2: Experiments}\label{part-2-experiments}}
+
+Week 6: Ideal Experiments
+
+\emph{No section on September 29. No class on October 1}
+
+Week 7: Field experiments
+
+Week 8: Dealing with Noncompliance
+
+\hypertarget{part-3-observational-studies}{%
+\subsubsection{Part 3: Observational
+Studies}\label{part-3-observational-studies}}
+
+Week 9: Selection on Observables
+
+Week 10: Fixed Effects
+
+Week 11: What is a ``Natural'' Experiment
+
+Week 12: Regression Discontinuity Designs
+
+Week 13: Instrumental Variables
+
+Week 14: Difference in Differences
+
+\emph{No class on November 25.}
+
+\hypertarget{likely-readings}{%
+\subsection{Likely Readings}\label{likely-readings}}
+
+\hypertarget{week-1-research-design}{%
+\subsubsection{Week 1: Research Design}\label{week-1-research-design}}
+
+Lundberg, Ian, Rebecca Johnson, and Brandon M Stewart. 2021. ``What Is
+Your Estimand? Defining the Target Quantity Connects Statistical
+Evidence to Theory.'' American Sociological Review: 34.
+\url{https://doi.org/10.1177/00031224211004187}
+
+\hypertarget{week-2-potential-outcomes-and-estimands}{%
+\subsubsection{Week 2: Potential Outcomes and
+Estimands}\label{week-2-potential-outcomes-and-estimands}}
+
+Testa, Paul. 2021. ``10 Types of Treatment Effect You Should Know
+About.'' EGAP.
+\url{https://egap.org/resource/10-types-of-treatment-effect-you-should-know-about/}
+(August 8, 2021).
+
+\hypertarget{week-3-why-randomizestatistical-review}{%
+\subsubsection{Week 3: Why Randomize/Statistical
+Review}\label{week-3-why-randomizestatistical-review}}
+
+Cunningham, Scott. 2021. Causal Inference: The Mixtape Chapter 2. New
+Haven: Yale University Press.
+\url{https://mixtape.scunning.com/probability-and-regression.html}
+
+\hypertarget{week-4-regression}{%
+\subsubsection{Week 4: Regression}\label{week-4-regression}}
+
+Morgan, Stephen L., and Christopher Winship. 2014. Counterfactuals and
+Causal Inference: Methods and Principles for Social Research Chapter 6.
+2nd ed.~Cambridge: Cambridge University Press.
+\url{http://ebooks.cambridge.org/ref/id/CBO9781107587991} (September 8,
+2020).
+
+\hypertarget{week-5-regression}{%
+\subsubsection{Week 5: Regression}\label{week-5-regression}}
+
+Wilfahrt, Martha. 2018. ``Precolonial Legacies and Institutional
+Congruence in Public Goods Delivery: Evidence from Decentralized West
+Africa.'' World Politics 70(2): 239--74.
+\url{https://www.cambridge.org/core/journals/world-politics/article/abs/precolonial-legacies-and-institutional-congruence-in-public-goods-delivery/5BA3EFBDEB0981B965801B9C1DA31D64}
+
+\hypertarget{week-6-field-experiments}{%
+\subsubsection{Week 6: Field
+Experiments}\label{week-6-field-experiments}}
+
+Kalla, Joshua L., and David E. Broockman. 2020. ``Reducing Exclusionary
+Attitudes through Interpersonal Conversation: Evidence from Three Field
+Experiments.'' American Political Science Review 114(2): 410--25.
+\url{https://www.cambridge.org/core/journals/american-political-science-review/article/abs/reducing-exclusionary-attitudes-through-interpersonal-conversation-evidence-from-three-field-experiments/4AA5B97806A4CAFBAB0651F5DAD8F223}
+
+\hypertarget{week-7-survey-experiments}{%
+\subsubsection{Week 7: Survey
+Experiments}\label{week-7-survey-experiments}}
+
+Mattes, Michaela, and Jessica L. P. Weeks. 2019. ``Hawks, Doves, and
+Peace: An Experimental Approach.'' American Journal of Political Science
+63(1): 53--66.
+\url{https://onlinelibrary.wiley.com/doi/abs/10.1111/ajps.12392}
+
+\hypertarget{week-8-spillovers-and-non-compliance}{%
+\subsubsection{Week 8: Spillovers and
+non-compliance}\label{week-8-spillovers-and-non-compliance}}
+
+Banerjee, Abhijit, Arun G Chandrasekhar, Esther Duflo, and Matthew O
+Jackson. 2019. ``Using Gossips to Spread Information: Theory and
+Evidence from Two Randomized Controlled Trials.'' The Review of Economic
+Studies 86(6): 2453--90.
+\url{https://web.stanford.edu/~arungc/BCDJ_gossip.pdf}
+
+Gerber, Alan S., and Donald P. Green. 2011. ``Field Experiments and
+Natural Experiments. Parts 5-6'' The Oxford Handbook of Political
+Science.
+\url{https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199604456.001.0001/oxfordhb-9780199604456-e-050}
+(August 8, 2021).
+
+Bowers, Jake, Mark M. Fredrickson, and Costas Panagopoulos. 2013.
+``Reasoning about Interference Between Units: A General Framework.''
+Political Analysis 21(1): 97--124.
+\url{https://www.cambridge.org/core/journals/political-analysis/article/abs/reasoning-about-interference-between-units-a-general-framework/0E2410C1A5666EE5ACA4CBE29AFFFAE7}
+
+\hypertarget{week-9-selection-on-observables}{%
+\subsubsection{Week 9: Selection on
+Observables}\label{week-9-selection-on-observables}}
+
+Imai, Kosuke, and James Lo. 2021. ``Robustness of Empirical Evidence for
+the Democratic Peace: A Nonparametric Sensitivity Analysis.''
+International Organization 75(3): 901--19.
+\url{https://imai.fas.harvard.edu/research/files/dempeace.pdf}
+
+\hypertarget{week-10-fixed-effects}{%
+\subsubsection{Week 10: Fixed Effects}\label{week-10-fixed-effects}}
+
+Kropko, Jonathan, and Robert Kubinec. 2020. ``Interpretation and
+Identification of Within-Unit and Cross-Sectional Variation in Panel
+Data Models.'' PLOS ONE 15(4): e0231349.
+\url{https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0231349}
+
+\hypertarget{week-11-what-is-a-natural-experiment}{%
+\subsubsection{Week 11: What is a ``Natural''
+Experiment}\label{week-11-what-is-a-natural-experiment}}
+
+Titiunik, Rocio. 2020. ``Natural Experiments.'' arXiv:2002.00202
+{[}econ, stat{]}. \url{http://arxiv.org/abs/2002.00202} (February 16,
+2020).
+
+Sekhon, Jasjeet S., and Rocío Titiunik. 2012. ``When Natural Experiments
+Are Neither Natural nor Experiments.'' American Political Science Review
+106(1): 35--57.
+\url{https://www.cambridge.org/core/journals/american-political-science-review/article/abs/when-natural-experiments-are-neither-natural-nor-experiments/E8A67829C2EEBC429CDD671B4C9313F9}
+
+Hyde, Susan D. 2007. ``The Observer Effect in International Politics:
+Evidence from a Natural Experiment.'' World Politics 60(1): 37--63.
+\url{https://www.cambridge.org/core/journals/world-politics/article/abs/observer-effect-in-international-politics-evidence-from-a-natural-experiment/B72409C4FB717F72CAB765024468511F}
+
+\hypertarget{week-12-regression-discontinuity-designs}{%
+\subsubsection{Week 12: Regression Discontinuity
+Designs}\label{week-12-regression-discontinuity-designs}}
+
+Cattaneo, Matias D., Nicolás Idrobo, and Rocío Titiunik. 2019. A
+Practical Introduction to Regression Discontinuity Designs: Foundations.
+1st ed.~Cambridge University Press.
+\url{https://www.cambridge.org/core/product/identifier/9781108684606/type/element}
+(December 11, 2019).
+
+\hypertarget{week-13-instrumental-variables}{%
+\subsubsection{Week 13: Instrumental
+Variables}\label{week-13-instrumental-variables}}
+
+van der Windt, Peter. 2021. ``10 Things to Know About the Local Average
+Treatment Effect.'' EGAP.
+\url{https://egap.org/resource/10-things-to-know-about-the-local-average-treatment-effect/}
+(August 8, 2021).
+
+\hypertarget{week-14-difference-in-differences}{%
+\subsubsection{Week 14: Difference in
+Differences}\label{week-14-difference-in-differences}}
+
+Wing, Coady, Kosali Simon, and Ricardo A. Bello-Gomez. 2018. ``Designing
+Difference in Difference Studies: Best Practices for Public Health
+Policy Research.'' Annual Review of Public Health 39(1): 453--69.
+\url{https://www.annualreviews.org/doi/10.1146/annurev-publhealth-040617-013507}
+
+\end{document}

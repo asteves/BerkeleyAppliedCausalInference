@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 24</title>
+    <meta charset="utf-8" />
+    <script src="Lecture24_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 24
+### 11-17-2021
+
+---
+
+
+
+
+
+
+## Announcements 
+
+There is no section on 11/24
+
+There is no class on 11/29 
+
+WP10 and Checkpoint 13 are due on Friday
+
+PS5 will be available on Thursday 
+
+---
+
+## Instrumental Variables 
+
+Imagine we have constant effects. 
+
+Our true model of the world is `\(Y_i = \alpha + \delta D_i + \beta X_i + \epsilon_i\)` 
+
+Our observed model of the world is `\(Y_i =\alpha + \delta D_i + \gamma_i\)`
+
+What is the bias? 
+
+---
+
+## Instrumental Variables 
+
+What is the bias? 
+
+Our estimate `\(\hat{\delta} = \frac{E[YD]-E[Y]E[D]}{V[Y]}\)` 
+
+The true value 
+`$$\begin{aligned}
+\hat{\delta} &amp;= \frac{E[\alpha D + D^2\delta + \beta XD + \epsilon D]-E[\alpha + \delta D + \beta X + \epsilon]E[D]}{V[Y]} \\
+\hat{\delta} &amp;= \delta + \beta \frac{C(X,D)}{V(D)}
+\end{aligned}$$`
+
+???
+
+If γ&gt;0 and C(X,S)&gt;0, then ˆδ, the coefficient on schooling, is upward biased. And that is probably the case given that it’s likely that ability and schooling are positively correlated.
+
+---
+
+## Instrumental Variables 
+
+Suppose we have an instrument Z that is independent of X and the error term 
+
+The covariance of Y and Z
+
+`$$\begin{aligned}
+C(Y,Z) &amp;= C(\alpha + \delta D + \beta X + \epsilon, Z) \\
+C(Y,Z) &amp;= \delta C(D,Z) + \beta C(X,Z) + C(\epsilon, Z)
+\end{aligned}$$`
+
+What is the best estimate of `\(\delta\)`?
+
+???
+
+C(Y,Z)/C(D,Z) is delta. 
+
+Suppose that the correlation of Z and X is 0, as is required by an instrument and the correlation between the error and Z is 0 also required by the exclusion restriction. Then this equation reduces to a basic fraction. dividing the right hand side by the left gets our estimate of delta 
+
+But the exclusion restriction is only a necessary condition for IV to work; it is not a sufficient condition. After all, if all we needed was exclusion, then we could use a random number generator for an instrument. Exclusion is not enough. We also need the instrument to be highly correlated with the endogenous variable schooling S. And the higher the better. We see that here because we are dividing by C(S,Z), so it necessarily requires that this covariance not be zero.
+
+The numerator in this simple ratio is sometimes called the “reduced form,” while the denominator is called the “first stage.” These terms are somewhat confusing, particularly the former, as “reduced form” means different things to different people. But in the IV terminology, it is that relationship between the instrument and the outcome itself. The first stage is less confusing, as it gets its name from the two-stage least squares estimator, which we’ll discuss next.
+
+---
+
+## Two Stage Least Squares 
+
+Consider a sample with Y, D, and Z. Assume the DGP 
+
+`$$Y_i = \alpha + \delta D_i + \epsilon_i$$`
+`$$D_i = \gamma + \beta Z_i + \epsilon_i$$` 
+
+We can rewrite our IV estimate: 
+
+`$$\frac{C(Y,Z)}{C(D,Z)} = \frac{\frac{1}{n} \sum_{i}^n (Z_i - \bar{Z})Y_i}{\sum_{i}^n (Z_i - \bar{Z})D_i}$$`
+
+???
+
+where C(Z,ε)=0 and β≠0. This is the exclusion restriction and the second part is the non zero first stage 
+
+---
+
+## Two Stage Least Squares 
+
+When we substitute in appropriately, we sub in the fitted values of the endogenous predictors from the first stage regression. 
+
+Recall that `\(D = \gamma + \beta Z + \epsilon\)`. 
+
+That means that our estimate is `\(\hat{D} = \hat{\gamma} + \hat{\beta}Z\)` 
+
+Then our 2SLS estimator becomes: `\(\frac{C(\hat{\beta}Z, Y)}{V(\hat{\beta}Z)}\)`
+
+Thus: The 2SLS estimator uses only the fitted values based on all variables in the model including the instrument. Because the instrument is exogenous this makes the fitted values themselves exogenous! 
+
+???
+
+IV reduces the variation in the data, so there is less information available for identification, and what little variation we have left comes from only those units who responded to the instrument in the first place. This, it turns out, will be critical later when we relax the homogeneous treatment effects assumption and allow for heterogeneity.
+
+---
+
+## Instrumental Variables: Bias and Consistency 
+
+2SLS is a ratio estimator (specifically a Wald Estimator). Ratio estimators are biased. 
+
+In general for a ratio `\(E[\frac{A}{B}] = \frac{E[A] - C(\frac{A}{B}, B)}{E[B]}\)`. The Bias becomes negligible as our sample size increases 
+
+The ratio estimator is a consistent estimator. As sample size grows the estimated ratio converges to the true value of the LATE. 
+
+---
+
+## Weak Instruments 
+
+Our IV 2SLS estimate of the treatment effect with a constant is `\(\frac{C(Y,Z)}{C(D,Z)}\)`. 
+
+This function is clearly undefined when C(D,Z) = 0. What happens when it is very small? 
+
+Small perturbations in the denominator will lead to massive swings in our coefficient
+
+The bias can be quantified as `\(\frac{C(\epsilon, D)}{V(D)}\frac{1}{F+1}\)` 
+
+???
+
+In instrumental variables (IV) regression, the instruments are called weak if their correlation with the endogenous regressors, conditional on any controls, is close to zero. When this correlation is sufficiently small, conventional approximations to the distribution of two-stage least squares and other IV estimators are generally unreliable. In particular, IV estimators can be badly biased, while t-tests may fail to control size and conventional IV confidence intervals may cover the true parameter value far less often than we intend. 
+
+Why is this the case? well intuitively the 2SLS estimate is just the ratio of the reduced form and the first stage. This ratio can be highly non-linear with the denominator. In finite samples, our estimate of the denominator is going to be noisy. If the standard errors of this estimate is large relative to the estimate that leads to strange behavior. 
+
+here F is the population analogy of the F-statistic for the joint significance of the instruments in the first-stage regression. If the first stage is weak, and F→0, then the bias of 2SLS approaches σεησ2η. But if the first stage is very strong, F→∞, then the 2SLS bias goes to 0.
+
+Historical practice suggested that a strong F was about 10. Recent research suggests that it is substantially higher to be confident unless we are willing to do something else about our inference such as an explicit weak instrument intervals. 
+
+---
+
+## The Problems with IVs in modern practice 
+
+Lal *et. al* (2021) suggest there are three major problems with IVs in political science: 
+
+1. Many studies do not report the appropriate first stage F statistic 
+
+2. Many studies underestimate the uncertainty of their estimates 
+
+3. 2SLS estimates are often much bigger in magnitude suggesting failures of exclusion restrictions 
+
+???
+
+Since the IV coefficient is a ratio the instability of ratio estimators requires that our F statistic be quite large. It's also possible that if the exclusion restriction assumptions hold weak instrument exacerbate the bias of 2SLS towards the inconsistent OLS estimator. 2) They become very imprecise estimates. Weak instruments also induce bias towards OLS estimates and thus recreate the same problem they were meant to solve. 
+
+2) Imprecision in statistics arise from the fact that the distribution of beta hat is derived from its linear approximation that is normal. Such an approximation breaks down when the denominator gets close to 0. 
+
+3) If there is a small violation of the exclusion restriction even small violations produce inconsistency. This is because the probability limit (or how we understand consistency) is Beta_IV = Beta + Cov(Z,e)/Cov(Z,X). If the denominator is approximately 0 the second term goes to infinity meaning that in the limit we don't get beta. 
+
+---
+
+## What should we do in research? 
+
+Lal *et. al* suggest: 
+
+1. Think about the design hard before beginning 
+
+2. After running the first stage regression, plot our actual treatment against our first stage predictions and check the IV strength by eye 
+
+3. Consider the expectation of the OLS bias. If OLS is expected to have upward bias be considered if the 2SLS are even bigger than the OLS ones. 
+
+---
+
+## What does `iv_robust` do? 
+
+Explicit notes are [here](https://declaredesign.org/r/estimatr/articles/mathematical-notes.html#iv-robust-notes)
+
+In short: 
+
+1. `iv_robust()` estimates a two stage least squares regression. 
+
+2. Variance estimation is the same as `lm_robust()` except the pacakges replace our endogenous estimator with the second stage regressors, `\(\hat{D}\)`, and we replace the residuals are from the final coefficients and the endogenous, uninstrumented regressor.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

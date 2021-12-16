@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 16</title>
+    <meta charset="utf-8" />
+    <script src="Lecture16_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 16
+### 10-20-2021
+
+---
+
+
+
+
+
+
+## What did we cover last time?
+
+We introduced observational studies 
+
+We made sure to note that observational studies are on a range of plausibility 
+
+---
+
+## What are we doing today?
+
+Continue discussing the structure of observational studies 
+
+Introduce the Propensity Score
+
+---
+
+## Okay so what if we assume selection on observables? 
+
+A common estimand of interest in observational studies is the ATT 
+
+`$$E[Y_i(1)|D_i = 1] - E[Y_i(0)|D_i = 1]$$`
+
+This holds under "Strong Ignorability" 
+
+`$$Y_i(0), Y_i(0) \perp || \perp D | X$$` 
+
+`$$0 &lt; P[D=1|X] &lt; 1$$` 
+
+???
+
+This equation is not directly observable because `\(Y_i(0)\)` is not observed for the treated. What we can assume is that selection for treatment depend on observable covariates denoted by X 
+
+Strong ignorability has the usual unconfoundeness of potential outcomes assumption (CIA) as well as an assumption about common overlap. The latter implies that there is some probability that a unit would be in treatment or control. We saw when discussing effective weights what happens when this is violated. 
+
+---
+
+## Okay so what if we assume selection on observables? 
+
+Given strong ignorability: 
+
+`$$E[Y_{ij}|D_i = 1, X_i] = E[Y_{ij}|D_i = 0, Xi]$$` 
+
+In words: once we make an assumption we can continue as if treatment was randomly assigned. 
+
+By conditioning on observed covariates, we achieve balance on observables and make the assumption that the only difference between the two groups is the potential outcomes we observe. 
+
+???
+
+In order to make this assumption we need to know what is pre and what is post-treatment. In other words, for an observational study we need to know our estimand, our target population, and what we think is being manipulated and when. 
+
+---
+
+## Balancing Scores 
+
+Under unconfoundedness we remove all bias in comparison between treated and untreated units by adjusting for differences in observed covariates. 
+
+In practice, this becomes difficult as the number of covariates to balance on becomes large. 
+
+A balance score is a lower dimensional function of the covariates that suffices for removing the bias associated with differences in pretreatment variables. 
+
+
+---
+
+## Balancing Scores 
+
+Formally: 
+
+`$$D_i \perp \!\!\! \perp X_i | b(X_i)$$`
+
+In words: a balancing score is a function of covariates such that the probability of receiving treatment given covariates is free of dependence on the covariates given the balancing score. 
+
+???
+
+Balancing scores are not unique. What we are interested in is a lower dimensional balance score. One balancing score that is very useful is the propensity score. 
+
+---
+## The Propensity Score is a Balancing Score 
+
+Balancing scores have a nice property that if assignment to treatment is unconfounded given the full set of covariates, then assignment is also unconfounded conditioning only on a balancing score. 
+
+The propensity score is the conditional probability of treatment (D = 1) given the observed covariates `\(X\)`. We tend to write it as: 
+
+`$$e(X) = Pr(D=1|X)$$` 
+
+The propensity score's balancing property says that: 
+
+`$$D \perp \!\!\! \perp X|e(X)$$`
+
+???
+
+The propensity score is defined in terms of observed covariates whether or not that model is actually true. 
+
+In an RCT the propensity score is known trivially because we know exactly how units make it into treatment via the randomization procedure. In an observational study the propensity score is unknown but can be estimated. 
+
+Treatment and observed covariates are conditionally indepdendent given the propensity score. The propensity score, if we know it, says we only have to match units on the propensity score to balance out the groups in general. 
+
+---
+
+## Propensity Scores and Interpretation 
+
+Consider a scenario where we have two units 1, 2 who are assigned to treatment and control. Each has a propensity score of 0.6. 
+
+Propensity score methods compare units based on observables who have very similar probabilities of being placed in the treatment group even though those units differed with regard to actual treatment assignment. 
+
+If conditional on covariates, two units have the same probability of being treated, then they have similar propensity scores. 
+
+???
+
+Insofar as the two units have the same propensity score but one is in treatment and the other is not, and the CIA holds, then differences between the two observed outcomes are attributable to treatment. 
+
+Implicit here is the common support assumption we discussed earlier. It must be possible for a unit to be in the treatment and control group across the estimated propensity score. 
+
+Our discussion of inverse probability weighting is a propensity score method where the weighting procedure is the individual unit's propensity score. 
+
+---
+## Matching and Regression 
+
+An attractive feature of matching strategies is that they are typically accompanied by an explicit statement of the CIA needed to give matching estimates a causal interpretation. 
+
+A regression is a control strategy too. Both rely on a similar assumption. 
+
+&lt;blockquote&gt; 
+"Any regression model gives the best linear approximation to [your estimate] subject to whatever parameterization you're using. This means that I can't imagine a situation where matching makes sense but regression does not. 
+
+*Josh Angrist*
+&lt;/blockquote&gt;
+
+---
+## Design Phase of Observational Studies 
+
+Prior to implementing any estimation strategies we need to go through the design phase of an observational study. 
+
+1. Assess Balance 
+
+2. Subsample selection if appropriate 
+
+3. Assess unconfoundedness 
+
+---
+
+## Assess Balance 
+
+Assessing balance means comparing the distribution of covariates in the treated and control samples. 
+
+Researchers tend to consider the difference in average covariate values by treatment status (usually tested with t-tests)
+
+This is a balance table. 
+
+???
+
+As a rule of thumb, when treatment groups have important covariates that are more than one-quarter or one-half of a standard deviation apart, simple regression methods are unreliable for removing bias.
+
+Yet again, if you can do the experiment you should because as long as your randomization works you get this for free. 
+
+---
+
+## Subsample selection if appropriate 
+
+If the basic sample exhibits a substantial amount of imbalance we might do better by constructing a subsample characterized by better balance. 
+
+A common procedure to do this is to first estimate the propensity score and then match each treated unit to the closest control unit in terms of estimated propensity score. 
+
+Trimming might be appropriate if units have values of the propensity score very close to 0 or very close to 1.
+
+???
+
+Note the may bit implies that we're making arguments. This should be set up in advance before you've spent a lot of time staring at the data. 
+
+We do not simply estimate the average effect of treatment by taking difference in outcomes, rather within the matched sample we rely on adjustments. Again analyse, how you "randomize", how you design. 
+
+Trimming matters because units with values close to 0 or 1 likely have problems with overlap. In addition, it will be difficult to obtain precise estimates of the typical effect of treatment because there are few units to match and compare with. 
+
+---
+
+## Assessing Unconfoundedness 
+
+If our model of the world is true than we're good to go. However, how much do we trust our selection on observables model?
+
+Critics (of which you are one of your own work) will claim that there is some variable that is being omitted and that variable biases your claims. 
+
+Sensitivity analysis is a process by which researchers consider how much an unobserved variable would have to affect a result to flip or change the result. 
+
+???
+
+Little and Pepinsky (2021) argue that any sincere claim about bias requires a belief about what that bias is and what direction it should go. That provides a benefit for considering sensitivity analysis. 
+
+Incidentally, the first sensitivity analysis performed explicitly as one was for a study on smoking and lung cancer. The researchers concluded that an unobserved covariate would need to be enormous in order to over turn the result. 
+
+---
+
+## Estimating the Effect of a Treatment on an Unaffected Outcome 
+
+One sensitivity test is to estimate our treatment on a variable that we know is not affected by the treatment. 
+
+We run the same analysis, but substitute out our outcome variable with the variable not associated with treatment. If there is an effect, we are skeptical that our treatment is well explaining anything. 
+
+Note that if we find no effects, this does not imply that our treatment effect is real, just that it is more plausible. 
+
+???
+
+Typically we want a variable that we know temporally cannot be affected by treatment. The best ones are one that come prior in time.
+
+Remember, the CIA cannot be tested empirically. Everything we do is to see how plausible or implausible it would be on a given set of data. 
+
+---
+
+## Estimate the Effect of a different treatment 
+
+We can also do the same kind of placebo but with a treatment that we know does not cause the outcome. 
+
+Suppose we have *two* possible control groups. We can compare estimated treatment effects using the control groups because in both of these groups the treatment indicator is known to be 0. 
+
+If we find a significant effect, that suggests that for at least one of the control groups unconfoundedness is violated. 
+
+???
+
+Again a failure to reject does not mean CIA is valid because it could be that both groups have similar biases. 
+
+Some examples of this are different geographical control groups on either side of a treatment group. 
+
+---
+
+## Sensititvity with different pre-treatment variables 
+
+Here we again use outcome data for all units, but partition the covariates such that we estimate the effect only a subset to those with the full set. 
+
+If there are substantial differences between the restricted and unrestricted models then unconfoundedness either relies critically on all covariates or it does not hold. 
+
+???
+
+Note here that this uses the outcome data, so we're "peeking" in some sense. As a result, we do not consider this a design approach per se, but it is useful as another check. 
+
+---
+
+## What should be reported?
+
+1. We should always start from the raw data and smooth the data slowly, deliberately, and transparently. 
+
+2. All our analyses should leverage our design, and by extension the question of interest as much as possible. Theoretical estimands are arguably more important in the observational world. 
+
+3. Selection on observables should be regarded skeptically unless compelling evidence to the contrary is provided. Think about the seat belts example. 
+
+4. Placebo and sensitivity tests should be conducted wherever possible. We should be very skeptical of studies that did not consider at the design test how to assess their findings. 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+---
+title: "Missing Data"
+author: "Alex Stephenson"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, message = F, warning = F}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Sharp Bounds Example 
+
+The sharp bounds are the best we can do without further assumptions. They are an example of partial identification (or set identification). 
+
+```{r}
+# Data frame 
+d <- tibble(
+  unit = c(1:6),
+  Y_i = c(1, NA, 1, 0, 1, NA),
+  R_i = c(1,0,1,1,1,0)
+)
+
+
+# Sharp bounds 
+d %>% 
+  mutate(Y_a = if_else(condition = is.na(Y_i),
+                       true = min(Y_i, na.rm =T),
+                       false = Y_i),
+         Y_b = if_else(condition = is.na(Y_i),
+                       true = max(Y_i, na.rm = T),
+                       false = Y_i)
+         )%>%
+  summarise(across(.cols = c(Y_a, Y_b),.fns = c(mean)))
+
+```
+
+## MCAR 
+
+The estimator for MCAR is the sample mean of the non missing values. 
+
+```{r}
+d %>%
+  summarise(mean = mean(Y_i, na.rm = T))
+```
+## Imputation with MCAR 
+
+```{r}
+d %>% 
+  # Impute missing values with sample mean of responders 
+  mutate(Y_i = if_else(
+    condition = is.na(Y_i),
+    true = .75, # this comes from our plug in estimator 
+    false = Y_i
+  ))%>%
+  # The sample mean with missing values imputed 
+  summarise(mean = mean(Y_i))
+```
+
+## Plug in estimation of the Expected Value under MAR 
+
+Imagine we also observe a binary covariate $X_i$ for every unit like so: 
+
+```{r}
+dc <- d %>% 
+  mutate(X_i = c(0,0,0,0,1,1))
+
+
+## Assuming MAR we can use the post stratification plug in estimator 
+dc %>% 
+  mutate(Y_i = case_when(
+    is.na(Y_i) & X_i == 0 ~ mean(dc$Y_i[dc$X_i == 0], na.rm=T),
+    is.na(Y_i) & X_i == 1 ~ mean(dc$Y_i[dc$X_i == 1], na.rm = T),
+    TRUE ~ Y_i
+  ))%>% 
+  summarise(mean = mean(Y_i))
+```
+Note that this example relies on a single discrete covariate. If we have many covariates, or a continuous covariate we will need to seek alternative methods. 
+
+A common method is regression estimation. 
+
+

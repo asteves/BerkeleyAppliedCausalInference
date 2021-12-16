@@ -1,0 +1,231 @@
+---
+title: "Lecture 15"
+date: "10-18-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+library(estimatr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+## What did we cover last time?
+
+Last week we covered attrition
+
+We discussed briefly bounding and weighting methods to get an estimate of $E[Y]$
+
+???
+
+Attrition is a serious problems in experiments. We should try very hard to avoid it. 
+
+---
+
+## What are we doing this week 
+
+Checkpoint 9, WP6, and PS3 are due on Friday. 
+
+The back half of the course is focused on "observational" studies 
+
+Today we are going to (re)introduce some of the assumptions we need to claim causality in an observational study
+
+???
+
+Checkpoint 9 is another survey. WP6 is posted along with the data. You will need to do some data wrangling, and on purpose this will require you to look up some code and examples for the help manuals for the tidyverse. 
+---
+
+## What is an observational study? 
+
+An observational study is a research design where treatment is not under control of the researcher. 
+
+Observational studies vary in their plausibility. 
+
+"If you can do the experiment, do the experiment. If you cannot do the experiment, find something that resembles it as closely as possible." 
+
+???
+
+Questions: Is a study for which a lottery was held by the government and then researchers asked lottery winners if they were more or less pro-welfare an observational study? 
+
+Yes it is.
+---
+
+## Treatment Assignment in Observational Studies
+
+Good observational studies have a well-defined treatment that began at a well defined time. Treatment assignment is not necessarily random, but the circumstances of the study indicate that it is plausibly random. 
+
+Poor observational studies do not have a well-defined treatment
+
+Observational studies **must** rely on the unconfoundedness assumption, which may be more or less plausible in a given study
+
+???
+
+Good observational studies try to find something that is randomly assigned, but not in control of the researcher. In good observational studies, the treatment assignment might not be random but it is plausibly random or not obviously related to the outcomes units would exhibit under treatment or control. 
+
+Poor studies pay little attention to the process that made some units treated and other units in control. 
+
+The unconfoundedness assumption is used widely to assess causal effects. 
+---
+
+## Comparability of Treatment and Control Arms 
+
+In good observational studies, the two groups have similar balance across treatment and control groups along *observable covariates*
+
+You should be able to find a table that shows whether this holds. 
+
+???
+
+This is the selection on observables assumption. We can never know if there is a factor that is unobservable that is different but driving the effect. Much of what we will think about latter in the week is related to this question of sensitivity to unobservables. 
+
+---
+
+## Alternatives to Treatment Effects 
+
+Good observational studies provide the most plausible alternatives to the treatment effect as identified. 
+
+The design of the study includes features to test (at least) implications of these alternatives. 
+
+Bad observational studies may only mention alternatives, but do not test them. 
+
+???
+
+Because there are many more plausible alternatives to a treatment effect in an observational study than in an experiment, much more effort is devoted to collecting data would shed light on these alternatives. 
+
+---
+
+## A Brief Aside about Bees
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/xlGuBT5GT10" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+???
+
+Note that this is an experiment (albeit a somewhat strange one) but this is exactly what we mean when we say that our design should consider many plausible alternatives. The more implications we can come up with that should hold, the more plausible our treatment effect is 
+---
+
+## Should you wear a seatbelt? 
+
+|Driver Result|Passenger Result|NB/B|B/NB|
+|-------------|----------------|----|----|
+|Driver Died| Passenger Survived|189|153|
+|Driver Survived|Passenger Died|111|363|
+
+???
+
+Yes. 
+
+However, car crashes vary in severity. We may also observe that people wearing seat belts are less likely to die in a car crash, but they may be less likely to die in general. They may take fewer risks on the road. If risk tolerant drivers do not wear seat belts, and also drive faster and ignore road conditions, then our comparisons between the two groups will be fraught with selection bias.
+
+The data here comes from a study by Leonard Evans that looked at crashes where there were two individuals in the front seat, one belted, the other not and had at least one fatality. In these crashes, several uncontrollable factors are the same for driver and passenger. When the passenger is belted and the driver is not more often than not the driver dies. The same is true in the converse. 
+
+Wear a seat belt. 
+
+---
+
+## Exclusion Criteria in Observational Studies 
+
+In good observational studies, units are included based on covariates and the same criteria are used in both treatment and control groups. 
+
+In bad observational studies, the criteria for membership in the treated and control groups differ. 
+
+???
+
+Note selection bias rearing its ugly head again here. In a bad observational study, these inclusion criteria are often not known or discussed. In a good observational study, the variables are measured prior to treatment assignment and are clear what they include. 
+
+---
+
+## Can Units leave the treatment group? 
+
+In a good observational study units do not exit from their treatment status. Units who do not comply with assigned treatment remain in the assigned treatment group with these characteristics noted. 
+
+In a bad observational study, there is no clear distinction of what constitutes assignment to treatment, acceptance of treatment, receipt of treatment, or switching treatments. 
+
+???
+
+This sounds like a non-compliance problem because it is one, and many similar techniques will be imported. Chief among them are instrumental variables. 
+
+---
+
+## Treatment Assignment Questions in Observational Studies
+
+"What is the theoretical estimand of interest?" 
+
+"Why can't you do an experiment?" 
+
+"Why did this unit receive treatment?" 
+
+???
+
+In randomized experiments differences in treatments are due to the randomization, and this procedure is known and verifiable. In observational studies, it is less clear why similar units should receive different assignments. 
+
+In settings where assignment is based on individual choices we should be concerned that individuals who look ex ante identical but make different choices must be different in unobserved ways that invalidated a causal interpretation of the outcomes. 
+
+---
+
+## A dictum about Observational Studies 
+
+<blockquote>
+"With an experiment, natural experiment, a discontinuity, or some other strong design, no amount of econometric or statistical modeling can make the move from correlation to causation persuasive" 
+
+Jasjeet S. Sekhon 
+</blockquote> 
+
+---
+
+## Okay so what if we assume selection on observables? 
+
+A common estimand of interest in observational studies is the ATT 
+
+$$E[Y_i(1)|D_i = 1] - E[Y_i(0)|D_i = 1]$$
+
+This holds under "Strong Ignorability" 
+
+$$Y_i(0), Y_i(0) \perp || \perp D | X$$ 
+
+$$0 < P[D=1|X] < 1$$ 
+
+???
+
+This equation is not directly observable because $Y_i(0)$ is not observed for the treated. What we can assume is that selection for treatment depend on observable covariates denoted by X 
+
+Strong ignorability has the usual unconfoundeness of potential outcomes assumption (CIA) as well as an assumption about common overlap. The latter implies that there is some probability that a unit would be in treatment or control. We saw when discussing effective weights what happens when this is violated. 
+
+---
+
+## Okay so what if we assume selection on observables? 
+
+Given strong ignorability: 
+
+$$E[Y_{ij}|D_i = 1, X_i] = E[Y_{ij}|D_i = 0, Xi]$$ 
+
+In words: once we make an assumption we can continue as if treatment was randomly assigned. 
+
+By conditioning on observed covariates, we achieve balance on observables and make the assumption that the only difference between the two groups is the potential outcomes we observe. 
+
+???
+
+In order to make this assumption we need to know what is pre and what is post-treatment. In other words, for an observational study we need to know our estimand, our target population, and what we think is being manipulated and when. 

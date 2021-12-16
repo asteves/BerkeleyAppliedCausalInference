@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 21</title>
+    <meta charset="utf-8" />
+    <script src="Lecture21_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 21
+### 11-08-2021
+
+---
+
+
+
+
+
+
+## What we did last time 
+
+Last week we introduced Natural Experiments 
+
+We focused on the similarities and differences between natural experiments and RCTs 
+
+We introduced several types of natural experiments common in applied research today
+---
+
+## What we are covering this week 
+
+Regression Discontinuity Designs 
+
+Reminder CP, WP, and PS4 are due on Friday 
+
+Makeups for PS3 and all outstanding incompletes are due by next Monday
+
+
+---
+
+## What's noticeable about this graph? 
+
+&lt;img src="bd.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+???
+
+Mortality risk shoots up on and immediately following a twenty-first birthday, a fact visible in the pronounced spike in daily deaths on these days. This spike adds about 100 deaths to a baseline level of about 150 per day. The age-21 spike doesn’t seem to be a generic party-hardy birthday effect. If this spike reflects birthday partying alone, we should expect to see deaths shoot up after the twentieth and twenty-second birthdays as well, but that doesn’t happen. There’s something special about the twenty-first birthday. It remains to be seen, however, whether the age-21 effect can be attributed to the MLDA, and whether the elevated mortality risk seen in Figure 4.1 lasts long enough to be worth worrying about.
+---
+
+## RDD the basics 
+
+Notation: `\(Y_i = D_iY_i(1) + (1-D_i)Y_i(0)\)`
+
+We have a running variable `\(Z_i\)` that is normalized to 0 where the cutoff of treatment is affected 
+
+Key parameter is the conditional expectation `\(E[Y_i|Z_i = z]\)` 
+
+???
+
+D_i is discontinuous, which means it changes from 0 to 1 at Z_i = 0. If E[Y|Z] is sufficiently smooth we can estimate the impact of D_i on Y_i at exactly Z_i = 0. 
+
+---
+
+## RDD the basics 
+
+The estimand of interest is a CACE: 
+
+`$$E[Y_i(1) - Y_i(0)|Z_i = 0] = \lim_{-z}E[Y_i|Z_i = z) - \lim_{+z}E(Y_i|Z_i = z)$$`
+???
+
+This estimand is a particular group of units. It is those right at the test score. We need to estimate the counterfactual means at Z_i = 0, which can be tough because we may not observe this point well or at all. 
+
+If Z_i affects our outcome variable, then we need to account for the running variable effect and the extrapolation, which can be tough for estimation. 
+
+--- 
+
+## RDD the basics 
+
+There are three fundamental components in an RDD: 
+
+The score: this is also known as a running variable, forcing variable, or index. 
+
+The cutoff: The threshold for which there is a change in treatment assignment 
+
+The treatment: what actually happens to a unit. 
+
+???
+
+Being assigned to the treatment condition, however, is not the same as receiving or complying with the treatment. As in experimental and other nonexperimental settings, this distinction is important in RD designs because non-compliance introduces complications and typically requires stronger assumptions to learn about treatment effects of interest. Following prior literature, we call Sharp RD design any RD design where the treatment condition assigned is identical to the treatment condition actually received for all units. Any RD design where compliance with treatment assignment is imperfect is referred to as Fuzzy RD design.
+
+We will focus only on sharp RDDs this week. 
+
+Although it is common to use the language of experimental methods and
+talk about the RD treatment “assignment,” in some RD applications units find themselves in different circumstances depending on their score value, and it is only ex post that the researcher interprets one of those circumstances as a treatment and the other as a control condition. This is different from an experiment, where the treatment and control conditions are always defined ex ante by the researcher, and units are explicitly assigned to one of these conditions.
+
+---
+
+## An RDD graph 
+
+&lt;img src="ts.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+???
+
+A sharp RD design exhibits an extreme case of lack of common support. Units in control and units in treatment cannot have the same value of the running variable. This sets aside RDD from other non-experimental methods. 
+
+The CATE at a given value of the score is the vertical distance between the two curves at value. It cannot be directly estimated because we never observe both curves for the same value of the score. However, a special situation occurs at the cutoff because we almost observe both curves. The vertical distance between the two curves at the cutoff value is precisely the treatment effect that can be estimated with a sharp RD 
+
+---
+
+## RDD: Example Meyersson (2014)
+
+Meyersson is interested in the effect of Islamic parties' control of local governments on women's rights. 
+
+This is operationalized as the effect of educational attainment of young women
+
+Problem: Islamic parties are not randomly assigned! 
+
+???
+
+The methodological challenge is that municipalities where the support for Islamic parties is high enough to result in the election of an Islamic mayor may differ systematically from municipalities where the support for Islamic parties is more tenuous and results in the election of a secular mayor. (For brevity, we refer to a mayor who belongs to one of the Islamic parties as an “Islamic mayor,” and to a mayor who belongs to a non-Islamic party as a “secular mayor.”) 
+
+If some of the characteristics on which both types of municipalities differ affect (or are correlated with) the educational outcomes of women, a simple comparison of municipalities with an Islamic versus a secular mayor will be misleading. For example, municipalities where an Islamic mayor wins in 1994 may be on average more religiously conservative than municipalities where a secular mayor is elected. 
+
+If religious conservatism affects the educational outcomes of women, the na¨ıve comparison between municipalities controlled by an Islamic versus a secular mayor will not successfully isolate the effect of the Islamic party’s control of the local government. Instead, the effect of interest will be contaminated by differences in the degree of religious conservatism between the two groups.
+
+---
+
+## RDD: Example Meyersson (2014)
+
+&lt;img src="m1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+???
+
+This challenge is illustrated in Figure 3, where we plot the percentage of young women who had completed high school by 2000 against the Islamic margin of victory in the 1994 mayoral elections (more information on these variables is given below). These figures are examples of so-called RD plots, which we discuss in detail in Section 3. In Figure 3(a), we show the scatter plot of the raw data (where each point is an observation), superimposing the overall sample mean for each group; treated observations (municipalities where an Islamic mayor is elected) are located to the right of zero, and control observations (municipalities where a secular mayor is elected) are located to the left of zero. 
+
+The raw comparison reveals a negative average difference: municipalities with an Islamic mayor have, on average, lower educational attainment of women. Figure 3(b) shows the scatter plot for the subset of municipalities where the Islamic margin of victory is within 50 percentage points, a range that includes 83% of the total observations; this second figure superimposes a fourth-order polynomial fit separately on either side of the cutoff. Figure 3(b) reveals that the negative average effect in Figure 3(a) arises because there is an overall negative relationship or slope between Islamic vote percentage and educational attainment of women for the majority of the observations, so that the higher the Islamic margin of victory, the lower the educational attainment of women. 
+
+Thus, a naıve comparison of treated and control municipalities, which differ systematically in the Islamic vote percentage, will mask systematic differences and may lead to incorrect inferences about the effect of electing an Islamic mayor.
+
+---
+
+## RDD: Example Meyersson (2014)
+
+Can we do better? Meyersson argues that we can consider a "close elections" design
+
+Focuses entirely on the 1994 election in Turkey
+
+The treatment group are municipalities that elect a mayor from an Islamic party in 1994. The control group are municipalities that do not. 
+
+The outcome is the education attainment of women who were in high school from 1994-2000
+
+???
+
+If we were writing this out in code: 
+
+Y: educational attainment of women, measured as the percentage of women aged 15 to 20 in 2000 who had completed high school by 2000.
+
+Z: vote margin obtained by the Islamic party in the 1994 Turkish mayoral elections, measured as the vote percentage obtained by the Islamic party minus the vote percentage obtained by its strongest secular party opponent.
+
+T: electoral victory of the Islamic party in 1994, equal to 1 if the Islamic party won the mayoral election and 0 otherwise.
+
+Meyersson also includes predetermined covariates for possible covariate adjustments
+---
+
+## The causal effect is local 
+
+Again, a Sharp RD is calculated at a single point on the support of a continuous random variable (our score)
+
+RD treatment effects tend to have limited external validity 
+
+RD effects are the average effect of treatment local to the cutoff ($Z_i = c$)
+
+???
+
+the RD treatment effect tends to have limited external validity, that is, the RD effect is generally not representative of the treatment effects that would occur for units with scores away from the cutoff. As discussed above, in the canonical Sharp RD design, the RD effect can be interpreted graphically as the vertical difference between E[Yi (1)|Xi = x] and E[Yi (0)|Xi = x] at the point where the score equals the cutoff, x = c. In the general case where the average treatment effect varies as a function of the score Xi , as is very common in applications, this effect may not be informative of the average effect of treatment at values of x different from c. For this reason, in the absence of specific (usually restrictive) assumptions about the global shape of the regression functions, the effect recovered by the RD design is only the average effect of treatment for units local to the cutoff, i.e., for units with score values Xi = c.
+
+In the context of the Meyersson application, the lack of external validity is reflected in the focus on close, as opposed to all, elections. As illustrated in Figure 3(a), it seems that the educational attainment of women is higher in municipalities where the Islamic party barely wins than in municipalities where the party barely loses the election. By definition, the sample of municipalities near the cutoff comprises constituencies where the Islamic party is very competitive. It is likely that the political preferences and religious affiliation of Turkish citizens in these municipalities differ systematically from those in municipalities where the Islamic party wins or loses by very large margins. This means that, although the RD results indicate that Islamic mayors lead to an increase in the educational attainment of women in competitive municipalities, it is not possible to know whether the same positive effect in female education would be seen if a mayor from the Islamic party governed a municipality with strong preferences for secular political parties
+
+---
+
+## The importance of continuity
+
+Continuity: The score function must be smooth. 
+
+Absent the treatment, the expected potential outcomes wouldn’t have jumped
+
+Continuity explicitly rules out omitted variable bias at the cutoff 
+
+Continuity can serve as a placebo test (sort of)
+
+???
+
+1.Absent the treatment, in other words, the expected potential outcomes wouldn’t have jumped; they would’ve remained smooth functions of X. But think about what that means for a moment. If the expected potential outcomes are not jumping at c0, then there necessarily are no competing interventions occurring at c0. Continuity, in other words, explicitly rules out omitted variable bias at the cutoff itself. All other unobserved determinants of Y are continuously related to the running variable X. Does there exist some omitted variable wherein the outcome, would jump at c0 even if we disregarded the treatment altogether? If so, then the continuity assumption is violated and our methods do not require the LATE.
+
+---
+
+## When is an RDD not an RDD? 
+
+The key assumption is that the only thing that causes a change to the outcome at the cutoff is the treatment. This is violated if: 
+
+1. The assignment rule is known in advance 
+
+2. Agents have the ability to choose what side of the cutoff to be on
+
+3. The cutoff is endogenous to factors that independently lead to a shift in potential outcomes 
+
+???
+
+Examples include retaking an exam, self-reporting income, and so on. But some other unobservable characteristic change could happen at the threshold, and this has a direct effect on the outcome. In other words, the cutoff is endogenous. An example would be age thresholds used for policy, such as when a person turns 18 years old and faces more severe penalties for crime. This age threshold triggers the treatment (i.e., higher penalties for crime), but is also correlated with variables that affect the outcomes, such as graduating from high school and voting rights. Let’s tackle these problems separately.
+---
+## RDD Examples
+
+We just went over an example of a regression discontinuity design 
+
+Here are some others: 
+
+- Electronic voting in Brazil (Hidalgo 2016) 
+
+- Representation under term limits (Klasnja and Titiunik 2018)
+
+- Discrimination and performance among legislatures (Anzia and Berry 2011)
+
+???
+
+(H) studies of clientelism typically assume that political machines distribute rewards to persuade or mobilize the existing electorate. We argue that rewards not only influence actions of the electorate, but can also shape its composition. Across the world, machines employ “voter buying” to import outsiders into their districts. Voter buying demonstrates how clientelism can underpin electoral fraud, and it offers an explanation of why machines deliver rewards when they cannot monitor vote choices. Our analyses suggest that voter buying dramatically influences municipal elections in Brazil. A regression discontinuity design suggests that voter audits—which undermined voter buying—decreased the electorate by 12 percentage points and reduced the likelihood of mayoral reelection by 18 percentage points.
+
+(KJ) We study how representation works in a context where accountability to voters is restricted because of term limits and accountability to parties is limited because of party weakness. Analyzing all Brazilian mayoral elections between 1996 and 2012 using a regression discontinuity design, we show that becoming the incumbent party results in large subsequent electoral losses. We theorize that the presence of term limits, combined with political parties to which politicians are only weakly attached, affects the incentives and behavior of individual politicians in such a way that their parties’ suffer systematic losses.
+
+(AB) If voters are biased against female candidates, only the most talented, hardest working female candidates will succeed in the electoral process. Furthermore, if women perceive there to be sex discrimination in the electoral process, or if they underestimate their qualifications for office, then only the most qualified, politically ambitious females will emerge as candidates. We argue that when either or both forms of sex-based selection are present, the women who are elected to office will perform better, on average, than their male counterparts. We test this central implication of our theory by studying the relative success of men and women in delivering federal spending to their districts and in sponsoring legislation. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

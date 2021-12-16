@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 14</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture14_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 14
+### Alex Stephenson
+### 10-13-2021
+
+---
+
+
+
+
+
+
+## What did we cover last time?
+
+We went over in abbreviated form the entirety of the semester so far 
+
+---
+## What are we doing today?
+
+Remind everyone that there is both a checkpoint and a weekly practice due this Friday 
+
+Reminder to turn in your make up for PS2 by Thursday 
+
+Today we are going to talk about attrition 
+
+---
+
+## Attrition 
+
+Attrition: Outcome data is missing for units in the study
+
+When attrition is systematically related to potential outcomes removing observations from the dataset leads to selection bias. 
+
+???
+
+Removal of observations in this case means that subjects assigned to treatment and control are no longer random samples of the original collection of units. A comparison of group averages may no longer be unbiased 
+
+---
+
+## Why does attrition occur?
+
+Units may refuse to cooperate with researchers 
+
+Researchers lose track of units in an experiment 
+
+There is interference with researchers finding out an outcome from a unit 
+
+Outcomes are intrinsically unavailable
+
+Researchers drop units 
+
+???
+
+Experiments that measure outcomes using surveys lead to units sometimes refusing to fill out the post treatment questionnaire 
+
+Substantial attrition happens when researchers investigate long-term effects of an intervention because units move or change names 
+
+Firms might block access, especially for sensitive topics 
+
+The study is interested in the effect of job training on future wages, but some units leave the labor pool entirely 
+
+Researchers drop units who fail manipulation checks or fail to take the experiment seriously
+
+---
+
+## Attrition Notation 
+
+Consider potential outcomes defined as `\(Y_i(z)\)` where `\(z \in \{0,1\}\)`
+
+Under no attrition: 
+
+`$$Y_i = Y_i(0)(1-z_i) + Y_i(1)z_i$$` 
+
+Under attrition 
+`$$r_i = r_i(0)(1-z_i) + r_i(1)Z_i$$` 
+
+Which implies when `\(r_i = 1\)` 
+`$$Y_i = Y_i(0) + [Y_i(1) - Y_i(0]z_i$$` 
+
+and missing otherwise 
+
+???
+
+For the time being, we will assume that assigned treatment is identical to treatment actually received. If this is not, then all of these problems become far worse. 
+
+We observe whether there is attrition depending on whether we have outcome data. We define a new potential outcome r that measures whether outcome data is reported when treatment assignment is z 
+
+Attrition occurs when some values of r_i are 0. Because observed R_i depends on treatment assignment. The observed outcome Y presupposes that there is no value that would become known to the researcher or not based on whether R_i is 1 or not. 
+
+This amounts to an implied exclusion restriction assumption `\(Y_i(z) = Y_i(z, r(z) =1) = Y_i(z, r(z) = 0)\)`
+---
+
+## When does attrition lead to bias 
+
+Assume we are interested in the ATE. We can rewrite this to include missing data as 
+
+`$$E[Y_i(1)|R_i(1) = 1] - E[Y_i(0)|R_i(0) = 1]$$` 
+
+Bias of this equation is based on the relationship between missingness `\(R_i\)` and outcomes `\(Y_i\)`. 
+
+If missing outcomes are completely at random (MCAR), then we do not have bias. 
+
+If missing outcomes are not completely at random, we begin to worry about possible bias. 
+
+???
+
+When outcomes for the entire treatment and control groups are observed, the treatment group's outcome are a random sample and so are the control group for the pool of units. The average outcome provides an unbiased estimate of the treatment and control conditions. 
+
+When attrition occurs, the units for whom we have recorded outcomes might no longer be representative of the subject pool. An implication of this is that our usual estimator will not recover the ATE for the entire pool and will be unlikely to recover the ATE for any meaningful subgroup. 
+
+Excluding missing observations therefore always has the potential to deliver misleading results. 
+
+---
+## Forms of attrition 
+
+MCAR: Missing completely at random 
+
+MAR: Missing at random 
+
+MNAR: Missing not at random 
+
+???
+
+MCAR: learning about missingness gives no clue about the values of the observed Y. MCAR requires us to do nothing different. It is most plausible when units have little discretion over whether their outcomes will be reported. 
+
+MAR: missing and potential outcomes are unrelated conditional on some covariate or some set of covariates denoted by X. If we partition our sample by a covariate that predicts missingness, than within each subgroup we might assume missingness is random. 
+
+When MAR holds, the expectations are now a weighted average within subgroups. The Weekly Practice for this week walks through one way to do this weighting "inverse probability weighting" 
+
+MNAR: missing is not at random. Your study is borked. 
+---
+
+## Estimands under attrition 
+
+ATE among "Always Reporters" 
+
+Suppose that all units are either never missing or always missing outcomes. 
+
+In this case, an unweighted comparison of average treatment and control group outcomes provides an unbiased estimate of the ATE among always reporters. 
+
+Such a situation might occur when there is a delay between intervention and measurement of the outcome. 
+
+???
+
+Always reporters are units who report their outcome regardless of group assignment. Never reporters are units who never report their assignment regardless of treatment. There are conceptually defiers, but that's more general of problem of missing not at random. 
+
+In delay situations, outcomes might be missing because subjects have moved. Here the unweighted version gives us an estimate for the Always Reporters, but the Always reporters might not be representative of the unit pool at large. 
+
+We might be interested in this estimand to assess theoretical predictions about interventions. In such cases, the ATE of any group might be useful in assessing whether a prediction holds. Second, we might be interested in a specific subgroup for which the Always Reporters are a good estimate. For example, if an intervention was targeted to just long-term residents, the ATE among always reporters would be a natural estimand. 
+---
+
+## Bounding ATE under attrition 
+
+If attrition is non random we may still be able to place bounds on the value of the ATE. 
+
+We choose to be purposely conservative with these bounds to make minimal assumptions (Manski 1989)
+
+Extreme Value Bounds gauge the potential consequences of attrition by examining how the estimated ATE varies depending on how one fills in missing potential outcomes. 
+
+???
+
+These bounds are often referred to as Manski Bounds. What we are describing here is an example of partial or set identification. We can't say anymore that the treatment is "point identified" or a single number. Rather, we are saying there is some interval for which we believe the ATE lies within. 
+
+These bounds will contain the true value, but they will be wide potentially to the point of not being useful at all. As the rate of attrition increases or as the range of possible Yi's expands, bounding exercises become less informative. 
+---
+
+## Reducing the threat of attrition 
+
+Attrition should be considered at the design stage 
+
+To mitigate the threat of attrition attempts should be made BEFORE data is collected to plan for follow up data. 
+
+The most promising approach is to plan for an intensive effort to reduce attrition under a random sample of subjects with missing data. 
+???
+
+Follow up strategies work best when the second round sample is large and obtains outcome data for a high proportion of the targeted sample, with second round success rates independent of potential outcomes. We get that for free with the randomization approach. 
+
+When missingness is strongly related to potential outcomes we narrow the expected range of our bounds which narrows uncertainty about the possible consequences of attrition. 
+
+Second round sampling does impose additional costs, hence yet another reason to try and find designs that have small amounts of missing data to begin with. 
+---
+
+## What if covariate data is missing?
+
+Missing data for covariates is far less series. In a purely randomized experiment, missing covariate data does not affect the consistency of our estimates. Why?
+
+If a covariate is missing, use the following strategy: 
+
+1. Assign an arbitrary value to units with missing values
+
+2. Create a dummy variable for missing values 
+
+3. Regress outcomes on the treatment, covariates, and the new dummy 
+
+???
+
+Missing covariates do not affect consistency because they are pre-treatment nuisance parameters. We can get unbiased and consistent estimates without including them at all to begin with in our experiment. 
+
+The approach is similar to substituting in the average value of a covariate for missing values. If the variable is a category (gender) code missingness as one of the categories and then use the number of categories - 1 in the regression 
+
+---
+
+## Should we only analyze subgroups without attrition 
+
+Comparing subgroups that do not suffer from attrition will produce biased treatment effects of the ATE 
+
+Example: 
+
+Suppose we run an experiment to help units run faster, but units have differential responses. Some units will love the program and keep going. Others will hate it and quit. 
+
+---
+
+## Example 
+
+|Unit|Pair|Y(0)|Y(1)|r(0)|r(1)|Y(0) Given r(0)|Y(1) Given r(1)|
+|----|---|----|-----|----|----|----|----|----|----|
+|1|A|8|12|1|1|8|12|
+|2|A|8|4|1|0|9|Missing|
+|3|B|16|16|1|1|16|16|
+|4|B|18|18|1|1|18|18|
+
+???
+
+In this example, we have a blocked design with two blocks. The point doesn't depend on a blocked design, but it makes sense here to imagine that different units have different pre-levels of exercise. 
+
+What's the ATE in this experiment? The answer is 0 (add up the POs to show). Here the intervention helps some units are harms others. Specifically it is good for unit 1 and bad for unit 2. 
+
+---
+
+## Example 
+
+Imagine we drop the pair where there is attrition. Using the remaining data can we recover the true ATE of 0?
+
+--
+
+No
+
+|Units assigned to T| Units assigned to C|Estimated ATE|Drops?|
+|-------------------|--------------------|-------------|------|
+|{1,3}|{2,4}|1|No|
+|{1,4}|{2,2}|3|No|
+|{2,3}|{1,4}|-2|Yes|
+|{2,4}|{1,3}|2|Yes|
+
+Our estimator produces `\(\frac{1+3+2-2}{4} = 1 \neq 0\)`
+???
+
+We drop the first pair from the analysis whenever the subject with the negative treatment effect is assigned to the treatment group and is retained whenever the subject with positive treatment is assigned to the treatment group. 
+
+first cell 12+16/2 - 8+18/2 = 0.5. second cell 6+0/2 + 4+8/2 = 1.5. third cell 8-9 = -1. Fourth cell 9-8 = 1. 
+
+This asymmetry produces bias. Note that if we had just focused on the second pair from the outset we'd be fine here. The effects all cancel out. However, a researcher is not in Oski the bear land, so there is no reason why they would discard the first pair when no attrition is observed in the pair, as is the case in the first two assignments. 
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

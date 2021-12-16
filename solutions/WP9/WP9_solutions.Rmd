@@ -1,0 +1,93 @@
+---
+title: "WP9 Solutions"
+output: pdf_document
+---
+
+---
+title: "WP9"
+date: 'Due Date: 11/12/21'
+urlcolor: blue
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(tidyverse)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+
+```
+
+1. Load the `rdrobust` package. 
+
+```{r, message = F, warning = F}
+library(rdrobust)
+library(readr)
+
+```
+
+2. Load in the `senate.csv` dataset. Make a new dataset called `df` that has three variables: 
+
+  - Y: made from demvoteshfor2 
+  - Z: made from demmv 
+  - D: a logical variable stating whether Z is greater than or equal to 0 
+
+```{r, message = F, warning = F}
+df <- read_csv("senate.csv") %>% 
+  select(Y = demvoteshfor2, 
+         Z = demmv)%>%
+  mutate(D = Z >= 0)
+
+
+```
+
+
+3. Construct an RD plot of the Design. On the Y axis, plot the outcome variable. On the X axis, plot the score variable. Give this plot the title "RD Plot for Senate Elections Data" 
+
+```{r}
+## Raw comparison of means 
+rdplot(df$Y, df$Z)
+
+```
+
+```{r}
+## local comparison of means 
+rdplot(df$Y[abs(df$Z) <= 50], df$Z[abs(df$Z) <= 50])
+
+```
+
+
+4. Construct an alternative RD plot with evenly spaced bins. Give this plot the same title and use the same variables. 
+
+```{r}
+# One way to do it without messing around with the number of bins 
+rdplot(df$Y, df$Z, binselect = "es")
+
+```
+
+5. Conduct an RD robust estimate with default options. Report the output and analyze whether there is a statistically significant effect. 
+
+```{r}
+default <- rdrobust(df$Y, df$Z)
+summary(default)
+```
+
+
+6. Conduct an RD robust estimate with uniform weights and with triangular weights. Report both estimates. You will need to look at the options of the canonical function of `rdrobust` to do this. 
+
+```{r}
+# uniform weights 
+uniform <- rdrobust(df$Y, df$Z, kernel = "uniform")
+summary(uniform)
+```
+
+```{r}
+# triangular weights 
+triangle <- rdrobust(df$Y, df$Z, kernel = "triangular")
+summary(triangle)
+
+```
+
+7. Do you think there is an effect of treatment in this RDD? If so what it is? What are the external validity limitations inherent in this design? 
+
+*Yes, there is a treatment effect by our estimates. It's a strong treatment effect as well. The inherent limitations is that for any RDD is that we can only get a local effect. It is not clear that a design tells us anything about the general estimand of interest because RDD identify a LATE.*
+

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 12</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture12_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 12
+### Alex Stephenson
+### 10-4-2021
+
+---
+
+
+
+
+
+
+
+## What did we cover last time? 
+
+For the last two weeks we have covered the mechanics of regression. 
+
+The big takeaways from that discussion are: 
+
+1) We can use regression to analyze experiments 
+
+2) If we do not have a good design, a regression will give us wonky results. 
+---
+
+## What are we doing today? 
+
+Today we are going to talk about two sided non-compliance
+
+New groups: Always-Takers and Defiers 
+
+New assumption: Monotonicity
+
+---
+
+## Notation Review 
+
+We are now writing potential outcomes as a function of `\(d_i(z)\)`
+
+What does `\(d_i\)` represent? 
+
+--
+
+- Indicates whether a subject was actually treated. 
+
+What does `\(z\)` represent? 
+
+--
+
+- Indicates whether a subject was assigned to treatment 
+
+
+???
+
+---
+
+## Two-Sided Non-complinance 
+
+I'll abbreviate this as 2SNC
+
+???
+
+That is not a standard abbreviation. It's just a pain to type out each time on a slide
+---
+
+## Classification of Subject Types 
+
+We now have four possible groups: 
+
+1) Compliers: `\(d_i(z) = z\)`
+
+2) Never-Takers: `\(d_i(1) = 0, d_i(0) = 0\)` 
+
+**3) Always-takers: `\(d_i(1) = 1, d_i(0) = 0\)`**
+
+**4) Defiers: `\(d_i(1) = 0, d_i(0) = 1\)`**
+
+---
+
+## Monotonicity Assumption 
+
+Informally, we have no defiers. 
+
+More formally: 
+
+For all `\(i \in \{1,...,n\}\)`, `\(d_i(1) \geq d_i(0)\)`. 
+
+This rules out defiers because we can characterize their potential outcomes as `\(d_i(1) &lt; d_i(0)\)`
+
+???
+
+Monotonicity says that whenever a subject moves from the control group to the treatment condition, d remains unchanged or increases. 
+---
+
+## ITT, `\(ITT_D\)` and CATE under 2SNC 
+
+Fortunately, if we're willing to assume monotonicity nothing changes about the CACE Theorem
+
+We just have to adapt the definition of Compliers to deal with 2SNC. 
+
+Compliers: `\(d_i(1) - d_i(0) = 1\)`. Using this definition 
+
+`$$CACE = E[Y_i(d = 1) - Y_i(d = 0)|d_i(1) - d_i(0) = 1]$$` 
+
+???
+
+This theorem goes back to Angrist Imbens and Rubin 1996 and it is extremely profound. It tells us not only that we can identify the CATE in experiments, but also that we can apply this to non-experimental contexts. 
+
+IV designs rely on this assumption. 
+
+---
+
+## Example of the Role of Monotonicity 
+
+
+| Unit| Y_i(d=0)| Y_i(d=1)| d_i(z=0)| d_i(z=1)|Type | Y_i(z=0)| Y_i(z=1)|
+|----:|--------:|--------:|--------:|--------:|:----|--------:|--------:|
+|    1|       24|       34|        0|        1|C    |       24|       34|
+|    2|       18|       28|        0|        1|C    |       18|       28|
+|    3|       19|       32|        0|        1|C    |       19|       32|
+|    4|       19|       26|        0|        1|C    |       19|       26|
+|    5|       18|       22|        1|        0|D    |       22|       18|
+|    6|       22|       28|        1|        0|D    |       28|       22|
+|    7|       10|       20|        1|        1|A    |       20|       20|
+|    8|       11|       12|        0|        0|NT   |       11|       11|
+|    9|        8|       15|        0|        0|NT   |        8|        8|
+|   10|       11|       18|        0|        0|NT   |       11|       11|
+
+???
+
+Here is a table of Potential Outcomes. We are in Oski the Bear land here because we can observe both. 
+
+How many compliers are there? 4 
+How many defiers are there? What does that mean in this context? 2 
+How many always takers are there? What does that mean in this context? 1 
+
+
+---
+## CACE 
+
+What is the CACE here? 
+
+--
+
+ATE for the compliers. `$$\frac{1}{n}\sum_i^nY_i(C) = 10$$`
+
+--
+
+In R 
+
+
+```r
+m %&gt;% 
+  filter(Type == "C")%&gt;%
+  summarise(CACE = mean(`Y_i(d=1)`-`Y_i(d=0)`))%&gt;%
+  pull()
+```
+
+```
+## [1] 10
+```
+---
+
+## Can we Recover the CACE with the usual formula 
+
+First we need the ITT 
+
+```r
+ITT &lt;- mean(m$`Y_i(z=1)` - m$`Y_i(z=0)`)
+ITT
+```
+
+```
+## [1] 3
+```
+Now get `\(ITT_D\)`
+
+
+```r
+ITT_D &lt;- mean(m$`d_i(z=1)`-m$`d_i(z=0)`)
+ITT_D
+```
+
+```
+## [1] 0.2
+```
+
+Plug into formula 
+
+```r
+ITT/ITT_D
+```
+
+```
+## [1] 15
+```
+???
+Hmm, that's not right. Why? 
+
+The ITT_d is the difference between the average of d_i(1) and d_i(0). In this case we have defiers, or a violation of monotonicity. Because the ITT is for the sample as a whole, it is a weighted average of each of the 4 types of subjects. 
+
+Among compliers, we saw it was 10. Among defiers the ITT is -5. Always takers and Never-takers the difference is always 0. Consequently we have 10(.4) + (-5)*.2 = 3 for the ITT 
+
+---
+
+## Can we Recover the CACE with the usual formula 
+
+Let's remove the defiers and run the calculations again. 
+
+
+```r
+m %&gt;% 
+  filter(Type != "D")%&gt;%
+  summarise(ITT =mean(`Y_i(z=1)` - `Y_i(z=0)`),
+            ITT_D =  mean(`d_i(z=1)`-`d_i(z=0)`),
+            CACE = ITT/ITT_D)%&gt;%
+  select(CACE)%&gt;%
+  pull()
+```
+
+```
+## [1] 10
+```
+???
+
+Removing the defiers is the implication of the monotonicity assumption. There's a few things happening in this code. First, we see that we can in fact summarise multiple things at the same time, and once we've defined them we can also use a column in a new computation. Second, just want to get back the CACE. Note that we could do all of this in one line, but this is easier to read for pedagogical purposes. 
+
+---
+
+## The Bias of the Defiers 
+
+When will Defiers really hurt our estimates? 
+
+Rewrite `\(ITT_D = (\pi_c + \pi_{AT})-(\pi_D + \pi_{AT}) = \pi_c - \pi_D\)`
+
+Divide the ITT by difference in proportion: 
+
+`$$\frac{ITT}{ITT_D} = \frac{(ATE|Compliers)\pi_c - (ATE|Defiers)*\pi_D}{\pi_c - \pi_D}$$`
+???
+
+This is the ratio when monotonicity is violated. Here, the pi's represent proportions of compliers and defiers respectively. We know that the ITT is a weighted average of all the groups, but the AT and NT groups drop out mechanically because their POs are the same for either treatment arm. 
+
+The ratio we get will only equal the CACE when either the defiers and compliers have the same ATE or when there are no defiers. The latter is true mechanically because the second term in the numerator drops out and we get back our usual definition. 
+
+We will get bias when the ATEs for the compliers and defiers are different and the ratio of defiers to compliers is growing large. 
+
+A design point here is that maximizing compliance reduces the consequences of monotonicity failing to hold because there is a greater share of compliers in the sample 
+
+---
+
+## Summarizing 2SNC 
+
+1) 2SNC occurs when some units in the control group are treated and some units in treatment are not treated. 
+
+2) Comparing average outcomes among units that do and do not receive treatment is a non-experimental strategy prone to bias. We should always avoid doing this. 
+
+3) 2SNC changes the interpretation of experimental estimates. We no longer get the ATE, but we can get the ITT (always) and the CACE (under appropriate assumptions)
+
+4) We do not know who the compliers are. This gives rise to caution when generalizing results to other contexts. 
+
+5) Monotonicity is required to rule out defiers and obtain an unbiased estimate of the CACE
+
+???
+
+2SNC is common when units have access to treatments and discretion about whether to take them. Naturally occurring randomizations such as school lotteries that change the probability that a student will attend a certain kind of school often give rise to 2SNC
+
+Again, if you take nothing else from this class it should be to be skeptical on non-experimental work, or bad analysis of experimental work. Selection bias is a heck of a drug and in the real world we have no good way of knowing its size and magnitude. 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

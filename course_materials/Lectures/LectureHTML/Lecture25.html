@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 25</title>
+    <meta charset="utf-8" />
+    <script src="Lecture25_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 25
+### 11-19-2021
+
+---
+
+
+
+
+
+
+## Announcements 
+
+There is no section on 11/24
+
+There is no class on 11/29 
+
+WP10 and Checkpoint 13 are due on Friday
+
+PS5 will be available on Thursday 
+
+---
+
+## Applications: Card (1995)
+
+Card is interested in estimating the returns to schooling 
+
+Problem: schooling is almost certainly associated with unobservables
+
+Strategy: instrument by using college in the county 
+
+???
+
+The data comes from the NLS Young Men Cohort of the National Longitudinal Survey. This data began in 1966 with 5,525 men aged 14–24 and continued to follow up with them through 1981. These data come from 1966, the baseline survey, and there are a number of questions related to local labor-markets. One of them is whether the respondent lives in the same county as a 4-year (and a 2-year) college.
+
+---
+
+## Applications: Card (1995)
+
+Why does this instrument work? 
+
+Does this represent a LATE or an ATE? 
+
+Is the parameter interesting? 
+
+???
+
+The main reason I can think of is that the presence of the 4-year college increases the likelihood of going to college by lowering the costs, since the student can live at home. This therefore means that we are selecting on a group of compliers whose behavior is affected by the variable. Some kids, in other words, will always go to college regardless of whether a college is in their county, and some will never go despite the presence of the nearby college. But there may exist a group of compliers who go to college only because their county has a college, and if I’m right that this is primarily picking up people going because they can attend while living at home, then it’s necessarily people at some margin who attend only because college became slightly cheaper. This is, in other words, a group of people who are liquidity constrained. And if we believe the returns to schooling for this group are different from those of the always-takers, then our estimates may not represent the ATE. Rather, they would represent the LATE. But in this case, that might actually be an interesting parameter since it gets at the issue of lowering costs of attendance for poorer families.
+
+---
+
+## Applications: Card (1995)
+
+Card finds that the 2SLS is larger than the OLS estimate. Should we be worried about this? 
+
+What story could we tell that justifies this pattern? 
+
+???
+
+After all, we showed earlier that if this was simply ability bias, then we’d expect the 2SLS coefficient to be smaller than the OLS coefficient, because ability bias implies that the coefficient on schooling is too large. Yet we’re finding the opposite. So a couple of things it could be. First, it could be that schooling has measurement error. Measurement error would bias the coefficient toward zero, and 2SLS would recover its true value. But I find this explanation to be unlikely, because I don’t foresee people really not knowing with accuracy how many years of schooling they currently have. Which leads us to the other explanation, and that is that compliers have larger returns to schooling. But why would this be the case? Assuming that the exclusion restriction holds, then why would compliers, returns be so much larger? 
+
+We’ve already established that these people are likely being shifted into more schooling because they live with their parents, which suggests that the college is lowering the marginal cost of going to college. All we are left saying is that for some reason, the higher marginal cost of attending college is causing these people to underinvest in schooling; that in fact their returns are much higher.
+
+---
+
+## Lotteries 
+
+Lotteries are a highly common instrumental variables strategy 
+
+Baicker *et. al* (2013) use a randomized lottery of Oregon's Medicaid program as an instrument for being on Medicaid. Why does this work? 
+
+In Oregon, for five weeks in the early 2000s people were allowed to sign up for Medicaid. The state than randomly drew 30,000 out of a list of 85,000 and gave the winners a chance to apply. 
+
+Out of the original 30,000 only 10,000 people were enrolled. 
+
+???
+
+In many randomized trials, participation is voluntary among those randomly chosen to be in the treatment group. On the other hand, persons in the control group usually don’t have access to the treatment. Only those who are particularly likely to benefit from treatment therefore will probably take up treatment, which almost always leads to positive selection bias. If you compare means between treated and untreated individuals using OLS, you will obtain biased treatment effects even for the randomized trial because of noncompliance. A solution to the problems of least squares in this application is to instrument for Medicaid with whether you were offered treatment and estimate the LATE.
+
+---
+
+## Lotteries 
+
+When studying the Oregon Medicaid experience the model of interest is: 
+
+`$$I_{ihj} = \beta_0+ \beta_1(L)_{ih} + CONTROLS + ERROR$$`
+
+`$$Y_{ihj} = \delta_0 + \delta_1 I_{ih} + CONTROLS + ERROR$$`
+
+???
+
+where the first equation is the first stage (insurance regressed onto the lottery outcome plus a bunch of covariates), and the second stage regresses individual-level outcomes onto predicted insurance (plus all those controls). We already know that so long as the first stage is strong, then the F statistic will be large, and the finite sample bias lessens.
+
+The effects of winning the lottery had large effects on enrollment. The results though were mixed. Access to the health system [through Medicaid] improves your health and well-being substantially while not being sufficient to control diabetes and high cholesterol. And one of the most widely circulated results of the experiment was the finding that Medicaid had on financial outcomes. In Table 7.12 we see that one of the main effects was reduction in personal debt (by $390) and reducing debt going to debt collection. The authors also found reductions in out-of-pocket medical expenses, and medical expenses, borrowing money or skipping bills for medical expenses, and whether they refused medical treatment due to medical debt.
+
+Some of this might have been due to statistical power concerns. That is there simply wasn't that many people for the effects that they are interested in. 
+
+---
+
+## Applications: Examiner Designs 
+
+In some situations there exists a specific path that all individuals must pass through where randomly assigned decision maker assign a treatment to individuals and the decision maker has discretion. 
+
+This situation has been used to get at what are often known as "Judge fixed effects design" 
+
+Mueller-Smith (2015) uses the fact that in Harris County, Texas (where Houston is located) uses a bingo machine to assign defendants to one of dozens of courts 
+
+---
+
+## Applications: Examiner Designs 
+
+We would like to estimate the equation 
+
+`$$Y_i = \beta_0 + \beta_1(D) + \textbf{X} \beta + ERROR$$` 
+The concern is that people who get longer prison sentences might be different than those who are given shorter sentences and these differences are unmeasureable. 
+
+However, if judges are randomly assigned and some are harsher than others we can use judge leniency as an instrument for prison sentence 
+
+This requires A LOT of data. 
+
+???
+
+Harris County has dozens of courts and defendants are randomly assigned to one of them. Mueller-Smith linked defendant outcomes to a variety of labor-market and criminal outcomes, and came to the opposite conclusion as Kling (2006). Mueller-Smith (2015) finds that incarceration generates net increases in the frequency and severity of recidivism, worsens labor-market outcomes, and increases defendant’s dependence on public assistance.
+
+consider a situation where a defendant is randomly assigned a severe judge. In expectation, if the case goes to trial, the defendant faces a higher expected penalty even given a fixed probability of conviction across any judge for no other reason than that the stricter judge will likely choose a harsher penalty and thus drive up the expected penalty. Facing this higher expected penalty, the defense attorney and defendant might decide to accept a lesser plea in response to the judge’s anticipated severity, which would violate exclusion since exclusion requires the instrument effect the outcome only through the judge’s decision (sentence).
+
+We need lots of data because of the finite sample bias of IVs.  The problem is that this is still just a high-dimension instrument. The correct specification is to use the actual judge fixed effects, and depending on your application you may have anywhere from eight (as in Stevenson’s case) to hundreds of judges. Insofar as some of these are weak, which they probably will be, you run into a typical kind of overidentification problem where in finite samples you begin moving the point estimates back to centering on the OLS bias as I discussed earlier.
+---
+
+## Applications: Examiner Designs 
+
+Bankruptcy and future financial events (Dobbie, Goldsmith-Pinkham, and Yang 2017) 
+
+Racial Bias among bail judges (Arnold, Dobbie, and Yang 2018) 
+
+Pretrial detention and recividism (Stevenson 2018) 
+
+???
+
+The three main identifying assumptions that should be on the researcher’s mind when attempting to implement a judge fixed effects design are the independence assumption, exclusion restriction, and the monotonicity assumption. Let’s discuss them each at a time because, in some scenarios, one of these may be more credible than the other.
+
+The independence assumption seems to be satisfied in many cases because the administrators in question are literally being randomly assigned to individual cases.
+
+---
+
+## Summarizing IVs 
+
+IV is an old and powerful design for identifying causal effects in situations where you have selection on unobservables 
+
+IV only identifies the LATE under HTE which may or may not be interesting 
+
+IV assumptions are strict. The best instruments come from situations where we can plausibly claim randomness. 
+
+???
+
+Figure 2 shows the causal web derived from the 185 social science studies that use weather as a variable. It is
+useful to contrast this figure with the assumed DAG in figure 1. In that figure, weather entered the causal network only through the single X variable of interest. In reality, weather enters the causal network of interest to social science in 71 places, and indirectly reaches a total of 132 variables of interest to social scientists. These all represent exclusion violations for the DAG in figure 1.These variables include several important variables that represent plausible routes to many social science outcomes including: pollution, crime, economic activity, mood, leisure activities, consumer sentiment, stock market performance, health, and skin tone.
+
+
+Once you have a plausible instrument, I, instrumented variable, X, and dependent variable, Y , you should aim to build a possible network of causal connections from the literature.
+First, you should search for articles which already link I and Y . If you find any such articles, do they posit or prove plausible pathways that for the I-to-Y link that do not run through X. If so, you should probably discard the instrument. However, if you choose to continue (if, for instance, you can show that the confounding variable comes after Y in the causal ordering), you should clearly document your reasons for
+believing that the mechanism that the paper posits does not represent an exclusion violation in your study (this applies to all of the following steps as well).
+
+Second, review the literature on Y for all other variables that have been found to be associated with it. For each associated variable, Q, search the literature for “I + Q” to find any existing research which links the associated variable to your instrument. If these searches find plausible links, then you have discovered a plausible exclusion violation in the literature. This probably means that you should discard the instrument. Third, review the literature on I and closely related concepts to I. For each associated variable R, search the literature for “Y + R” to find existing research which links your associated variable R to the dependent variable. Once again, any plausible links mean that you have discovered an exclusion violation and should probably discard the instrument.
+
+Finally, review the two lists of associated variables Q and R for any possible links between them. Follow up on any links you find even slightly plausible. If you discover causal pathways, you should probably abandon the instrument.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

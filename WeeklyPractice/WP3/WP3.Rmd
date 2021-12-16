@@ -1,0 +1,72 @@
+---
+title: "Weekly Practice 3"
+author: "FILL IN YOUR NAME"
+output: pdf_document 
+---
+
+## Pedagogical Purpose 
+
+The point of this Weekly practice is to walk through the CACE Theorem. 
+
+### Part A 
+
+Build a data frame according to the following specifications 
+
+N <number> a column of units. There should be 100. 
+
+YiD0 <number> a potential outcome under control. This should be the same length as N from a standard normal distribution. 
+
+YiD1 <number> a potential outcome under treatment. This should be a constant effect of 5. 
+
+diZ0 <number> This is the potential outcome given treatment is never received. For all units, it should be the same number that we use to represent no treatment. 
+
+diZ1 <number> This is the status for units who are compliers. Use complete random assignment and put 30% of units in treatment. 
+
+Type <number> This is a dummy variable indicating whether a unit is a complier or a NT. If a unit is a complier, this is equal to 1, else this is equal to 0. 
+
+```{r, message = F, warning=F}
+library(tidyverse)
+set.seed(42)
+data <- tibble(
+  N = 1:100,
+  YiD0 = rnorm(100),
+  YiD1 = YiD0 + 5,
+  diZ0 = c(rep(0,100)),
+  diZ1 = sample(c(rep(0,30), rep(1,70)), 100, F),
+  Type = if_else(diZ1 == 1, 1, 0)
+)
+```
+
+
+### Part B 
+
+Identify the $ITT_D$ which is $E[d_i(z=1) - d_i(z=0)]$. 
+
+```{r}
+
+
+```
+
+
+Identify the $ITT$ which is $E[Y_i(z=1, d(1))] - E[Y_i(z=0, d(0))]$
+
+
+```{r}
+
+
+```
+
+### Part C 
+
+Identify the CACE which is the ratio of the $ITT$ relative to the $ITT_D$
+
+```{r}
+
+
+```
+
+### Part D 
+
+Turn your work from parts B and C into a function called CACE. This function should take in a data frame with appropriate columns and return the CACE. 
+
+Show your function works by passing the created dataset. You should get the same answer as Part C if your function is correct. 

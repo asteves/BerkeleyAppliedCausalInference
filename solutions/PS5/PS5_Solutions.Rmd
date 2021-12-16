@@ -1,0 +1,291 @@
+---
+title: "Problem Set 5" 
+date: "Due Date 12/3"
+output: pdf_document
+urlcolor: "blue"
+---
+```{r setup, include=FALSE, message = F, warning = F}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(estimatr)
+library(fabricatr)
+library(formatR)
+library(ri2)
+library(randomizr)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Instructions 
+
+For this final problem set, the answers to some coding questions are provided. Your responsibility for these problems is to fill in the work required to get to the answer. An answer is therefore correct if and only if your answer is the same as the answer given. A completed problem set will include **detailed** commented code explaining each step and a exact replication of the result. 
+
+For questions that do not have answers, we have covered some version of how to do the problem on previous problems throughout the semester. 
+
+You are required to create your own Rmarkdown file. Make sure to include the following in the set up chunk. 
+
+```{r, echo = T, eval = F}
+library(formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+These lines of code ensure that your comments for code blocks do not run off the page. Completed pdfs that run off the page will not be accepted or graded. 
+
+For questions that require an interpretation, please put the interpretation outside of the code block as a separate answer. Work that does not do this will not be graded. 
+
+
+## Questions 
+
+### Question 1 
+
+Middleton and Rogers (2010) conducted an experiment about the effect of ballot guides on the number of net votes won by sponsors of the guide across the four ballot measures that they endorsed or opposed. The treatment is binary about whether a district was assigned to receive a ballot guide. A prognostic covariate is the average share of the vote cast for Democratic candidates in 2006. The data needed to complete this problem is `Middleton_Rogers_AI_2010.csv`
+
+a) Estimate the average treatment effect 
+
+```{r, echo = T, message = F, warning = F}
+data <- read_csv("Middleton_Rogers_AI_2010.csv")
+
+ate <- difference_in_means(relevant_measures_net ~ treatment, data = data)%>%
+  tidy()%>%
+  filter(term =="treatment")%>%
+  pull(estimate)
+
+ate 
+```
+
+b) Make an individuals values plot 
+
+```{r, echo = T, message = F, warning = F}
+data %>% 
+  mutate(treatment = as.character(treatment))%>%
+  ggplot(aes(treatment, relevant_measures_net))+
+  geom_point()+
+  theme_bw()+
+  xlab("Treatment")+
+  ylab("Outcome")
+  
+```
+
+c) Comment on the variability of each treatment group. Is it similar or different? 
+
+*The mean of the treatment group is higher than the mean of the control group and the amount of dispersion around the mean is similar in both groups.* 
+
+d) Use randomization inference to test the hypothesis that the difference of means could have occurred by chance under the sharp null hypothesis of no treatment effect for any precinct. Interpret your results. 
+
+```{r}
+set.seed(1234567)
+```
+
+```{r, echo = T, message = F, warning = F}
+dec <- declare_ra(N = 65,m = 48)
+ri2_out <- ri2::conduct_ri(
+  formula = relevant_measures_net ~ treatment, 
+  declaration = dec,
+  sharp_hypothesis = 0,
+  data = data,
+  assignment = "treatment"
+)
+
+```
+
+e) Plot the distributions of estimated ATEs in this experiment. Highlight the observed ATE. (Hint, the binwidth is 1/3 of the default size and the opacity parameter is a decile).  
+
+```{r, echo = F, message = F, warning = F}
+ri2_out$sims_df%>%
+  ggplot(aes(est_sim))+
+  geom_histogram(binwidth = 10, alpha = 0.5)+
+  geom_vline(xintercept = ate)+
+  xlab("Estimated ATE")+
+  ylab("")
+```
+
+f) Suppose we were only interested in a one-sided test of this hypothesis. Would this test cause us to reject the null hypothesis and why? 
+
+*No, the p-value will be half of the p-value we got with the two sided test, but will still be greater than our usual rejection threshold of 0.05.*
+
+### Question 2 
+
+Suppose that a researcher hires a group of canvassers to contact a set of 1000 undergraduates at Berkeley randomly assigned to a treatment group to test the effect of telling undergraduates about the football program increases student attendance at games. When the canvassing effort concludes the canvassers report successfully contact 500 voters in the treatment group. In reality, the canvassers are lying liars and only successfully contact 250. When outcomes rates are tabulated for the treatment and control groups, it turns out that 400 of the 1000 students in the treatment group went to a game as compared to 700 of the 2000 students in the control group. 
+
+a) If you believe the liars when they say they contacted 500 students, what would your estimate of the CACE be?
+
+*The ITT is 400/1000 - 700/2000 = 0.05. The $ITT_D$ is 500/1000. The estimate of the CACE will be $\frac{0.05}{0.5} = 0.10$*
+
+b) Suppose you learn the truth that only 250 students were contacted. What would you estimate of the CACE become?
+
+*There is no difference in the ITT. The $ITT_D$ will be half its size of .25. The new estimate will be 0.2.*
+
+
+c) What is the ITT of this experiment? Does the program work?
+
+*The ITT is 0.05, suggesting that the program had a positive effect. The question does not require you to consider inference, though answers that applied the formula for the standard error of an ITT would be fine as well.* 
+
+### Question 3 
+
+For this question, consider the article "Do Female Officers Police Differently? Evidence from Traffic Stops" by Shoub, Stauffer, and Song (2021) available [here]( https://doi.org/10.1111/ajps.12618). The datasets for this problem are `northCarolina.csv` and `florida.csv` and the codebook is availabe on bCourses. Each dataset is a subset of the full dataset that the article uses, so not every variable in the codebook is in the datasets. 
+
+a) Replicate Table 2 
+
+```{r}
+nc <- data.table::fread("northCarolina.csv")
+fl <- data.table::fread("florida.csv")
+
+nc_s <- lm_robust(search ~ of_gender + of_race +  race_gender + subject_age + investigatory + Officer_Years_of_Service, data = nc, fixed_effects = ~month + year + CMPD_Division)
+fl_s <- lm_robust(search_occur ~ of_gender + of_race + race_gender + subject_age + out_of_state+investigatory + officer_years_of_service+ officer_age, data = fl, fixed_effects = ~hour_of_day + month + year + county_name)
+```
+
+
+b) In addition to making two regression tables, make a coefficient plot that is clearly labeled. Put both treatment effects on the same plot. 
+
+```{r}
+bind_rows(fl_s %>% tidy()%>%mutate(model = "fl"), nc_s %>% tidy()%>%mutate(model = "nc"))%>%
+  filter(term == "of_gender")%>%
+  ggplot(aes(y = model, x = estimate))+
+  geom_vline(xintercept = 0, linetype = 2)+
+  geom_point()+
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high, height = 0.1))+
+  theme_bw()
+
+```
+
+*Both model estimates and confidence intervals do not include zero, suggesting that there is a significant effect of being a woman officer on search decision. Note though, that this requires us to believe that our models are correct. In other words, we are making a strong assumption about selection on observables.*
+
+c) For each regression, identify what is the implied experiment. In other words, if you were to conduct a randomized control trial, what would do? 
+
+*For both regressions, the implied experiment is holding all other aspects of an encounter between a police officer and a motorist fixed, randomly change the gender of the police officer. The manipulation under consideration is the counterfactual substitution of an individual with a different gender identity into the encounter, while holding the encounter's objective context fixed. Note that our interpretation will depend rather critically on what we mean by this.*
+
+d) Find the effective weights of each regression. Make a plot similar to the effective weight plots you've made in previous sets. Interpret the plot and what it might see about the nominal vs effective sample. 
+
+```{r, cache=TRUE}
+effectiveWeights <- function(Y, controls, data){
+  # Make the OLS formula call 
+  treat_formula <- reformulate(termlabels = c(controls), 
+                               response = Y)
+  # Run a regression of the treatment on the controls 
+  treat.model <- lm(as.formula(treat_formula), data = data)
+  # Extract the residuals from that regression 
+  d.tilde <- as.numeric(residuals(treat.model))
+  # Square the residuals. 
+  weights <- d.tilde^2
+  return(weights)
+}
+
+## For the fixed effects, we'll need to convert some variables into factors 
+
+nc_2 <- nc %>% 
+  mutate(across(c(race_gender, of_gender, of_race, month, year, CMPD_Division), as.character))
+
+fl_2 <- fl %>% 
+  mutate(across(c(race_gender, of_gender, of_race, hour_of_day, month, year, county_name), as.character))
+
+fl_w <- effectiveWeights("of_gender", controls = c("race_gender", "subject_age", "out_of_state", "investigatory", "of_race", "officer_years_of_service", "officer_age", "hour_of_day", "month", "year", "county_name"), data = fl_2)
+
+nc_w <- effectiveWeights("of_gender", controls = c("race_gender", "subject_age", "investigatory", "of_race", "Officer_Years_of_Service", "month", "year", "CMPD_Division"), data = nc_2)
+```
+
+```{r, message = F, warning = F}
+## To deal with the huge amount of computation randomly sample 
+## 10,000 rows 
+## Florida Effective Weights 
+sampled <- sample(1:2712478, 10000, replace = F)
+fl_w_10000 <- fl_w[c(sampled)]
+tibble(x = 1:10000, y = fl_w_10000)%>%
+  ggplot(aes(x, y))+
+  geom_point()+
+  geom_hline(yintercept = 0.05)+
+  ggtitle("Effective Weights for Florida")
+
+nc_sample <- sample(1:length(nc_w), 10000, replace = F)
+nc_w_10000 <- nc_w[nc_sample]
+
+tibble(x=1:10000, y = nc_w_10000)%>%
+  ggplot(aes(x,y))+
+  geom_point()+
+  geom_hline(yintercept = 0.05)+
+  ggtitle("Effective Weights for NC")
+```
+
+*In both cases, there are a large number of points below the our usual cut off value of 0.05, suggesting that the effective sample is smaller than the nominal sample. The effective sample may also be different in important ways than the nominal sample. As a result, while the nominal sample may meet the selection on observables, the effective sample might not. Given the small effects and the large N, this suggests that we should interpret Table 2's regression with caution from a causal perspective.*
+
+### Question 4 
+
+(From Gerber and Green 2012): Prior to a 2006 primary election, Gerber, Green, and Larimer sent a sample of registered voters in Michigan an encouragement to vote that disclosed whether each person registered to vote at that address had voted in previous elections. A similar mailing was sent to Michigan voters in 2007, prior to municipal elections in small cities and towns, and to Illinois voters in 2009, prior to a special congressional election. For comparability, we restrict each of the samples to the set of households containing just one registered voter. The table of these studies is below.
+
+|Study|Number in control groups|Number Voting in control groups|Number in treatment group|Number voting in the treatment group|
+|---------------|------------------------|-------------------------------|--------------------|---------------------|
+|Michigan (2006)|26481|8755|5310|2123|
+|Michigan (2007)|348277|88960|12391|3791|
+|Illinois (2009)|15676|2600|9326|1936|
+
+a) Estimate the ATE for each study 
+
+```{r, echo = T}
+p_c_MI06 <- 8755/26481
+p_t_MI06 <- 2123/5310
+ATE_MI06 = p_t_MI06 - p_c_MI06
+ATE_MI06
+
+p_c_MI07 <- 88960/348227
+p_t_MI07 <- 3791/12391
+ATE_MI07 = p_t_MI07 - p_c_MI07
+ATE_MI07
+
+p_c_IL09 <- 2600/15676
+p_t_IL09 <- 1936/9326
+ATE_IL09 = p_t_IL09 - p_c_IL09
+ATE_IL09
+```
+
+b) Estimate the standard error for each study. Use the standard errors (squared) to calculate the [precision](https://en.wikipedia.org/wiki/Precision_(statistics)) of each study.  
+
+```{r, echo = T}
+SE_MI06 <- sqrt((p_t_MI06 * (1-p_t_MI06))/5310 +
+(p_c_MI06 * (1-p_c_MI06))/26481)
+
+SE_MI07 <- sqrt((p_t_MI07 * (1-p_t_MI07))/12391 +
+(p_c_MI07 * (1-p_c_MI07))/348227)
+
+SE_IL09 <- sqrt((p_t_IL09 * (1-p_t_IL09))/9326 +
+(p_c_IL09 * (1-p_c_IL09))/15676)
+
+prec_MI06 <- 1/SE_MI06^2
+prec_MI07 <- 1/SE_MI07^2
+prec_IL09 <- 1/SE_IL09^2
+
+prec_MI06
+prec_MI07
+prec_IL09
+```
+
+Assuming that these three samples are random draws from the same population, calculate a
+precision-weighted average of the three studies. (Hint: weight each estimate by the inverse of its squared standard error.)
+
+```{r, echo = T}
+weighted.mean(c(ATE_MI06, ATE_MI07, ATE_IL09), c(prec_MI06, prec_MI07, prec_IL09))
+
+```
+
+### Question 5 
+
+Using the `rdd.csv` dataset which contains election information on electoral outcomes for 2012 and 2016 for 6000 municipalities. 
+
+a) Create a RDD plot with margin in the x axis and vote share on the y axis. Make sure that the bins are equally spaced. What does this chart visually show? Base your answer on the Cattaneo *et. al* reading. 
+
+```{r}
+rdd <- read_csv('rdd.csv')
+rdrobust::rdplot(rdd$in_2016, rdd$margin, binselect = 'es')
+```
+
+
+*There appears to be a visual difference between the treated and untreated groups at the cutoff point.* 
+
+b) Estimate the LATE effect of the treatment. Is there an advantage to being the incumbent in the previous election? 
+
+```{r}
+summary(rdrobust::rdrobust(rdd$in_2016, rdd$margin))
+```
+
+*There is a positive effect here. Being the incumbent in a previous election by winning a close election leads to a greater increase in the likelihood of winning in 2016 in this data*
+
+c) Consider the external validity of this study. Can we learn anything about the incumbency advantage for elections for which the incumbent has retired? 
+
+*No, we should worry about strategic retirements. It is possible the close elections mean that some incumbents will retire early, so that only incumbents who are particularly strong run again. This would imply some sorting of agents around the cutoff. The result also cannot speak to situations for which there was no previous close election because in those cases the treatment would be missing.*

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Section 5</title>
+    <meta charset="utf-8" />
+    <script src="Section5_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Section 5
+
+---
+
+
+
+
+
+
+## Jensen 2003
+
+Jensen is interested in the effect of regime type on foreign direct investment (FDI)
+
+The design is a TSCS design using regression of 114 countries from 1970-1997. 
+
+He finds that "democratic political institutions are associated with higher levels of FDI inflows" 
+
+Is this a causal parameter? If not, what would we need to assume or do to make it a causal parameter?
+
+???
+
+No. From a design perspective, it's not clear what's random here, or how we would randomly assign democratic political institutions. That should make us worry about selection bias in general. 
+
+From a model perspective, we could assume that we have all the controls such that conditional on controls democratic political 
+---
+## How do we code effective samples? 
+
+1. We define our treatment variable and any pre-treatment controls or additional model terms 
+
+2. Run a regression of the treatment on the controls 
+
+3. Extract the residuals from that regression 
+
+4. Square the residuals. 
+
+5. Get the average of these residuals^2 for each country 
+???
+
+The multiple regression weights are the squares of the residuals. 
+
+Here to measure the extent to which a given country contributes to the estimate, we take the sum of the weights for a country and divide by the sum of all weights in the sample. 
+---
+## Packages we'll need
+
+
+```r
+library(tidyverse)
+library(sf) # for mapping 
+library(patchwork)
+```
+
+For ease of use, we'll use the base `lm()` function to run the regressions. Why is that ok here? 
+
+???
+
+Answer: We don't care about the standard errors. We are just interested in the fit. 
+---
+
+## Effective Weights as a function 
+
+
+```r
+effectiveWeights &lt;- function(arg1, arg2, ...){
+  # Make the OLS formula call 
+  
+  # Run a regression of the treatment on the controls 
+
+  # Extract the residuals from that regression 
+
+  # Square the residuals. 
+
+}
+```
+---
+
+## Effective Weights as a function 
+
+
+```r
+effectiveWeights &lt;- function(Y, controls, data){
+  # Make the OLS formula call 
+  treat_formula &lt;- reformulate(termlabels = c(controls), 
+                               response = Y)
+  # Run a regression of the treatment on the controls 
+  treat.model &lt;- lm(as.formula(treat_formula), data = data)
+  # Extract the residuals from that regression 
+  d.tilde &lt;- as.numeric(residuals(treat.model))
+
+  # Square the residuals. 
+  weights &lt;- d.tilde^2
+  return(weights)
+}
+```
+
+???
+
+reformulate() is a function to build formulas of the form y~x
+
+we can do d.tilde^2 because R is doing elementwise multiplication
+
+---
+
+## Get our Data 
+
+
+```r
+world &lt;- st_read("~/Desktop/dataverse_files/world_countries_boundary_file_world_2002.shp")
+```
+
+```
+## Reading layer `world_countries_boundary_file_world_2002' from data source 
+##   `/Users/alexstephenson/Desktop/dataverse_files/world_countries_boundary_file_world_2002.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 211 features and 9 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: -180.0002 ymin: -90 xmax: 180 ymax: 83.62303
+## CRS:           NA
+```
+
+```r
+mapnames &lt;- read_csv("~/Desktop/dataverse_files/mapnames_filled2.csv")
+
+jensenData &lt;- read_csv("~/Desktop/dataverse_files/jensenData.csv")
+```
+
+---
+
+## Calculate effective weights 
+
+
+```r
+X.vars &lt;- c("var5",
+            "market","lgdppc",
+            "gdpgrowt","tradeofg",
+            "overallb","generalg",
+            "country", "d2","d3")
+
+w &lt;- effectiveWeights(Y = "regime", controls =X.vars, data = jensenData)
+```
+
+---
+
+## Step 5: Average of residuals^2 for each country 
+
+
+```r
+df &lt;- tibble(weight = w, country = jensenData$country)
+
+weights &lt;- df %&gt;% 
+  group_by(country)%&gt;%
+  summarise(avg = round(mean(weight),4))
+```
+
+---
+
+## Apply our weights to our map 
+
+
+```r
+mapWeights &lt;- mapnames %&gt;% 
+  left_join(weights, by = c("jensen"="country"))%&gt;%
+  na.omit()
+
+output &lt;- world %&gt;% 
+  left_join(mapWeights, by = c("NAME"="mapname"))%&gt;%
+  filter(NAME != "Antarctica")%&gt;%
+  mutate(weight = if_else(is.na(avg), 0,avg),
+         expW = if_else(is.na(avg), 0, 1))
+```
+
+---
+
+## Make plots 
+
+
+```r
+ns &lt;- ggplot(output)+
+  geom_sf(aes(fill = expW))+
+  scale_fill_gradient(low = "white", high = "black")+
+  theme_void()+
+  theme(legend.position = "none")+
+  ggtitle("Nominal Sample")
+
+es &lt;- ggplot(output)+
+  geom_sf(aes(fill = weight))+
+  scale_fill_gradient(low = "white", high = "black")+
+  theme_void()+
+  theme(legend.position = "none")+
+  ggtitle("Effective Sample")
+```
+
+---
+
+## Put our maps on the same plot 
+
+
+```r
+plots &lt;- ns / es
+plots + plot_annotation(
+  title = "The difference between Effective and Nominal Samples"
+)
+```
+---
+## Put our maps on the same plot 
+
+&lt;img src="Section5_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,120 @@
+---
+title: "Weekly Practice 1"
+author: "FILL IN YOUR NAME"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+```
+
+## Delete me after reading 
+
+Below is a template for Weekly Practice 1. Make sure to run all of your code when you feel like it is correct. When finished, knit your file to a pdf and submit the pdf. 
+
+## Problems 
+
+### Libraries 
+
+1. Load the `tidyverse` package. 
+
+```{r}
+### Fill in your answer here 
+### Run the chunk when finished 
+```
+
+2. Provide the code needed to install the `estimatr` package and the `here` package. You should also install this package on your machine for the future. 
+
+```{r}
+### Fill in your answer here 
+
+```
+
+### Plotting Practice 
+
+On bCourses is a csv file called `wpData.csv` 
+
+**Question 1**
+
+a. Read in this file to R as a tibble. Name your tibble "img" (without quotes).  
+
+```{r}
+img <- ... # fill in your answer here, replacing the ... 
+
+```
+
+b. Using `ggplot2` make a scatterplot of the data. Set the color aesthetic to the z column. In your chain add the functions `scale_color_identity()` and `theme_void()`. Using the function to give your plot a title, set the title to "How Learning Often Feels." (Note, this may take a little bit of time to run).
+
+```{r}
+### Fill in your answer here 
+
+```
+
+**Question 2**
+
+a. Set the RNG seed to 42, and run it to make sure that your random number generator starts in the right place. 
+
+b. Create a tibble named `practice` with five variables: 
+
+- id: <numeric vector> the sequential set of numbers beginning at 100 and ending at 200 inclusive. 
+
+- x: <numeric vector> a set of observations from a uniform distribution with a minimum of 7 and a maximum of 42 
+
+- y: <numeric vector> a set of observations from a standard normal distribution 
+
+- u: <numeric vector> a set of observation from a normal distribution centered at 100 with variance 100 
+
+- d: <numeric vector> a set of binomial observations from a fair coin. 
+
+c. What is the number of rows of the data frame you made? What is the number of columns?
+
+d. Use a function to print the first six rows of your data frame. 
+
+```{r}
+set.seed(...) # Replace the ... with your answer 
+
+### Fill in the rest of your answer here 
+
+
+```
+
+
+**Question 3** 
+
+For each of the following code blocks, explain why will result in an error. Fix the error to make the code run. 
+
+a. 
+
+```{r}
+## Fix this code 
+A_VARIABLE <- 25
+A_VAR1ABLE 
+```
+
+
+b. 
+
+```{r}
+multNum <- function(arg1, arg2){
+  out <- arg1 * arg2
+  return(out)
+}
+
+# Fix this code 
+multNum(2) == 10
+
+```
+
+c.
+
+```{r}
+# Fix this code
+myTibble <- tibble(
+  x = c(1,2,4,6),
+  y = c("John", "Paul", "George, "Ringo"),
+  z = c(TRUE, FALSE, TRUE, FALSE)
+) 
+```
+
+

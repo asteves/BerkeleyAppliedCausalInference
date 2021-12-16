@@ -1,0 +1,170 @@
+---
+title: "Applied Causal Inference"
+subtitle: "Lecture 1"  
+author: 
+  - Alex Stephenson
+date: '8-25-2021'
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "30px")
+
+```
+
+## What are we doing today?
+
+1. Course Overview 
+2. Introductions 
+3. Take the Final Exam
+
+---
+class: highlight-last-item 
+## Course Overview 
+
+We have three goals in this course 
+
+- Understand the concepts of applied causal inference 
+
+
+
+- Demonstrate our learning through code that we can take to future research or jobs 
+
+
+
+- Enjoy doing Goals 1 and 2
+
+
+
+My job is to help you learn this material as best as possible. Think of me as a coach. 
+
+---
+
+## Where do I find stuff? 
+
+- The syllabus has all basic information for the course. 
+
+
+
+- I cannot emphasize enough that you should read the syllabus 
+
+
+
+- Seriously, instructors spend lots of time on the syllabus. Humor us by reading the syllabus. 
+---
+
+## Yeah, but what if it's not in the syllabus?
+
+- Feel free to reach out to me or your fellow classmates. 
+
+
+- Lots of information comes through email and bCourses. Check them frequently. 
+---
+
+class: center, middle 
+## Course Mechanics 
+
+---
+class: highlight-last-item 
+## Lecture Mechanics 
+
+Berkeley time means we 150 minutes of lecture a week. I plan to split up the lectures as follows: 
+
+- First 50 Minutes: Concept overview 
+
+
+
+- Second 50 Minutes: Basic application of the concept 
+
+
+
+- Third 50 Minutes: Additional application of the concept. 
+
+- Lecture slides go up on bCourses after lecture.
+---
+## What should I bring to lecture?
+
+- On Mondays: 
+  - Whatever you like to take notes on. 
+
+
+
+- On Wednesdays and Fridays: 
+
+  - Whatever notes you thought were useful
+  - Anything else that you think will be helpful, but at minimum a computer. 
+
+---
+
+## A Brief Digression on Notes and Studying 
+
+- You're probably taking notes wrong 
+
+- You're probably studying wrong 
+
+- If either or both are true, it's not your fault. No one taught you. 
+
+---
+## Section Mechanics 
+
+Section is R heavy by design. 
+
+The purpose of section is to prepare you for applications and assignments. 
+
+You will always need a laptop in Section. 
+
+Section materials will always be posted on bCourses, often before section begins.
+
+---
+
+## Assignments 
+
+- This class works differently than other classes you have taken at Berkeley. 
+
+- We're working together during a pandemic, so flexibility to changing circumstances is a virtue. 
+
+---
+
+class: center, middle 
+## Introductions 
+
+---
+class: center, middle
+## Final Exam
+---
+
+## Are you \*\*\*\*\*\*\* kidding?
+
+---
+## No, but it's short. 
+
+The answers themselves have no effect on your grade. It is for you and I to have a record of where you started at the beginning of class. 
+
+Completing and turning in the assignment counts as the first Checkpoint. 
+
+We will cover all the material on the final exam over the semester. 
+
+Please turn it in before you leave today. I'll hand it back in section. 

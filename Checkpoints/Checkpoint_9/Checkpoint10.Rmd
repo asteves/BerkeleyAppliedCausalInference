@@ -1,0 +1,28 @@
+---
+title: "Checkpoint 10"
+output: pdf_document
+urlcolor: blue
+---
+  
+## Reading Assignment 
+  
+Read "Improving the Interpretation of Fixed Effects Regression Results" by Mummolo and Peterson. The reading is available online [here](https://scholar.princeton.edu/sites/default/files/jmummolo/files/improving_the_interpretation_of_fixed_effects_regression_results.pdf) and is also on bCourses in the Readings folder. 
+
+All the questions in this checkpoint can be answered based on the article. 
+
+## Questions 
+
+### What is the substantive choice that researchers make when using fixed effects? 
+
+
+
+### Why should researchers avoid discussing effects of changes of a variable that are larger than any observed change in the data? 
+
+
+
+### What is the problem with Snyder and Strömberg (2010) consider a 0-to-1 shift in the their treatment when discussing its impact on the probability that an indviduals recalls the name of their member of Congress?
+
+
+### How should a research go about identifying a plausible counterfact shift in a treatment effect given the data? 
+
+

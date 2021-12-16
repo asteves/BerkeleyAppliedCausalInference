@@ -1,0 +1,294 @@
+---
+title: "Lecture 13"
+author: "Alex Stephenson"
+date: "10-11-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+library(estimatr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+
+## What did we cover last time? 
+
+For the last two weeks we have covered experiments with non-compliance
+
+We now have three theoretical estimands: ATE, ITT, CACE. 
+
+We can estimate all three with data 
+---
+
+## What are we doing today? 
+
+Today we are going to review what we have covered over the semester so far 
+
+We are going to start with Week 1 and move to where we are at now
+
+---
+
+## Framework for a Causal Question 
+
+"What is the effect of X on Y?" 
+
+This question needs to be interesting. 
+
+This question needs to be answerable in the real world 
+
+The way we answer it is a causal research design. 
+
+  - A statement of how a study will estimate a relationship between two variables that is causal in nature. 
+  - "How would I do this if it was possible run the ideal experiment?"
+
+---
+
+## What do we need for a causal question? 
+
+1. What is the estimand I care about? ATE? ITT? CACE? Something else? 
+
+2. What is the target population of interest? 
+
+- For whom does this study generalize? 
+
+3. Why is learning this quantity useful? 
+
+- The so what question. There are lots of questions in the world, why should you spend time learning the answer to this one? 
+
+---
+
+## Causality and Manipulation 
+
+We do experiments because we follow the dictum that there is "no causation without manipulation" 
+
+Causality is an action applied to a unit. 
+
+We represent these actions with Potential Outcomes 
+
+$$Y_i(1)D + Y_i(0)(1-D)$$
+
+???
+
+We focus in this class on two treatments, but we can think of more than two treatments. For last week, you read an article that has multiple experiments going on.
+
+Conventionally the first PO is the potential outcome under treatment and the second is potential outcome under control. 
+
+Ideally we would like to get the ICE for an individual, but cannot because we cannot observe both of these quantities at once. That is the fundamental problem of causal inference. In this sense, causal inference is a missing data problem that requires us to make guesses or impute values of the counterfactual. 
+
+---
+
+## ATE 
+
+The main causal estimand we consider is the ATE. The sample analog is the SATE. 
+
+The ATE is $E[Y_i(1) - Y_i(0)]$ and has a causal interpretation when our assignment mechanism $D$ is unconfounded with the potential outcomes. 
+
+In addition, we need to assume that it is the case that potential outcomes depend solely on whether a unit itself receives a singular treatment. 
+
+  - Exclusion Restriction about treatment $Y_i(z_i = 1, d_i) = Y_i(z_i = 0, d_i)$
+  - Non-interference between units $Y_i(\textbf{d})=Y_i(d)$
+  - Know what the treatment is and guarantee it is the same for all units
+
+???
+We can guarantee this if we have an appropriate randomization mechanism. 
+
+If we have all of these, then we can use our difference in means plug-in estimator to get an unbiased and consistent estimate of the ATE
+
+We can also use regression with appropriate pre-treatment covariates in order to get a more precise estimate. 
+
+---
+
+## Randomization 
+
+Randomization is a mechanism that ensures that either: 
+
+$$P[D_i = 1] = p, \forall i \\
+P[D_i = 1|X = x] = f(x), \forall i$$
+
+We either know this for sure, or we assert via the Conditional Independence Assumption that 
+
+$$ Y_i(0), Y_i(1) \perp \!\!\! \perp D_i| \textbf{X}_i, \forall i$$
+???
+
+This is a physical or electronic procedure by which randomization is conducted to ensure that assignment to the treatment group is statistically independent of all unobserved and unobserved variables. 
+---
+
+## Analyze as you randomize as you design 
+
+We start with the question, which leads to reasons to prefer some random assignment rather than another. 
+
+Complete Random Assignment: a procedure that guarantees that exactly m of N total units are assigned to treatment with equal probability.
+
+Block Random Assignment: A procedure where units are partitioned into sub-groups (blocks) and complete random assignment occurs within each block.
+
+Cluster Random Assignment: Assign units to clusters. All units in the same cluster are placed as a group into either the treatment or control conditions.
+
+---
+
+## Randomization Inference 
+
+Because our designs are estimates on a sample to learn something about a population, we need to consider inference. 
+
+Randomization inference is a procedure that can be used to test the sharp null hypothesis that for all units, the ITE is exactly 0. 
+
+For randomization inference, we compute the sampling distribution of a test statistic of interest. The probability of obtaining a test statistic at least as large as the observed test is the p-value. 
+
+Conventionally, if the p-value is below a certain level we reject the null hypothesis. 
+
+---
+
+## Regression 
+
+Regression is a device that allows us to estimate Average Treatment Effects 
+
+We started with the equivalence between a Difference in Means and regression in the binary case. 
+
+We then noted that the way to estimate block fixed effects is a regression of the form $Y \sim D + X_1 + X_2 + ... + X_n$
+
+---
+
+## Regression 
+
+We saw that we can motivate regression in several different ways: 
+
+1. The best linear estimate for the Conditional Expectation Function 
+
+2. Regression as a natural way to estimate an experiment 
+
+3. Regression as an information problem 
+
+???
+
+If the CEF is linear, then the best linear estimate is the CEF. If the CEF is nonlinear, than the best linear approximation is regression. If the ATE is constant or can be appropriately modeled, regression gives an unbiased estimator of the effect. 
+
+As an information problem, we saw that regression creates a weighted average and upweights points for which covariates do not well explain treatment assignment. In the RCT case, this isn't a problem, but in observational studies this can lead to a sample that is much different than the nominal sample
+
+---
+
+## Regression and Interactions 
+
+Sometimes our treatment depends on an interaction. An effect might be an interaction between two variables. 
+
+Regression can model this by simply adding another variable that is the product of the variables of interest. 
+
+We always need to estimate the main effect of each variable separately if we plan to include their interaction. 
+
+---
+
+## Regression and Omitted Variables 
+
+When we cannot guarantee unconfoundedness between treatment and potential outcomes, we need to worry about omitting a relevant variable. 
+
+Omitted Variable Bias is the difference between the true value and our estimate when we do not include a relevant variable. 
+
+???
+
+OVB is yet another reason why if we can run the experiment, we should just run the experiment. Modeling is really hard, and there are lots of variables that might matter a lot. 
+
+---
+
+## Bad Controls 
+
+A bad control is a variable that is itself an downstream effect of the treatment variable. Bad controls are functionally identical to mediator variables. 
+
+Including a bad control in a regression leads to bias, and sometimes substantial bias. 
+
+???
+
+We showed this occurring even in an example where we know by construction that there was no causal effect at all
+
+---
+
+## Compliance 
+
+In an ideal experiment every unit follows directions. In real experiments, that rarely happens. 
+
+We have two kinds of non-compliance: 
+
+- One sided non-compliance: Some units in the treatment group do not receive treatment 
+
+- Two sided non-compliance: Some units in both treatment and control do not receive their intended treatment. 
+
+???
+
+Compliance is not normative. It is dependent on the design, and different designs will produce different compliance rates even among the same units. 
+
+---
+
+## Compliance 
+
+In general we have four kinds of units: 
+
+Compliers: Units that always take the treatment they are assigned. 
+
+Never Takers: Units that never take treatment but will always take control. 
+
+Always Takers: Units that always take treatment and will never take control. 
+
+Defiers: Units that do the opposite of their treatment assignment. 
+
+---
+
+## ITT 
+
+When we run an experiment, we can also ask "Does the random assignment produce an effect?" 
+
+ITT: The causal effect of treatment assignment. 
+
+
+???
+
+Everything after treatment assignment, such as compliance, future interference, etc is also post-treatment in an ITT design. All we are interested in is the effect of being assigned to treatment. A consequence of this is that under full compliance, the ITT is the ATE, but otherwise that is not generally true. 
+
+The ITT also is likely to have more variance all things equal 
+
+---
+
+## CACE 
+
+The average treatment effect for the subset who units who are compliers. 
+
+In general, if we assume monotonicity we can recover the CACE. 
+
+When the share of compliers is close to 0, slight violations of the exclusion restriction will lead to massive bias in our estimates. This is a major problem in observational research, and a reason to be skeptical of experiments with low compliance. 
+
+---
+
+## Estimating the CACE 
+
+We can estimate the CACE by hand as a ratio estimator: 
+
+$$CACE = \frac{ITT}{ITT_D}$$
+
+We can also estimate this in R with the estimatr package 
+
+```{r, eval = F}
+iv_robust(Y ~ D | Z, data = data)
+
+```

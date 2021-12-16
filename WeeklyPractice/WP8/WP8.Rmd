@@ -1,0 +1,41 @@
+---
+title: "WP8" 
+output: pdf_document
+urlcolor: blue
+---
+
+
+```{r setup, include=FALSE}
+library(formatR)
+library(tidyverse)
+library(estimatr)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+
+```
+
+## Reading Assignment 
+
+For this weekly practice, you are going to walk through a replication analysis of Jason Lyall's "Does Indiscriminate Violence Incite Insurgent Attacks?: Evidence from Chechnya" available [here](https://journals.sagepub.com/doi/10.1177/0022002708330881) or on bCourses in the Readings folder. 
+
+The data is available in the WP8 folder on bCourses. The dataset includes all variable that you need to answer the following questions. 
+
+Some hints for replication 
+
+1. The dataset is a super set of the data that you actually need to answer the questions. This means that not every variable is essential. Use the article to guide your decision making. 
+
+2. Table 2 is useful for figuring out what variables to include in the models that include covariates. 
+
+3. Pay close attention for some models about what version of the dataset you need. The article has substantive information about which covariate needs adjustment. 
+
+## Questions 
+
+1. Why does the question that Lyall seeks to answer matter? Answer in your own words. 
+
+
+2. In your own words, what are the two mechanisms identified by Lyall as to how indiscriminate violence can weaken insurgencies? 
+
+
+3. What is the source of external variation identified by Lyall? Do you think it is plausible as an assignment mechanism? 
+
+
+4. Using the `WP8Data.csv` file, replicate the treatment coefficient and standard error in Table 3. Make a coefficient plot with clear labels of which model each treatment coefficient and standard errors come from. Use default clustered standard errors in `lm_robust()`. 

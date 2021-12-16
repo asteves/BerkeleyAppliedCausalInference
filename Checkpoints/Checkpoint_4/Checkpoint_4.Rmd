@@ -1,0 +1,36 @@
+---
+title: "Checkpoint 4"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Sources Required 
+
+You can answer all questions in this checkpoint by consulting Chapter 2 of Causal Inference: The Mixtape. 
+
+## Due Date 
+
+This checkpoint is due at the beginning of lecture on Friday, 9/17
+
+## Questions 
+
+For all questions, make sure to answer all parts of the question. Checkpoints are not eligible for a redo if an answer is left blank. 
+
+1. State the CEF decomposition property mathematically. Below your mathematical statement, explain what the CEF decomposition means in words. 
+
+2. State the ANOVA Theorem mathematically. Below the mathematical statement, explain what the ANOVA theorem means in words. 
+
+3. The Conditional Expectation Function is often non-linear. Provide at least one argument for why using linear regression is useful, even if this is true. 
+
+4. What are the four assumptions required for OLS to give an unbiased estimator of the parameters of interest? Explain for each assumption what it means substantively for a research project. 
+
+## Grading Policy 
+
+P/NP. A passing grade is given when every answer is correct. 
+
+## Makeup Policy 
+
+Assignments are eligible for re-takes provided that they are turned in by the original deadline, and a good faith effort is made to answer every question. If a question is left blank, the assignment is not eligible for a redo. 

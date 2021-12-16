@@ -1,0 +1,35 @@
+---
+title: "WP7"
+author: "FILL IN YOUR NAME" 
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(tidyverse)
+library(estimatr)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Tasks 
+
+Read Chapter 5 of [R For Data Science](https://r4ds.had.co.nz/transform.html). 
+
+Answer the following exercises from the chapter. Note, you will need to create your own R chunks for each exercise. 
+
+### 5.2.4
+
+#### Exercise 1:1-7
+
+### 5.5.2
+
+#### Exercises 1-4
+
+### 5.6.7 
+
+#### Exercises 4, 5 (not the challenge part), and 6.
+
+### 5.7.1 
+
+#### Exercises 2-3,7. For exercise 2, consider the metric as mean arrival delay and only look at planes with at least 20 fights. For exericse 3, consider time of day as the hour of the day. 
+

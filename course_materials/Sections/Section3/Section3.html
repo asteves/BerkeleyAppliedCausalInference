@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Section 3: Functions and Simulations</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Section3_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Section 3: Functions and Simulations
+### Alex Stephenson
+### 9-8-2021
+
+---
+
+
+
+
+
+
+## What have we covered so far?
+
+Data Frames 
+
+Visualization 
+
+Functions 
+
+---
+
+## What are we doing today?
+
+Showing how to subset a data frame 
+
+Explaining for loops 
+
+Put this pieces today to show how to conduct Randomization Inference 
+
+---
+
+## Materials for today 
+
+On bCourses, download the riExample.csv file 
+.pull-left[
+Import it into R as df 
+
+
+```r
+df &lt;- read_csv("YOUR FILE PATH")
+
+df &lt;- read_csv("~/Desktop/riExample.csv")
+```
+
+]
+
+
+| id| y0| y1| assign|
+|--:|--:|--:|------:|
+|  1| NA| 15|      1|
+|  2| 15| NA|      0|
+|  3| 20| NA|      0|
+|  4| 20| NA|      0|
+|  5| 10| NA|      0|
+|  6| 15| NA|      0|
+|  7| NA| 30|      1|
+---
+
+## Subsetting a data frame 
+
+.pull-left[
+To get a single column of a data frame 
+
+
+```r
+df$id
+df[["id"]]
+df[,1]
+```
+
+
+```
+## [1] 1 2 3 4 5 6 7
+```
+
+]
+
+.pull-right[
+To get elements conditional on another column in our data frame 
+
+
+```r
+df$id[df$assign == 1]
+df[["id"]][df[["assign"]]==1]
+df[,1][df[,4]==1]
+```
+
+
+```r
+df$id[df$assign == 1]
+```
+
+```
+## [1] 1 7
+```
+
+
+]
+
+---
+## Subsetting a data frame based on a separate Vector
+
+Imagine we have a separate vector of the same size as the number of rows in our data frame
+
+
+```r
+example_vec &lt;- c(0,0,0,1,1,0,0)
+```
+
+We can subset our data frame in similar ways
+
+
+```r
+df$id[example_vec == 1]
+df[["id"]][example_vec==1]
+df[,1][example_vec==1] # will fail with tibbles 
+```
+
+
+```
+## [1] 4 5
+```
+---
+  
+## For Loops 
+
+.pull-left[
+
+Suppose we want to run the same computation repeatedly
+
+We could type out the line each time, but this is error prone 
+
+A better way is to have the computer do the job 
+]
+
+.pull-right[
+
+For loop 
+
+
+```r
+# General pattern 
+
+for(i in 1:length(NUM_RUNS)){
+  DO CONDITION 
+}
+```
+]
+---
+
+## For Loop Example 
+
+.pull-left[
+
+
+```r
+for(i in 1:10){
+  print(i)
+}
+```
+]
+
+.pull-right[
+
+```
+## [1] 1
+## [1] 2
+## [1] 3
+## [1] 4
+## [1] 5
+## [1] 6
+## [1] 7
+## [1] 8
+## [1] 9
+## [1] 10
+```
+]
+---
+## For Loop Example 
+
+.pull-left[
+We can also store a value by making a NULL vector 
+
+
+```r
+val &lt;- NULL 
+for(i in 1:10){
+  val[i] &lt;- i
+}
+val
+```
+
+
+```r
+val &lt;- NULL 
+for(i in 1:10){
+  val[i] &lt;- i
+}
+sum(val)
+```
+]
+
+.pull-right[
+
+```
+##  [1]  1  2  3  4  5  6  7  8  9 10
+```
+
+```
+## [1] 55
+```
+
+]
+---
+## Randomization Inference 
+
+
+1. Run an experiment. Here we already have treatment and control so let's get the ATE 
+
+
+```r
+treat &lt;- mean(df[["y1"]][df[["assign"]]==1], na.rm = T)
+control &lt;- mean(df[["y0"]][df[["assign"]]==0], na.rm = T)
+est_ATE &lt;- treat - control
+```
+
+The estimated ATE for this experiment is 
+
+|   x|
+|---:|
+| 6.5|
+
+---
+## Randomization Algorithm 
+
+1. Run an experiment. *We got an estimated ATE of 6.5*
+
+2. Decide the test statistic of interest. `\(T(D, Y^{obs}, \textbf{X})\)`: `\(\hat{\theta} = E[Y_1] -E[Y_0]\)`
+
+3. State the null hypothesis of interest: `\(Y_i(0) = Y_i(1), \forall i\)`
+
+4. State a randomization procedure: `\(7 \choose 2\)`
+
+R shows there are 21 unique combinations of assigning 2 units to treatment and 5 to control 
+
+
+```r
+choose(7,2)
+```
+
+```
+## [1] 21
+```
+---
+
+## Getting all possible assignments 
+
+Let's use a for loop to get all of the possible treatment assignments
+
+
+```r
+set.seed(42)
+all_possible_assign &lt;- matrix(nrow = 100, ncol = 7)
+
+for(i in 1:100){
+  all_possible_assign[i,] &lt;- sample(c(rep(1,2), rep(0,5)), 7, 
+                                    replace = F)
+}
+
+# Cut down to just the unique rows 
+unique_treats &lt;- unique(all_possible_assign)
+
+# Confirm that we have 252 assignments 
+dim(unique_treats)[1] == 21
+```
+
+```
+## [1] TRUE
+```
+
+???
+all_possible_assign is a matrix. A matrix is another data structure and is similar to a data frame, though with more restrictions. It's exactly like a matrix that you have seen in a math class before. 
+
+Here we are initializing an empty data frame because we just tell R the number of rows and columns we want. The number of columns is equal to the total number of units. The number of rows is equal to the number of runs we want to do in the for loop. 
+
+The unique() function is a base R function that removes all duplicate rows from the matrix.
+
+---
+
+## Getting all possible assignments 
+
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13] [,14]
+## [1,]    1    1    1    0    0    0    0    0    0     0     0     1     0     0
+## [2,]    0    1    0    0    1    1    0    1    1     0     1     0     0     0
+## [3,]    0    0    0    0    1    0    0    0    0     0     0     0     1     0
+## [4,]    0    0    1    0    0    0    1    1    0     1     0     0     0     0
+## [5,]    1    0    0    1    0    0    0    0    1     1     0     0     1     0
+## [6,]    0    0    0    0    0    0    1    0    0     0     1     1     0     1
+## [7,]    0    0    0    1    0    1    0    0    0     0     0     0     0     1
+##      [,15] [,16] [,17] [,18] [,19] [,20] [,21]
+## [1,]     0     1     1     0     0     0     0
+## [2,]     0     0     0     0     0     0     0
+## [3,]     0     1     0     1     1     0     1
+## [4,]     0     0     0     0     1     1     0
+## [5,]     1     0     0     0     0     0     0
+## [6,]     1     0     0     1     0     0     0
+## [7,]     0     0     1     0     0     1     1
+```
+
+???
+
+When we know we have a small number of treatment assignments, this method always works. As we get larger, we will simply want to do a random sampling of assignments. 
+---
+
+## Decide the Test Statistic of Interest 
+
+.pull-left[
+
+```r
+get_ate &lt;- function(df, y1, 
+                    y0, d){
+  ## Get groups 
+  y1 &lt;- df[[y1]][d == 1]
+  y0 &lt;- df[[y0]][d == 0]
+
+  ## Conditional Expected Values 
+  E_Y1 &lt;- mean(y1, na.rm = T)
+  E_Y0 &lt;- mean(y0, na.rm = T)
+  
+  # Return 
+  #the difference in means 
+  return(E_Y1 - E_Y0)
+}
+```
+]
+
+.pull-right[
+Example of running this function. Note that we pass strings to name the variables in the data frame
+
+
+```r
+example_vec &lt;- c(0,0,0,0, 1,1,1,1)
+ex_df &lt;- tibble(
+  id = 1:8,
+  y0 = seq(from = 1, to = 15, by =2),
+  y1 = y0 + 2
+)
+get_ate(df = ex_df, y1= "y1", 
+        y0="y0", d = example_vec)
+```
+
+```
+## [1] 10
+```
+]
+
+???
+
+Note that the subsetting in the function could theoretically subset down to NA values without being careful. This will lead to the function returning 'NaN'
+
+---
+
+## State the Null Hypothesis 
+
+Let's return to our original experiment. The null hypothesis is that there is no treatment effect for any group. This allows us to fill in our missing values. There are several ways to do this. One way is to just make a new data frame. 
+
+
+```r
+ex1 &lt;- tibble(
+  id = 1:7,
+  y0 = c(15,15,20,20,10,15,30),
+  y1 = y0
+)
+```
+
+This quickly gets annoying 
+---
+## Two ways to change variables 
+
+.pull-left[
+I prefer the tidyverse way. `mutate()` is a function from dplyr. It can make new variables, or change variables in place.  
+
+
+```r
+ex2 &lt;- df %&gt;% 
+  mutate(y0 = ifelse(is.na(y0), 
+                      y1, 
+                      y0),
+         y1 = ifelse(is.na(y1), 
+                      y0, 
+                      y1))
+```
+]
+
+.pull-right[
+The base R way. Using other subsetting syntax also works
+
+
+```r
+ex3 &lt;- df 
+
+ex3$y0 &lt;- ifelse(is.na(ex3$y0), 
+                 ex3$y1, ex3$y0)
+ex3$y1 &lt;- ifelse(is.na(ex3$y1), 
+                 ex3$y0, ex3$y0)
+```
+]
+
+---
+
+## State the Null Hypothesis 
+
+Create our null hypothesis data frame 
+
+.pull-left[
+
+```r
+null_df &lt;- df %&gt;% 
+  mutate(y0 = ifelse(is.na(y0), 
+                      y1, 
+                      y0),
+         y1 = ifelse(is.na(y1), 
+                      y0, 
+                      y1))%&gt;%
+  # remove the assign column
+  select(-assign) 
+```
+]
+
+.pull-right[
+
+| id| y0| y1|
+|--:|--:|--:|
+|  1| 15| 15|
+|  2| 15| 15|
+|  3| 20| 20|
+|  4| 20| 20|
+|  5| 10| 10|
+|  6| 15| 15|
+|  7| 30| 30|
+]
+
+---
+
+## Get the Randomization distribution 
+
+Now we can put it all together and get our p-value 
+
+
+```r
+obs_ate &lt;- 6.5 # our experiment
+dm &lt;- NULL 
+## Randomize over all possible assignments 
+for(i in 1:nrow(unique_treats)){
+  dm[i] &lt;- get_ate(null_df, "y1", "y0", d=unique_treats[i,])
+}
+## one sided p-value 
+sum(dm &gt;= obs_ate)/nrow(unique_treats) 
+```
+
+```
+## [1] 0.2380952
+```
+
+```r
+## two sided p-value
+sum(abs(dm) &gt;= obs_ate)/nrow(unique_treats)
+```
+
+```
+## [1] 0.3809524
+```
+
+???
+
+Like a dataframe, a matrix is two dimensional. Each row is a unique assignment, so we use bracket notation to get that assignment. 
+
+We see that in our simulations at least 23% of our runs get a value at least as big, even if there were no difference. We fail to reject the null at the 5% level.
+
+---
+
+## Visualize Absolute Difference in Means Across Simulations 
+
+
+&lt;img src="Section3_files/figure-html/unnamed-chunk-30-1.png" width="100%" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

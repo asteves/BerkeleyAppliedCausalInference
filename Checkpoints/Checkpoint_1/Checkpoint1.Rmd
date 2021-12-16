@@ -1,0 +1,22 @@
+---
+title: "Checkpoint 1"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Requirements 
+
+1. Complete the Pre-class survey on Qualtrics. 
+
+2. Complete the Final Exam 
+
+## Evaluation 
+
+P/NP 
+
+## Retake Policy  
+
+There is no make-up for this assignment. 

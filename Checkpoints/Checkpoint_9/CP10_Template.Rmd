@@ -1,0 +1,24 @@
+---
+title: "Checkpoint 10"
+author: "FILL IN YOUR NAME"
+output: pdf_document
+urlcolor: blue
+---
+
+## Questions 
+
+### What is the substantive choice that researchers make when using fixed effects? 
+
+
+
+### Why should researchers avoid discussing effects of changes of a variable that are larger than any observed change in the data? 
+
+
+
+### What is the problem with Snyder and Strömberg (2010) consider a 0-to-1 shift in the their treatment when discussing its impact on the probability that an indviduals recalls the name of their member of Congress?
+
+
+
+### How should a research go about identifying a plausible counterfact shift in a treatment effect given the data? 
+
+

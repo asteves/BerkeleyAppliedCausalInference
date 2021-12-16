@@ -1,0 +1,382 @@
+---
+title: "Lecture 7"
+author: "Alex Stephenson"
+date: "9-10-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+## Blocking 
+
+Blocking helps reduce sampling variability. In practice, block on what you can and randomize on what you cannot.
+
+The total number of random allocations in a design with B blocks is always less than the total number of allocations under complete randomization. 
+
+Example N = 20, m = 10. Under complete randomization there are $\frac{20!}{10!10!}=184,756$. 
+
+Under blocking with complete randomization with 2 equal sized blocks. $\frac{10!}{5!5!}\frac{10!}{5!5!} = 63,504$ 
+
+Blocking also guarantees that a certain subgroup will be available for analysis. E.g. we guarantee that there are 10 Democrats and 10 Republicans in each block. 
+???
+
+We calculate the number of complete randomizations in each block and then multiply them together to get the total number of allocations. 
+
+Block on what you can and randomize on what you can't might not be technically feasible or easy. It is not a major design flaw to not block. Covariate adjustment with large enough samples can do almost as well in terms of precision. 
+---
+
+## Block ATE 
+
+$$ATE = \sum_i^J \frac{N_j}{N}ATE_j$$ 
+
+$$ATE_j = E[Y_{ij}(1)] - E[Y_i{ij}(0)]$$
+
+$ATE_j$ is the within block j ATE. 
+
+J is total number of blocks.
+
+$\frac{N_j}{N}$ is the weighted share of all units who are in block j 
+---
+## Block ATE in R 
+
+```{r}
+within_block_ate <- function(df, y0, y1, block, block_weights){
+  # Block weights are the number of observations in each
+  # block 
+  treat <- mean(df$y1[df$block==block], na.rm = T)
+  control <- mean(df$y0[df$block==block], na.rm = T)
+  
+  return((treat-control)*block_weights)
+}
+
+```
+---
+## Block Conservative SE 
+
+For any number of blocks 
+
+$$\sigma_{\hat{ATE}} = \sqrt{\sum_i^J(\frac{N_j}{N})^2\sigma^2_{\hat{ATE_j}}}$$
+For two blocks this is: 
+$$\sigma_{\hat{ATE}} = \sqrt{(\frac{N_1}{N})^2\sigma^2_{\hat{1}} + (\frac{N_2}{N})^2\sigma^2_{\hat{2}}}$$
+???
+
+The fraction with N is the block weights which are squared. The sigmas are the standard errors squared, which is the same thing as the variance
+---
+## Block SE in R 
+
+```{r}
+within_block_se <- function(df, y0, y1, block, N, m){
+  # formula for se = sqrt(V[X]/N-m + V[Y]/m)
+  # We need to get this within each block so subset appropriately
+  control <- var(df$y0[df$block==block], na.rm = T)/(N-m) 
+  treat <-var(df$y1[df$block==block], na.rm = T)/(m)
+  return(sqrt(treat+control))
+}
+```
+---
+
+## Block Confidence Intervals 
+
+Confidence Intervals for Blocking function like confidence intervals for non-blocked assignments. 
+
+Provided we have correctly estimated the ATE and SE, we proceed the same way as before. 
+---
+## Block Confidence Intervals in R 
+
+```{r}
+get_block_ci95 <- function(block_ate, block_se){
+  # get 95% CI 
+  # 1.96 is the normal approximation value 
+  ci_l <- block_ate - block_se*1.96
+  ci_u <- block_ate + block_se*1.96
+  
+  return(c(ci_l, ci_u))
+}
+
+```
+
+---
+
+## Block Example 
+
+Suppose we have the following data frame 
+
+```{r}
+d <- tibble(
+  block = c(rep("A", 8), rep("B",6)),
+  y0 = c(0,1, NA, 4,4,6,6,NA, 14, NA, 16,16,17, NA),
+  y1 = c(NA, NA, 1, NA, NA, NA, NA, 3, NA, 9, NA,NA,NA, 17)
+)
+```
+---
+
+## Block Example 
+
+We need to get the overall sum of each within block ATE 
+
+```{r}
+get_block_ate <- function(df, y0, y1, block,block_weights){
+  val <- NULL 
+  for(i in 1:length(block)){
+    val[i]<-within_block_ate(df, y0, y1, block[i],
+                             block_weights[i])
+  }
+  return(sum(val))
+}
+
+```
+
+---
+## Block Example 
+
+We need to get the overall Block SE 
+
+```{r}
+get_block_se <- function(df, y0, y1, block, N, m, block_weights){
+  # variance of sum of independent random variables 
+  # V[aX + bY] = a^2V[X]+b^2V[Y]
+  
+  # for loop to get sum of weighted variances
+  val <- NULL
+  for(i in 1:length(block)){
+    val[i] <- within_block_se(df, y0, y1, 
+                              block[i], N[i], 
+                              m[i])^2*block_weights[i]^2
+  }
+  
+  # sqrt of the sum to get se 
+  return(sqrt(sum(val)))
+}
+
+```
+
+---
+
+## Block Example 
+
+Use `get_block_ate()` with appropriate parameters to get: $\hat{\mu}$
+
+```{r}
+
+ate_hat <-get_block_ate(d, y0="y0",y1="y1", 
+                      block=c("A","B"), 
+                      block_weights = c(sum(d$block=="A")/nrow(d),
+                                        sum(d$block=="B")/nrow(d)))
+kable(ate_hat)
+```
+
+---
+
+## Block Example 
+
+Use `get_block_se()` with appropriate parameters to get: $\hat{\sigma}_{ATE}$
+
+```{r}
+se_hat <- get_block_se(df = d, 
+                   y0 = "y0",
+                   y1 = "y1",
+                   block = c("A","B"), 
+                   N = c(8,6), 
+                   m = c(2,2), 
+                   block_weights = c(sum(d$block=="A")/nrow(d),
+                                     sum(d$block=="B")/nrow(d)))
+kable(se_hat)
+```
+---
+
+## Block Example 
+
+Use `get_block_ci95()` with appropriate parameters to get our 95% CI
+
+```{r}
+block_ci <- get_block_ci95(ate_hat, se_hat)
+
+kable(tibble(
+  interval = c("lower", "upper"),value = block_ci))
+```
+
+---
+
+## Clustered Designs 
+
+Situations in which underlying potential outcomes are related. Examples include schools, villages, towns, states. 
+
+There may be large N within cluster, but because of relations we have to analyze at the cluster level. 
+
+Each unit in a cluster is placed into either treatment or control conditions
+
+???
+
+cluster assignment rules out all possible allocations in which individuals in the same cluster are assigned to different experimental conditions
+---
+## Clustered Designs ATE 
+
+If clusters are the same size, then our estimate of the ATE via difference in means will be unbiased. 
+
+If clusters are not the same size, then our estimate of the ATE must take this into account. Naive estimates will be biased. 
+
+Clustered designs will have more variability (uncertainty) than non clustered designs. 
+
+We do clustered designs because we have to, not because we want to.
+---
+
+## Cluster Example 
+
+.pull-left[
+```{r, eval = F}
+cdf <- tibble(
+  cluster = c(rep("Berkeley",3), 
+              rep("Stanford",3),
+              rep("UCLA",3), 
+              rep("UCSD",3)),
+  dorm = c(rep(c(1,2,3),4)),
+  y0 = c(0:11),
+  y1 = y0 + 4
+)
+```
+]
+
+.pull-right[
+```{r, echo = F}
+cdf <- tibble(
+  cluster = c(rep("Berkeley",3), rep("Stanford",3),
+              rep("UCLA",3), rep("UCSD",3)),
+  dorm = c(rep(c(1,2,3),4)),
+  y0 = c(0,1,2,2,3,4,3,4,5,7,8,9),
+  y1 = y0 + 4
+)
+kable(cdf)
+```
+]
+
+???
+
+Due to size constraints the last few UCSD have been cut off. Note that we have equal sized clusters. A naive difference in means will be unbiased here because of equal sizes. 
+
+However, there are only 4 possible random allocations here to put equal numbers of clusters in each treatment arm. If this was an individual experiment, there would be 924 ways. Our lack of size means that we have a tiny number of possible allocations, which is the intuition for the increase in variance. 
+
+---
+
+## Cluster ATE and Conservative SE 
+
+The Cluster ATE formula with equal sized clusters
+
+$$\hat{\mu}_{DM} = \left[\frac{\sum_1^T\sum_1^nY_{it}}{\sum_i^Jn_t}-\frac{\sum_1^C\sum_1^NY_{ic}}{\sum_1^Cn_c}\right]$$
+
+
+The Cluster Difference in Totals formula 
+$$\hat{\mu} = \frac{k_c + k_t}{N}\left(\frac{\sum Y_i(1)|d_i =1}{k_t} - \frac{\sum Y_i(0)|d_i=0}{k_c} \right)$$
+The Cluster SE Formula 
+$$\hat{\sigma}_{\hat{ATE}} = \sqrt{\frac{N\hat{V}[\bar{Y_j}(0)]}{k(N-m)} + \frac{N\hat{V}[\bar{Y_j}(1)]}{km}}$$
+
+???
+
+In words the difference in means estimator says sum the values inside each treated cluster and divide the sum of each number of units in treatment clusters and do the same procedure for control. This is only unbiased when clusters are the same size. 
+
+k_c is the number of clusters assigned to control and k_t is the number of clusters assigned to treatment. This estimator is different than the usual difference in means because it divides by quantities that are unaffected by which units are assigned to treatment. It is equivalent to the difference in means estimator when clusters are all the same size. 
+K is the number of clusters, J is the jth cluster.
+
+---
+
+## Cluster ATE with Equal Clusters
+
+.pull-left[
+```{r, eval = F}
+assignment_vectors <- list(
+  c(rep(0,3), rep(0,3), 
+    rep(1,3), rep(1,3)),
+  c(rep(0,3), rep(1,3), 
+    rep(0,3), rep(1,3)),
+  c(rep(1,3), rep(0,3), 
+    rep(0,3), rep(1,3)),
+  c(rep(1,3), rep(1,3), 
+    rep(0,3), rep(0,3)),
+  c(rep(0,3), rep(1,3), 
+    rep(1,3), rep(0,3)),
+  c(rep(1,3), rep(0,3), 
+    rep(1,3), rep(0,3))
+  
+)
+```
+]
+.pull-right[
+
+```{r, echo = F}
+get_cluster_ate <- function(df,assign_vec, cluster_var, y0, y1){
+  
+  atc <- NULL
+  att <- NULL
+  # Control clusters 
+  control <- df[assign_vec == 0,]
+  control_clusters <- unique(control[[cluster_var]])
+  
+  # treated clusters 
+  treated <- df[assign_vec == 1,]
+  treated_clusters <- unique(treated[[cluster_var]])
+  
+  # Control cluster outcomes 
+  for(i in 1:length(control_clusters)){
+    atc[i] <- mean(control[[y0]][control[[cluster_var]]==control_clusters[i]])
+  }
+
+  # treated cluster outcomes 
+  for(i in 1:length(treated_clusters)){
+    att[i] <- mean(treated[[y1]][treated[[cluster_var]]==treated_clusters[i]])
+  }
+
+  return(mean(att) - mean(atc))
+}
+assignment_vectors <- list(
+  c(rep(0,3), rep(0,3), rep(1,3), rep(1,3)),
+  c(rep(0,3), rep(1,3), rep(0,3), rep(1,3)),
+  c(rep(1,3), rep(0,3), rep(0,3), rep(1,3)),
+  c(rep(1,3), rep(1,3), rep(0,3), rep(0,3)),
+  c(rep(0,3), rep(1,3), rep(1,3), rep(0,3)),
+  c(rep(1,3), rep(0,3), rep(1,3), rep(0,3))
+  
+)
+guess <- NULL
+for(i in 1:length(assignment_vectors)){
+  guess[i] <- get_cluster_ate(cdf, assign_vec = assignment_vectors[[i]], cluster_var = "cluster", y0="y0", y1 = "y1")
+}
+```
+
+Running over all possible assignments, the ATE will be equal to 4
+```{r, echo = F}
+kable(mean(guess))
+```
+]
+
+---
+
+## Next Week 
+
+Regression 

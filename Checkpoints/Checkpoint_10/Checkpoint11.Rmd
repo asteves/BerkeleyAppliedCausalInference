@@ -1,0 +1,24 @@
+---
+title: "Checkpoint 11"
+output: pdf_document
+urlcolor: blue
+---
+
+## Reading Assignment 
+  
+Read "When Natural Experiments Are Neither Natural nor Experiments" by Sekhon and Titiunik. The reading is available online and is also on bCourses in the Readings folder. 
+
+All the questions in this checkpoint can be answered based on the article. 
+
+## Questions 
+
+1. Describe the four natural experiments in your own words that the article analyzes. 
+
+
+
+2. In the redistricting experiment, what is the ambiguity in the way comparison groups are analyzed? 
+
+
+
+3. Building on (2), why does this ambiguity matter for understanding the treatment effect? 
+

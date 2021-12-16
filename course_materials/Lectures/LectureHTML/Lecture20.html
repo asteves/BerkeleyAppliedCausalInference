@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 20</title>
+    <meta charset="utf-8" />
+    <script src="Lecture20_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 20
+### 11-05-2021
+
+---
+
+
+
+
+
+
+## A Natural Experiment 
+
+Last time we discussed John Snow's natural experiment regarding the origin of cholera 
+
+We emphasized what David Freedman would refer to as "shoe leather" research. 
+
+Today we will continue showing the importance of shoe leather work 
+
+???
+
+Get Freedman's shoe leather essay here 
+
+---
+
+## Occupation and Cooptation: A Natural Experiment
+
+![](fmabs.png)
+???
+
+FM examine how an institutional difference (German devolution of authority to the Vichy government) interacted with political partisanship to cause variation in violent resistance. We first examine what the general historical literature can tell us about this question. Given that FM’s study focuses on a small fraction of French territory, we next look at what aggregated data covering the whole of France says about the association between partisanship and armed resistance.
+
+---
+
+## The Line of Demarcation 
+
+![](loc1.png)
+
+???
+
+The most significant aspect of the occupation of France for our research strategy is the fact that native- and foreign-governed zones coexisted within French territory. After Germany defeated France on 22 June 1940, an armistice divided the country into an occupied zone in the north and west ruled by a German military administration and an unoccupied zone in the south ruled by the Vichy government under the right-wing Marshal Philippe Petain, to whom the French assembly voted full powers in July 1940 (Paxton Reference Paxton1972). German military forces quickly imposed a boundary between the two zones by designating and policing a demarcation line, which severely restricted communications and travel between the two zones (Gildea Reference Gildea2002, 142–3). While the broad contours of the line were strategic in nature—i.e., capturing the Atlantic coast for the German zone—it followed an arbitrary course at the local level, cutting across preexisting administrative borders and splitting departments (provinces), cantons (counties), and communes (municipalities) 
+
+Because of this division, life in the two zones was quite different. Apart from the presence of German soldiers, in the occupied zone the Germans harnessed French industry for the German war effort, instituted a curfew, and banned many civic associations and public gatherings (Gildea Reference Gildea2002, 35–36, 120–1, 136, 145, 212–214; Paxton Reference Paxton1972, 55–56). The Germans also instituted a collective punishment policy, executing and deporting hundreds of hostages and prisoners in retaliation for attacks on German personnel (Fontaine Reference Fontaine2007, 10–14). In the Vichy zone, meanwhile, officials were not subject to German military commands. The native government under Petain—largely a coalition of right-wing and conservative groups—was thus autonomous, allowing it to implement its right-wing program of “National Revolution”
+---
+
+## Mapping Attacks 
+
+![scale = 125%](resistEvents.png)
+---
+
+## Let's check the Covariate Balance 
+
+![](bal.png)
+
+???
+
+Explain what balance means here 
+
+---
+
+## Results 
+
+![](fwres.png)
+???
+
+At every bandwidth, the expected Sabotage rate is higher in the German zone, with the majority of estimates statistically significant at the 95% level. Although the rate of Fighting is higher in the German zone when examining communes within very narrow bandwidths (see Table 3), the point estimate is not statistically significant at the 95% level. However, it remains significant at the 90% level for several bandwidths
+
+Taken together, the results suggest that resistance activity was lower in the Vichy zone when analyzing comparable communes. Based on the estimates obtained for the smallest bandwidth, a commune reassigned from the Vichy to the German zone would experience an increased resistance rate of, on average, 1.9 Sabotage and 0.8 Fighting events.Footnote 29 Given the small size of communes in France (an average of 18.6 km2 within our sample) and the fact that measured resistance events entail either the consequential destruction of infrastructure or combat deaths, this result is substantively significant, especially at higher levels of aggregation.
+
+---
+
+## Is there a problem? 
+
+Unfortunately yes (Kocher and Monteiro 2015). 
+
+There is overwhelming evidence that the Line of Demarcation was not placed randomly at the local level. 
+
+Near the LoD the French resistance staged more attacks in the German zone because there were more targets there. 
+
+
+???
+
+There is, however, overwhelming evidence that the LoD was not as-if randomly placed at the local level. A combination of documentary and cartographic evidence shows that the German rationale for the specific placement of the LoD was to keep major double-track railroad lines running from the German border to
+the Atlantic coast, and along the Atlantic coast to the Spanish border, under their direct control. This policy was formulated by Adolf Hitler himself, formalized in the Franco-German armistice, and implemented on the ground by the German occupation authorities with remarkable faithfulness.
+
+---
+
+## The effect of railroads 
+
+![](kmmap.png)
+???
+
+When the overwhelming majority of these attacks occurred, the LoD was not a meaningful obstacle to the mobility of the Resistance. Furthermore, the Resistance had by then created a national command structure, which coordinated with the Allies to attack railways in order to impede the movement of German troops and materiel toward the sites of the Allied invasions and, later, away from the collapsing front lines. Consequently, Resistance groups based on one side of the LoD could easily strike targets on the other and, given the greater prevalence of important railways on the occupied side, obeyed a strategic imperative to do so. Finally, these railroads were more common in the occupied zone because the LoD was not locally placed as-if randomly. The Germans chose its path in 1940 to keep these major railways under their direct control. At the same time, the governing institutions that prevailed on the two sides of the LoD during this period were not appreciably different, making the French case a poor test of the effects of indirect rule. In other words, we uncover a case of spurious causation: the location of important railways—a “pre-treatment” variable—explains the variation of both the supposed cause and the outcome.
+
+---
+
+## Conclusion 
+
+A natural experiment is still an observational study. Understanding the process of treatment assignment is therefore critical.
+
+Observational studies are "harder" to do well than RCTs because we do not know the assignment mechanism 
+
+Designing natural experiments should consider a variety of challenges to inference
+
+---
+
+
+## The remainder of the semester 
+
+1. Regression Discontinuity 
+
+2. Instrumental Variables 
+
+3. Difference in Differences 
+
+---
+
+## Regression Discontinuity 
+
+An RDD uses knowledge about selection into treatment in order estimate average treatment effects 
+
+We utilize the fact that treatment assignment changes discontinuously at some cutoff and compare units above and below the cutoff. 
+
+The estimand of interest here is a Local Average Treatment Effect (LATE) 
+
+---
+
+## RDD Examples
+
+We just went over an example of a regression discontinuity design 
+
+Here are some others: 
+
+- Electronic voting in Brazil (Hidalgo 2016) 
+
+- Representation under term limits ( KLAŠNJA and Titiunik)
+
+- Discrimination and performance among legislatures (Anzia and Berry 2011)
+
+???
+
+(H) studies of clientelism typically assume that political machines distribute rewards to persuade or mobilize the existing electorate. We argue that rewards not only influence actions of the electorate, but can also shape its composition. Across the world, machines employ “voter buying” to import outsiders into their districts. Voter buying demonstrates how clientelism can underpin electoral fraud, and it offers an explanation of why machines deliver rewards when they cannot monitor vote choices. Our analyses suggest that voter buying dramatically influences municipal elections in Brazil. A regression discontinuity design suggests that voter audits—which undermined voter buying—decreased the electorate by 12 percentage points and reduced the likelihood of mayoral reelection by 18 percentage points.
+
+(KJ) We study how representation works in a context where accountability to voters is restricted because of term limits and accountability to parties is limited because of party weakness. Analyzing all Brazilian mayoral elections between 1996 and 2012 using a regression discontinuity design, we show that becoming the incumbent party results in large subsequent electoral losses. We theorize that the presence of term limits, combined with political parties to which politicians are only weakly attached, affects the incentives and behavior of individual politicians in such a way that their parties’ suffer systematic losses.
+
+(AB) If voters are biased against female candidates, only the most talented, hardest working female candidates will succeed in the electoral process. Furthermore, if women perceive there to be sex discrimination in the electoral process, or if they underestimate their qualifications for office, then only the most qualified, politically ambitious females will emerge as candidates. We argue that when either or both forms of sex-based selection are present, the women who are elected to office will perform better, on average, than their male counterparts. We test this central implication of our theory by studying the relative success of men and women in delivering federal spending to their districts and in sponsoring legislation. 
+---
+
+## Instrumental Variables 
+
+A variable that is correlated with the causal variable of interest but uncorrelated with any other determinants of the dependent variable. 
+
+We have seen them before when we discussed one sided and two sided non compliance 
+
+By far the most popular observational study design in the design based inference toolbox 
+
+???
+
+Find an variable that isolates exogenous variation in our potentially biased coefficient of interest in order to estimate its effect on our dependent variable. Because our treatment variable is correlated with the error term, without some exogenous assignment we will have biased estimators.
+---
+
+## Instrumental Variables Examples 
+
+- The relationship between collective action and representation in autocracies (Dower et al 2017)
+
+- The value of committee services to legislators (Cirone and Van Coppenolle 2018)
+
+- Segregation and inequality in public goods in the US (Trounstine 2016)
+
+???
+
+(D) We explore the relationship between capacity for collective action and representation in autocracies with data from Imperial Russia. Our primary empirical exercise relates peasant representation in new institutions of local self-government to the frequency of peasant unrest in the decade prior to reform. To correct for measurement error in the unrest data and other sources of endogeneity, we exploit idiosyncratic variation in two determinants of peasant unrest: the historical incidence of serfdom and religious polarization. We find that peasants were granted less representation in districts with more frequent unrest in preceding years
+
+(CV) What is the value of committee service to an individual legislator? Self-selection and party control of appointments typically obscure this relationship. We estimate the causal effect of committee service on legislative behavior and parliamentary careers by exploiting a natural experiment in the French Third Republic (1870–1940). Yearly lotteries divided the legislature into groups that nominated members to the budget committee, and we use the random composition of these groups as an instrument for individual appointment. We find that appointment increased legislative entrepreneurship concerning budget legislation but not other types, suggesting that committee members acquire specialized expertise.
+
+(T) Many U.S. cities function without regular problems. They have well-kept roads, sewers that never overflow, and public parks with swing sets and restrooms. Others struggle to maintain balanced budgets, fail to adequately equip or staff their police forces, and offer little assistance to residents of limited means. What explains these differences? I argue that segregation along racial lines contributes to public goods inequalities. Racially segregated cities are also politically polarized cities, making collective investment more challenging and public goods expenditures lower. I provide evidence for this argument using election data from 25 large cities and demographic data matched to city finances in more than 2,600 places. To handle the problem of endogeneity, I instrument for segregation using the number of waterways in a city. I find that segregated municipalities are more politically polarized and spend less on a wide range of public goods.
+---
+
+## Difference in Differences 
+
+A quasi-experimental approach that compares changes in outcomes over time between a treatment group and a control group 
+
+Requires "parallel trends" between the two groups in order to isolate the effect of a treatment 
+
+We saw a version of these when discussing fixed effects. The first differenced and the TWFE estimator for two periods in a difference in differences design. 
+
+---
+
+## Difference in Differences Examples 
+
+- Does public education benefit autocracies (Paglayan 2020)
+
+- The effect of police officers on crime (Mello 2019)
+
+???
+
+(P) Because primary education is often conceptualized as a pro-poor redistributive policy, a common argument is that democratization increases its provision. But primary education can also serve the goals of autocrats, including redistribution, promoting loyalty, nation-building, and/or industrialization. To examine the relationship between democratization and education provision empirically, I leverage new datasets covering 109 countries and 200 years. Difference-in-differences and interrupted time series estimates find that, on average, democratization had no or little impact on primary school enrollment rates. When unpacking this average null result, I find that, consistent with median voter theories, democratization can lead to an expansion of primary schooling, but the key condition under which it does—when a majority lacked access to primary schooling before democratization—rarely holds. 
+
+(M) I exploit a natural experiment to estimate the causal effect of police on crime. The American Recovery and Reinvestment Act increased funding for the Community Oriented Policing Services (COPS) hiring grant program from less than $20 million over 2005–2008 to $1 billion in 2009. Hiring grants distributed in 2009 were allocated according to an application score cutoff rule, and I leverage quasi-random variation in grant receipt by comparing the change over time in police and crimes for cities above and below the threshold in a difference-in-differences framework. Relative to low-scoring cities, those above the cutoff experience increases in police of about 3.2% and declines in victimization cost-weighted crime of about 3.5% following the distribution of hiring grants. The effects are driven by large and statistically significant effects of police on robbery, larceny, and auto theft, with suggestive evidence that police reduce murders as well. Crime reductions associated with additional police were more pronounced in areas most affected by the Great Recession. The results highlight that fiscal support to local governments for crime prevention may offer large returns, especially during bad macroeconomic times.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

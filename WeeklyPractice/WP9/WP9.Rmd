@@ -1,0 +1,65 @@
+---
+title: "WP9"
+date: 'Due Date: 11/12/21'
+urlcolor: blue
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(tidyverse)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+
+```
+
+## Goal 
+
+The purpose of this Weekly Practice is to introduce you to the `rdrobust` package in R, which is by far the dominant method for estimating regression discontinuity designs. 
+
+You may be interested in reading the following article: "rdrobust: An R package for Robust Nonparametric Inference in Regression-Discontinuity Designs" available [here](https://journal.r-project.org/archive/2015/RJ-2015-004/RJ-2015-004.pdf) which will provide relatively extensive guidance of how to answer these questions. 
+
+As we are reaching the end of the semester, it is your responsibility to set up an appropriate RMarkdown file to answer these questions. I highly encourage you to look at previous templates. 
+
+## RMarkdown Specifications 
+
+1. Your completed document must not have text that runs off the page and must be entirely readable. Submissions that fail this test will not be graded at all and be marked incomplete without the possibility of a redo. Consult previous WP or ask me in office hours how to guarantee this will work if you have questions. 
+
+2. Your document must have an author and it must be your name. 
+
+
+3. Only output asked for should be shown in your submission. Additional output (for example datasets not asked for) will be marked incomplete without the possibility of a redo. 
+
+## Assignment Requirements 
+
+### Chunks 
+
+Each one of the following requirement should be in its own chunk. That chunk should be identified by text outside of the chunk. As an example: 
+
+
+**This is chunk one**
+```{r, chunk_one, eval = F, fig.align='center'}
+print("I'm chunk one")
+```
+
+### Requirements in Order 
+
+1. Load the `rdrobust` package. 
+
+2. Load in the `senate.csv` dataset. Make a new dataset called `df` that has three variables: 
+
+  - Y: made from demvoteshfor2 
+  - Z: made from demmv 
+  - D: a logical variable stating whether Z is greater than or equal to 0 
+
+3. Construct an RD plot of the Design. On the Y axis, plot the outcome variable. On the X axis, plot the score variable. Give this plot the title "RD Plot for Senate Elections Data" 
+
+4. Construct an alternative RD plot with evenly spaced bins. Give this plot the same title and use the same variables. 
+
+5. Conduct an RD robust estimate with default options. Report the output and analyze whether there is a statistically significant effect. 
+
+6. Conduct an RD robust estimate with uniform weights and with triangular weights. Report both estimates. You will need to look at the options of the canonical function of `rdrobust` to do this. 
+
+7. Do you think there is an effect of treatment in this RDD? If so what it is? What are the external validity limitations inherent in this design? 
+
+
+

@@ -1,0 +1,215 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[]{mathpazo}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Readings},
+  pdfauthor={Alex Stephenson},
+  colorlinks=true,
+  linkcolor=Maroon,
+  filecolor=Maroon,
+  citecolor=Blue,
+  urlcolor=blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Readings}
+\author{Alex Stephenson}
+\date{Fall 2021}
+
+\begin{document}
+\maketitle
+
+\hypertarget{readings}{%
+\subsection{Readings}\label{readings}}
+
+\hypertarget{week-1-research-design}{%
+\subsubsection{Week 1: Research Design}\label{week-1-research-design}}
+
+Lundberg, Ian, Rebecca Johnson, and Brandon M Stewart. 2021. ``What Is
+Your Estimand? Defining the Target Quantity Connects Statistical
+Evidence to Theory.'' American Sociological Review: 34.
+\url{https://doi.org/10.1177/00031224211004187}
+
+\hypertarget{week-2-potential-outcomes-and-estimands}{%
+\subsubsection{Week 2: Potential Outcomes and
+Estimands}\label{week-2-potential-outcomes-and-estimands}}
+
+Testa, Paul. 2021. ``10 Types of Treatment Effect You Should Know
+About.'' EGAP.
+\url{https://egap.org/resource/10-types-of-treatment-effect-you-should-know-about/}
+(August 8, 2021).
+
+\hypertarget{week-3-why-randomizestatistical-review}{%
+\subsubsection{Week 3: Why Randomize/Statistical
+Review}\label{week-3-why-randomizestatistical-review}}
+
+Cunningham, Scott. 2021. Causal Inference: The Mixtape Chapter 2. New
+Haven: Yale University Press.
+\url{https://mixtape.scunning.com/probability-and-regression.html}
+
+\hypertarget{week-4-regression}{%
+\subsubsection{Week 4: Regression}\label{week-4-regression}}
+
+Morgan, Stephen L., and Christopher Winship. 2014. Counterfactuals and
+Causal Inference: Methods and Principles for Social Research Chapter 6.
+2nd ed.~Cambridge: Cambridge University Press.
+\url{http://ebooks.cambridge.org/ref/id/CBO9781107587991} (September 8,
+2020).
+
+\hypertarget{week-5-regression}{%
+\subsubsection{Week 5: Regression}\label{week-5-regression}}
+
+Wilfahrt, Martha. 2018. ``Precolonial Legacies and Institutional
+Congruence in Public Goods Delivery: Evidence from Decentralized West
+Africa.'' World Politics 70(2): 239--74.
+
+\hypertarget{week-6-field-experiments}{%
+\subsubsection{Week 6: Field
+Experiments}\label{week-6-field-experiments}}
+
+Kalla, Joshua L., and David E. Broockman. 2020. ``Reducing Exclusionary
+Attitudes through Interpersonal Conversation: Evidence from Three Field
+Experiments.'' American Political Science Review 114(2): 410--25.
+
+\hypertarget{week-7-survey-experiments}{%
+\subsubsection{Week 7: Survey
+Experiments}\label{week-7-survey-experiments}}
+
+Mattes, Michaela, and Jessica L. P. Weeks. 2019. ``Hawks, Doves, and
+Peace: An Experimental Approach.'' American Journal of Political Science
+63(1): 53--66.
+
+\hypertarget{week-8-spillovers-and-non-compliance}{%
+\subsubsection{Week 8: Spillovers and
+non-compliance}\label{week-8-spillovers-and-non-compliance}}
+
+Banerjee, Abhijit, Arun G Chandrasekhar, Esther Duflo, and Matthew O
+Jackson. 2019. ``Using Gossips to Spread Information: Theory and
+Evidence from Two Randomized Controlled Trials.'' The Review of Economic
+Studies 86(6): 2453--90.
+\url{https://web.stanford.edu/~arungc/BCDJ_gossip.pdf}
+
+Gerber, Alan S., and Donald P. Green. 2011. ``Field Experiments and
+Natural Experiments. Parts 5-6'' The Oxford Handbook of Political
+Science.
+\url{https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199604456.001.0001/oxfordhb-9780199604456-e-050}
+(August 8, 2021).
+
+\hypertarget{week-9-selection-on-observables}{%
+\subsubsection{Week 9: Selection on
+Observables}\label{week-9-selection-on-observables}}
+
+Imai, Kosuke, and James Lo. 2021. ``Robustness of Empirical Evidence for
+the Democratic Peace: A Nonparametric Sensitivity Analysis.''
+International Organization 75(3): 901--19.
+\url{https://imai.fas.harvard.edu/research/files/dempeace.pdf}
+
+\hypertarget{week-10-fixed-effects}{%
+\subsubsection{Week 10: Fixed Effects}\label{week-10-fixed-effects}}
+
+Kropko, Jonathan, and Robert Kubinec. 2020. ``Interpretation and
+Identification of Within-Unit and Cross-Sectional Variation in Panel
+Data Models.'' PLOS ONE 15(4): e0231349.
+
+\hypertarget{week-11-what-is-a-natural-experiment}{%
+\subsubsection{Week 11: What is a ``Natural''
+Experiment}\label{week-11-what-is-a-natural-experiment}}
+
+Titiunik, Rocio. 2020. ``Natural Experiments.'' arXiv:2002.00202
+{[}econ, stat{]}. \url{http://arxiv.org/abs/2002.00202} (February 16,
+2020).
+
+Sekhon, Jasjeet S., and Rocío Titiunik. 2012. ``When Natural Experiments
+Are Neither Natural nor Experiments.'' American Political Science Review
+106(1): 35--57.
+\url{https://www.cambridge.org/core/journals/american-political-science-review/article/abs/when-natural-experiments-are-neither-natural-nor-experiments/E8A67829C2EEBC429CDD671B4C9313F9}
+
+Hyde, Susan D. 2007. ``The Observer Effect in International Politics:
+Evidence from a Natural Experiment.'' World Politics 60(1): 37--63.
+\url{https://www.cambridge.org/core/journals/world-politics/article/abs/observer-effect-in-international-politics-evidence-from-a-natural-experiment/B72409C4FB717F72CAB765024468511F}
+
+\hypertarget{week-12-regression-discontinuity-designs}{%
+\subsubsection{Week 12: Regression Discontinuity
+Designs}\label{week-12-regression-discontinuity-designs}}
+
+Cattaneo, Matias D., Nicolás Idrobo, and Rocío Titiunik. 2019. A
+Practical Introduction to Regression Discontinuity Designs: Foundations.
+1st ed.~Cambridge University Press.
+\url{https://www.cambridge.org/core/product/identifier/9781108684606/type/element}
+(December 11, 2019).
+
+\hypertarget{week-13-instrumental-variables}{%
+\subsubsection{Week 13: Instrumental
+Variables}\label{week-13-instrumental-variables}}
+
+van der Windt, Peter. 2021. ``10 Things to Know About the Local Average
+Treatment Effect.'' EGAP.
+\url{https://egap.org/resource/10-things-to-know-about-the-local-average-treatment-effect/}
+(August 8, 2021).
+
+\hypertarget{week-14-difference-in-differences}{%
+\subsubsection{Week 14: Difference in
+Differences}\label{week-14-difference-in-differences}}
+
+Wing, Coady, Kosali Simon, and Ricardo A. Bello-Gomez. 2018. ``Designing
+Difference in Difference Studies: Best Practices for Public Health
+Policy Research.'' Annual Review of Public Health 39(1): 453--69.
+
+\end{document}

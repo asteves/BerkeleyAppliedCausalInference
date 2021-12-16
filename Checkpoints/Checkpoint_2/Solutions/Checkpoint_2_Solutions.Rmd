@@ -1,0 +1,67 @@
+---
+title: "Checkpoint 2 Solutions"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Due Date 
+
+This assignment is due on Thursday at 23:59:59. Assignments not turned in by that time without an excused absence are not eligible for a retake. 
+
+## Requirements 
+
+Answer the following questions in a pdf document with your name and the assignment clearly labeled at the top. 
+
+Read Lundberg *et al.* (2021). After reading the article, answer the following questions. Provide page number citations to support your answers.  
+
+## Questions 
+
+**1. According to the article, what is the first step in quantitative empirical research? Give two reasons why being precise about this quantity matters for research.**
+
+The first step of empirical research is to state the theoretical estimand that exists outside of the statistical model. It is a quantity with two components: a unit-specific quantity and a target population of units (page 4).
+
+Some reasons why being precise about this matters. Other answers are accepted if correct and cited appropriately: 
+
+1) It allows us to be clear about the causes we are studying (p. 7).
+
+2) It allows us to be precise about the levels of the treatment being contrasted (p. 7).
+
+3) Facilitates questions that involve interventions with multiple variables (p. 7). 
+
+4) It allows us to know whom the causal effect will apply to and whom it will not (p. 8). 
+
+5) Clarifies debates about which methods will be most credible for studying an issue and whether the population under study is informative about the general target population or is itself theoretically important in its own right (p. 9). 
+
+**2. Based on the discussion in the article about defining the target population, who is the target population in the following hypothetical study? Why?**
+
+**"We conduct an experiment to estimate the effect of an active learning curriculum on student learning outcomes. To do so, we randomly assign UC Berkeley political science undergraduates to receive either a lecture based course or a flipped learning based course..."**
+
+Two answers are acceptable here. The target population is college students. In this reading, Berkeley college students are representative of the overall target population of college students. Alternatively, the target population is Berkeley undergraduates. In this reading, Berkeley political science undergraduates are a sample of Berkeley undergraduates more generally. 
+
+**3. What are the two types of causal estimands the article discusses? What is the difference between them?**
+
+The two types of causal estimands are the theoretical estimand and empirical estimand. The theoretical estimand is a unit-specific quantity that posits an answer to a substantive question of what factual or counterfactual thing we would like to learn for each unit in our population (p. 5). The theoretical estimand is not an empirical quantity because it is not possible to observe both potential outcomes. 
+
+The empirical estimand is the procedure or formula that we use to estimate unknown parameters. It clarifies the observed quantity that statistical techniques can recover and what we can learn from data (p. 10). 
+
+In class, we called this an "estimator." I ask this question so students become familiar with the annoying habit of the causal inference literature to rename concepts. 
+
+**4. Much of this article's vocabulary might be new to you. What parts of the paper were difficult for you to understand or looked scary?**
+
+By the nature of the question, every answer to this question is correct. Checkpoints based on articles will always ask this question. Please take it seriously because your answers structure future lectures. My goal is for you is to understand the material.
+
+### Sufficient Work 
+
+An assignment shows sufficient work if all questions are answered, and there is a clear effort for those answers to be correct. 
+
+## Evaluation 
+
+P/NP 
+
+## Retake Policy  
+
+There is one make-up for this assignment. Students must turn in the make-up exam at the beginning of Section on Wednesday. 
+

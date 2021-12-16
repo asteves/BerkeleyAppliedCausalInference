@@ -1,0 +1,48 @@
+---
+title: "WP6"
+author: "FILL IN YOUR NAME" 
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(formatR)
+library(tidyverse)
+library(estimatr)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+```
+
+## Tasks 
+
+### Replicate Figures 2 and 3 
+
+#### Figure 2 
+
+```{r}
+# Code for figure 2 goes here 
+
+```
+
+#### Figure 3 
+
+```{r}
+# Code for figure 3 goes here 
+```
+
+
+### Replicate Tables 1 and 3 and make coefficient plots
+
+#### Table 1 
+
+```{r}
+### Coefficient plot for Table 1
+
+```
+
+
+#### Table 3
+
+```{r}
+### Coefficient plot for Table 2
+
+
+```

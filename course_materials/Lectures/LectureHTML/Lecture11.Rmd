@@ -1,0 +1,570 @@
+---
+title: "Lecture 11"
+author: "Alex Stephenson"
+date: "9-27-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+library(estimatr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+## Announcements 
+
+Checkpoint 6 and WP3 have been posted. They are due this Friday at the usual time. 
+
+We do not have section this week. 
+
+We do not have class on Friday this week. 
+
+---
+
+## What did we cover last time? 
+
+For the last two weeks we have covered the mechanics of regression. 
+
+The big takeaways from that discussion are: 
+
+1) We can use regression to analyze experiments 
+
+2) If we do not have a good design, a regression will give us wonky results. 
+---
+
+## What are we doing today? 
+
+Today we are going to talk about running field experiments
+
+Introduce the ITT and the CACE
+
+Discuss One-Sided Non-compliance
+
+???
+
+ITT = Intent to Treat 
+
+CACE = Complier average Causal Effect
+
+---
+
+## Why Field Experiments 
+
+We often worry that running an experiment to test a mechanism in a lab is unrealistic. Taken the experiment to the field corrects for this problem. 
+
+To be an ideal experiment 
+
+1. The treatment used in the study resembles the actual treatment of interest in the real world 
+
+2. The units involved in the study resemble the units who ordinarily encounter the interventions of interest. 
+
+3. The context within which units receive treatments resembles the context of interest. 
+
+4. The outcome measure resemble the actual outcomes of theoretical or practical interest 
+
+???
+
+Correction incorporates a host of its own problems, as we will see. There is nothing wrong with good lab experiments. 
+
+An example of a design. Suppose we are interested in the extent to which financial contributions to legislators relections campaigns buys access to legislations. 
+
+Suppose we recruit college students to play the part of legislative schedulers and present them with a list of requests for meetings from a pool. What might be a worry about the outcome of this study? 
+
+Instead let's imagine that the subjects are actual legislative schedulers that are brought in and follow the same protocol as the students. What might be a worry about this study? 
+
+Let's imagine a third study for which we randomly assigned names of constituents and called legislators asking for a meeting to discuss a policy. What about this study? (this btw is another Broockman study)
+---
+
+## Why Not Field Experiments 
+
+Field interventions are cumbersome and take a lot of work. 
+
+Field interventions can present ethical challenges (recall the first week) 
+
+Field interventions often require collaboration with other organizations
+
+In the field, subjects don't always do what you want them to do
+
+---
+
+## Compliance 
+
+Compliance: Does the actual treatment coincide with the assigned treatment? 
+
+Under full compliance: All units assigned to treatment group receive treatment and no subject assigned to control groups receives treatment 
+
+Under partial one-sided compliance: At least some unit in the treatment group does not receive treatment. 
+
+
+---
+
+## A hypothetical experiment 
+
+Suppose you are interested in assessing the effect of canvassing on turnout to a Berkeley student group, which is measured by magic for each unit. 
+
+Imagine we take a random sample of 2000 first year students and assign via complete randomization 1000 of them to receive a personal canvass message about joining a club and the other to receive a control treatment. For the sake of this example, assume they all live in the dorms. Assume no problems with interference. 
+
+In a case of full compliance, what estimand are we interested in? Can we recover it? 
+
+???
+
+We are interested in the ATE. Yes we can recover it. Our estimator is simply the difference in means between the two groups. 
+---
+
+## A hypothetical experiment 
+
+Now suppose the same setup, but that first year students often do not open their doors to randos. Instead of 1000 students opening the door, only 250 students open the door. 
+
+1. How many different groups of units do we now have? 
+
+2. Suppose we analyze the study by taking a difference in means. What are we assuming about the units who were not treated? 
+
+3. Suppose we instead compare the average outcome among subjects who receive treatment to the control group. Is this estimator unbiased for the ATE? 
+
+???
+
+1. We have three: treated units, units assigned to treatment but not treated, control units 
+
+2. We assume that they do not enter into the equation and so their ATE is exactly 0. This seems implausible. 
+
+3. No, it's actually quite biased. The people who actually answer the door are a non-random subset that occurs post-treatment. They will not in general have the same expected potential outcomes. 
+
+---
+
+## Some Reasons for Bias
+
+1. Some students assigned to the treatment group may hang out exclusively at their significant other's dorm room.
+
+2. Students who are successfully canvassed exclude all people who are not in the dorms, but the control group will include some people who also don't hang out in the dorms. 
+
+3. Comparing the effect of canvassing will in this case exaggerate the effect upward even if there was no treatment, increasing the number of annoying club fliers. 
+---
+## New Notation: Actual Treatment and Assigned Treatment 
+
+The potential outcome $d_i(z)$ indicates whether unit i is actually treated when treatment assignment is z. 
+
+$d_i(1) = 0$: a unit assigned to the treatment group is untreated. 
+
+$d_i(0) = 0$: a unit assigned to the control group is untreated. 
+
+$d_i(0) = 1$: a unit assigned to the control group is treated. We are currently ruling this out by assumption 
+
+$d_i(1) = 1$: a unit assigned to the treatment group is treated. 
+
+???
+
+For class, how would we write the three groups in the previous experiment to correspond with this notation? 
+
+---
+
+## Compliers and Never-Takers 
+
+Compliers: Units are considered to be compliers if they only take treatment when in the treatment control and only take control when in the control. $d_i(1) = 1, d_i(0) = 0$
+
+Never-takers: Units are considered never takers if they never take the treatment regardless of whether they are put in treatment. $d_i(1) = 0, d_i(0) = 0$. 
+
+---
+
+## Revisiting Non-interference under Non-compliance 
+
+We modify our assumption about non-interference as follows: 
+
+a) $d_i(z) = d_i(z')$ if $z = z'$ where the notation on z means that unit i keeps the same treatment assignment even when the assignments of other subjects change
+
+b) $Y_i(\textbf{z}, \textbf{d}) = Y_i(\textbf{z}_i, \textbf{d}')$ if $\textbf{z}_i = \textbf{z}_i'$ and $\textbf{d}_i = \textbf{d}_i'$. 
+
+The bold letters indicate that this is a vector a treatment assignments for each of the units in the experiment 
+
+???
+
+Part B says that the potential outcomes are affected by the unit's own assignment and the treatment that the unit receives as a consequence of that assignment. Other units assignments and treatments are assumed to have no effect 
+
+---
+
+## Intent to Treat
+
+The causal effect of treatment assignment is the Intent to Treat (ITT). It is a measure of the average effect of the experimental assignment on outcomes regardless of how many of them were treated
+
+The ITT reflects the intended assignments. The 
+
+$$ITT_{i,D} \equiv d_i(1) - d_i(0)$$
+
+Taking the average across all subjects 
+
+$$E[ITT_{i,D}] = ITT_D = E[d_i(1)] - E[d_i(0)]$$
+
+???
+
+Under one sided non-compliance, the latter term is 0, so the ITT is just the expectation of the first term. 
+
+---
+
+## ITT on outcomes 
+
+The ITT of $z_i$ on $Y_i$ for each unit is: 
+
+$$ITT_{i,Y} \equiv Y_i(z = 1, d(1)) - Y_i(z = 0, d(0))$$
+The average ITT over these units is the change when units from an assigned control group to assigned treatment group 
+
+$$ITT_Y \equiv E[Y_i(z = 1, d(1)) - Y_i(z = 0, d(0)]$$
+
+???
+
+For experiments with 100% compliance treatment assignment is the same as treatment status, so the ITT_Y = ATE. 
+
+---
+
+## Complier Average Causal Effect 
+
+The CACE is the average treatment effect for a subset of units, called the compliers 
+
+$$CACE = E[Y_i(d=1) - Y_i(d = 0)|d_i(1) = 1]$$
+
+Any experiment without full compliance will generate a CACE. In situations with full compliance, the CACE is the ATT. 
+
+---
+
+## Example Calculations 
+
+```{r, echo = F}
+a <- tibble(
+  Observation = 1:9,
+  `Yi[d = 0]` = c(4,2,1,5,6,2,6,2,5),
+  `Yi[d = 1]` = c(6,8,5,7,10,10,9,5,9),
+  `di[z = 0]` = c(rep(0,9)),
+  `di[z = 1]` = c(1,0,1,1,1,0,1,1,0),
+  Type = c("Complier", "NT", "Complier", "Complier", "Complier", "NT", "Complier", "Complier", "NT")
+)
+knitr::kable(a)
+```
+
+---
+
+## Estimands for the table 
+
+.pull-left[
+```{r}
+ate <- mean(a$`Yi[d = 1]`)-mean(a$`Yi[d = 0]`)
+itt <- a %>% 
+  mutate(vals = if_else(`di[z = 1]` == 1, 
+                        `Yi[d = 1]`-`Yi[d = 0]`, 0))%>%
+  summarise(avg = mean(vals))%>%
+  pull()
+        
+cace <- a %>% 
+  filter(Type == "Complier")%>%
+  summarise(avg = mean(`Yi[d = 1]`)-
+              mean(`Yi[d = 0]`))%>%
+  pull()
+
+```
+]
+
+.pull-right[
+```{r}
+ate
+itt
+cace
+```
+]
+
+---
+
+## Code on separate slide 
+
+```{r, eval = F}
+
+```{r}
+ate <- mean(a$`Yi[d = 1]`)-mean(a$`Yi[d = 0]`)
+itt <- a %>% 
+  mutate(vals = if_else(`di[z = 1]` == 1, 
+                        `Yi[d = 1]`-`Yi[d = 0]`, 0))%>%
+  summarise(avg = mean(vals))%>%
+  pull()
+        
+cace <- a %>% 
+  filter(Type == "Complier")%>%
+  summarise(avg = mean(`Yi[d = 1]`)-
+              mean(`Yi[d = 0]`))%>%
+  pull()
+
+```
+
+---
+## Identifying the CACE 
+
+There is a relationship between the CACE and the ITT. 
+
+Given excludability of treatment assignment and $ITT_D > 0$
+
+$$CACE = \frac{ITT}{ITT_D}$$
+
+---
+
+## Identifying the CACE 
+
+Step 1: Define terms 
+
+$$\begin{aligned}
+ITT_D &= E[d_i(z=1) - d_i(z=0)]\\
+ITT &= E[Y_i(z=1, d(1))- Y_i(z=0, d(0))] \\
+CACE &= E[Y_i(d=1) - Y_i(d=0)|d_i(1)=1]
+\end{aligned}$$
+
+---
+## Identifying the CACE 
+
+Step 2: Expected potential outcomes among units in treatment can be rewritten as a weighted average of treated potential outcomes of compliers and untreated potential outcomes under never-takers. 
+
+Again, everything is an average 
+
+$$E[Y_i(z=1, d(1))] = E[Y_i(z=1, d =1)|d_i(1) = 1]ITT_D +\\ E[Y_i(z=1, d =0|d_i(1) = 0)](1-ITT_D)$$
+---
+
+## Identifying the CACE 
+
+We can do the same thing for the control group 
+
+$$E[Y_i(z=0, d(0))] = E[Y_i(z=0, d =0)|d_i(1) = 1]ITT_D +\\ E[Y_i(z=0, d =0|d_i(1) = 0)](1-ITT_D)$$
+---
+
+## Identifying the CACE 
+
+By substitution, the ITT is a weighted average of the ITT among compliers and the ITT among never takers
+
+$$ITT = E[Y_i(z=1, d = 1)] -E[Y_i(z=0, d =0)|d_i(1) = 1]ITT_D +\\ E[Y_i(z=1, d =0 - Y_i(z = 0, d=0)|d_i(1) = 0)](1-ITT_D)$$
+
+---
+
+## Identifying the CACE 
+
+The exclusion restriction about treatment assignment implies that the second part of that expression is 0.
+
+The assumption that $ITT_D >0$implies that there is at least one complier. 
+
+$$\frac{ITT}{ITT_D} = E[(Y_i(d=1)-Y_i(d=0))|d_i(1) = 1]$$ 
+
+which is equivalent to: 
+
+$$\frac{ITT}{ITT_D} = CACE$$ 
+
+
+???
+
+Treatment assignment has no effect on the untreated potential outcomes of Never-Takers
+---
+
+## Back to our example. 
+
+The $ITT$ was equal to 2. There were six compliers out of nine subjects, so the $ITT_D = \frac{2}{3}$
+
+$$CACE = \frac{2}{\frac{2}{3}}$$
+$$CACE = 3$$ 
+
+which is identical to our finding. 
+
+---
+
+## Some Facts about the CACE under our assumptions 
+
+1. An experiment with one sided noncompliance enables us to estimate the ITT, and the CACE.
+
+2. Compliers are a result of experimental design and context, not innate categories for units. 
+
+3. We need independence of assignment to treatment ($z_i$) for unbiased estimation, but the theorem holds for any assignment scheme. 
+4. Increasing the treatment rate does not necessarily lower the CACE
+
+5. The overall ATE is a weighted average of the ATE for each unit type. The CACE may be a bad estimator for the Never Takers ATE. 
+
+???
+
+The CATE the average for the subset of compliers who would be treated if assigned to the treatment group 
+
+Experiments can alter the share of compliers by providing incentives, increasing the appeal of treatment, or working hard to contact units who have not be found. 
+
+Increasing share of compliers also changes the numerator (the ITT) so its effect is ambiguous
+
+---
+
+## Some Facts about the CACE 
+
+6) The exclusion restriction matters. Treatment assignment can have no effect beyond treatment actually received. Treatment assignment should have no effect on never-takers. Violations of the exclusion restriction will bias estimates of the CACE. 
+
+7) When the $ITT_D$ is close to zero, slight violations of the exclusion restriction will lead to massive bias in estimation. A straightforward implication is that an experiment with very low compliance is in greater danger of any violations of the exclusion restriction. 
+
+???
+
+Under a violation the ratio of ITT/ITT_D is the the CACE + ((1-ITT_D)/ITT_d)E[Y_i(z = 1, d = 0)-Y_i(z = 0, d = 0)]. As the denominator goes to 0, the second term explodes 
+
+---
+
+## Estimating the CACE 
+
+Note that we have a randomized experiment here. Expand our assumption about random assignment to include non-compliance 
+
+$$Z_i \perp Y_i(z, d(z)) \& Z_i \perp D_i(z)$$
+
+In words: assignment is independent of potential outcomes. 
+
+---
+
+## Back to the Student canvassing experiment 
+
+```{r, echo = F}
+b <- tibble(
+  group = c("Attendance Rate among Contacted",
+            "Attendance Rate among not Contacted",
+            "Overall Turnout Rate"),
+  Treatment = c(60, 29, 36.75),
+  Treatment_Contacted = c(250, 750, 1000),
+  Control = c(NA, 33, 33),
+  Control_Contacted = c(NA, 1000, 1000)
+)
+kable(b)
+```
+
+All outcomes are in percentages. 
+
+???
+
+What's the ITT here? 
+
+36.75-33 = 3.75. The program "worked" in the sense that more people showed up 
+---
+
+## Estimating the $ITT_D$
+
+We need the turnout rate in the treatment group, the turnout rate in the control group, and the rate at which subjects are actually treated. 
+
+A general fact about estimation. The ratio of two unbiased estimators is not itself unbiased. 
+
+Based on this fact is the estimation of the CACE unbiased? 
+
+???
+
+No, the CACE Theorem shows us the CACE is itself a ratio of two unbiased estimators. 
+
+It is however consistent. As the sample size goes to infinity, the estimated ratio converges to the true value of the CACE. This will be true when we look at instrumental variables in general. 
+---
+
+## Estimating the $ITT_D$ 
+
+We want to look at the proportion of each pool that was treated. 
+
+What's the answer for the control group? 
+
+What's the answer for the treatment group? 
+
+???
+
+Answers will be on the next slide, but this is a class activity. There are no units who took treatment in the control group, so the first answer is 0. 
+
+There were 250 units who answered the door so the proportion is 25%
+---
+
+## Estimating the $ITT_D$ 
+
+We want to look at the proportion of each pool that was treated. 
+
+What's the answer for the control group? 0!
+
+What's the answer for the treatment group? $\frac{250}{1000}$
+
+???
+
+Answers will be on the next slide, but this is a class activity. There are no units who took treatment in the control group, so the first answer is 0. 
+
+There were 250 units who answered the door so the proportion is 25%
+---
+
+## Estimating the $\widehat{CACE}$
+
+What do we need for the CACE? 
+
+What's the effect of the ITT? 
+
+What did we learn from the last slide? 
+
+---
+## Estimating the $\widehat{CACE}$
+
+$$\widehat{CACE} = \frac{\hat{ITT}}{\hat{ITT_D}} = \frac{3.75}{.25}$$
+
+$$\widehat{CACE} = 15$$ 
+
+In words, the estimate ATE of the canvassing treatment here is a 15% increase the probability of a student showing up to a club meeting. 
+---
+
+## CACE and Regression 
+
+We can use regression to estimate both the ITT and the CACE. 
+
+For the first, we can use plain old OLS. 
+
+For the second, we need to use something called 2SLS 
+
+???
+
+2SLS means two stage least squares 
+
+---
+
+## Estimating the ITT with regression 
+
+```{r, eval = F}
+ITT <- lm_robust(Y~D, data = data)
+
+```
+
+---
+## Estimating the CACE with regression 
+
+"By Hand" 
+```{r, eval = F}
+ITT_D <- lm_robust(d ~ z, data = data) 
+
+fits <- predict(ITT_D, newdata = data)
+
+newData <- dat %>% 
+  mutate(fits = fits)
+
+CACE <- lm_robust(y ~ fits, data = newData)
+```
+
+???
+
+actual treatment is regressed on treatment assignment. Treatment is scored 1 is unit actually was treated and 0 otherwise. Assignment is 1 if unit was in the treatment group and 0 otherwise. 
+
+---
+
+## Estimating with estimatr 
+
+```{r, eval = F}
+iv_robust(y ~ d| z, data = data)
+
+```

@@ -1,0 +1,139 @@
+---
+title: "WP6 Solution" 
+output: pdf_document
+---
+
+
+```{r setup, include=FALSE}
+library(formatR)
+library(tidyverse)
+library(estimatr)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+
+```
+
+
+## Read in data 
+
+```{r, message=F, warning = F}
+segsub <- read_csv("Segregation_HS.csv")%>%
+  filter(seg == 1)
+
+int <- read_csv("Integration_HS.csv")
+```
+
+## Figure 2 
+
+We need to do a bit of data wrangling to get this answer 
+
+First, blackbn is a number. We should turn it into a character. 
+
+```{r}
+segsub <- segsub %>% 
+  mutate(blackbn = as.character(blackbn))
+```
+
+Next, we need to group by the count and blackbn variables. Within each of these groupings we want to get the total number (`n()`) and the average fatality rate. The variable for this from the replication codebook is `spec_fatal_rate`
+
+```{r}
+fig2Data <- segsub%>% 
+  group_by(count, blackbn)%>%
+  summarise(number = n(), 
+            sum = sum(spec_fatal, na.rm = T),
+            avg = mean(spec_fatal_rate, na.rm = T)*100, .groups = "drop_last")
+```
+
+Now that we have the data, we can make the figure. 
+
+```{r}
+segsub %>% 
+  ggplot(aes(x = count, y = spec_fatal_rate100, shape = blackbn))+
+  geom_point()+
+  geom_line(data = fig2Data, aes(x = count, y = avg, group = blackbn, color = blackbn))+
+  xlab("Period (Year-Month-Half)")+
+  ylab("Fatality (%)")+
+  theme(legend.title = element_blank())
+
+```
+
+## Figure 3 
+
+
+We follow the same steps as before but with the int data set. 
+
+```{r}
+int <- int %>% 
+  mutate(blackbn = as.character(blackbn))
+
+
+fig3Data <- int %>% 
+  group_by(count, blackbn)%>%
+  summarise(number = n(), 
+            avg = mean(specpct_imputed, na.rm = T)*100,
+            sum = sum(specpct_imputed, na.rm = T),
+            .groups = "drop_last")
+
+## Figure 3 
+ggplot(data = int, aes(x = count, y = specpct_imputed*100, shape = blackbn))+
+  geom_point()+
+  geom_line(data = fig3Data, aes(x = count, y = avg, group = blackbn, color = blackbn), size = 1)+
+  xlab("Period (Year-Month-Half)")+
+  ylab("Fatality (%)")+
+  theme(legend.title = element_blank())
+```
+
+
+## Replicate OLS models for Table 1
+
+To replicate the models, we look to see the appropriate variables, and then make the coefficient plot as usual. 
+
+The one "new" thing here is fixed effects, which we will cover next week. 
+
+```{r}
+m1 <- lm_robust(spec_fatal_rate100 ~ blackbn, data = segsub, se_type = "HC3")%>%
+  tidy()%>%
+  mutate(model = "m1")
+
+m2 <- lm_robust(spec_fatal_rate100 ~ blackbn, data = segsub, fixed_effects = ~count,
+                se_type = "HC3")%>%
+  tidy()%>%
+  mutate(model = "m2")
+
+## Coefficient plot of models for Table 1 
+cplot <- bind_rows(m1, m2)%>%
+  filter(term == "blackbn1")%>%
+  ggplot(aes(x = estimate, y = model, color = model))+
+  geom_point()+
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high, height = 0.1))+
+  theme_bw()+
+  guides(color = "none")+
+  ggtitle("Coefficient Plots for Table 1")
+cplot
+```
+
+## Replicate Table 3
+
+Conceptually, nothing is different than what was required for the replication of Table 1. 
+
+```{r}
+m31 <- lm_robust(specpct_imputed100 ~ blackbn, data = int, se_type = "HC3")%>%
+  tidy()%>%
+  mutate(model = "m1")
+m32 <- lm_robust(specpct_imputed100 ~ blackbn, data = int, fixed_effects = ~count,  
+                 se_type = "HC3")%>%
+  tidy()%>%
+  mutate(model = "m2")
+m33 <- lm_robust(specpct_imputed100 ~ blackbn, data = int, fixed_effects = ~count + obs, se_type = "HC3")%>%
+  tidy()%>%
+  mutate(model = "m3")
+
+cplot2 <- bind_rows(m31, m32, m33)%>%
+  filter(term == "blackbn1")%>%
+  ggplot(aes(x = estimate, y = model, color = model))+
+  geom_point()+
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high, height = 0.1))+
+  theme_bw()+
+  guides(color = "none")+
+  ggtitle("Coefficient Plots for Table 3")
+cplot2
+```

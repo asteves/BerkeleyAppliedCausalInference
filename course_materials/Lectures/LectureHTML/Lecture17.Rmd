@@ -1,0 +1,349 @@
+---
+title: "Lecture 17"
+date: "10-25-2021"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+library(tidyverse)
+library(knitr)
+library(estimatr)
+style_mono_light(base_color = "#003262",
+                 base_font_size = "25px")
+```
+
+## What did we cover last time?
+
+Last week we discussed selection on observables
+
+We made a note that selection on observables is often hard to believe
+---
+
+## What are we doing today?
+
+Introducing Panel Data 
+
+Introducing Fixed Effects 
+
+---
+
+## What is Panel Data? 
+
+Panel Data is data with at least two dimensions. 
+
+Panel Data is obtained by observing the same unit over several periods 
+
+???
+
+Unlike cross section data, the observation for the same unit is in general dependent. 
+
+For example, panel data on place and weather will likely be correlated from one period to another. 
+
+Panel data is often also known as Time series cross sectional data, or  longitudinal data
+---
+
+## Panel Data 
+
+```{r, echo = F}
+kable(head(gapminder::gapminder))
+```
+
+---
+## Panel Data 
+
+A balanced panel data set is a dataset with the same number of time periods for each cross section unit observation. 
+ 
+
+
+
+---
+
+## The Omitted Variables Problem 
+
+Suppose $\textbf{X} \equiv (x_1,x_2,...,x_k)$ are observable random variables 
+
+Let $c$ be an unobservable random variable. 
+
+We are interested in $E[Y|\textbf{X}, c]$
+
+???
+
+In words, we want to hold c constant when obtaining partial effects of observable explanatory variables. 
+---
+
+## The Omitted Variables Problem 
+
+We estimate this model with the regression: 
+
+$$E[Y|\textbf{X}, c] = \beta_0 + \textbf{X}\beta + c + \epsilon$$
+
+If $Cov(x_j, c) \neq 0$ for some variable, putting c in the error term causes serious problems with an omitted variable.
+
+???
+
+Our interest lies in the beta coefficients. If c is uncorrelated with the x's then c is just another unobserved factor affecting y that is not systematically related to the observable explanatory variables whose effects are interesting. 
+
+With cross sectional data we have one of three possibilities 1) find a proxy for c 2) find an instrument for the variable x that is correlated with c 3) find indicators of c that could be used in a multiple instrumental variables procedures 
+---
+## The Omitted Variables Problem 
+
+If we have access to panel data then we have other possibilities to solve this problem. 
+
+Suppose we make an assumption that c is constant, which means it is an unobserved time-constant variable. We call this an *unobserved effect* in panel data analysis
+
+We are now interested in a new CEF 
+
+$$E[Y_t | \textbf{X}_t, c] = \beta_0 + \textbf{X}_t\beta + c + \epsilon_t$$ 
+
+???
+
+Here t indexes time. XtB is our set of beta coefficients B1xt1 + ... BkXtk. x_ij indicates variable j at time t. This model assumes that c has the same effect on the mean response in each time period. 
+
+The unobserved effect when there are different time periods is often interpreted as capturing features of a unit that are given and do not change over time. 
+---
+## The Unobserved Effects Model 
+
+For a randomly drawn cross section unit i, the UEM is: 
+
+$$Y_{it} = \textbf{X}_{it}\beta + c_i + \epsilon_{it}$$
+
+$c_i$ is often referred to as an individual effect or individual heterogeneity. The errors are called idiosyncratic errors or idiosyncratic disturbances. 
+
+???
+
+The x's can contain observable variables that change across t but not i, variables that change across i but not t and variables that change across both. 
+
+For our models, c_i is allowed to arbitrarily correlate with the x_is. 
+
+---
+
+## First Difference Estimator 
+
+Consider the case when T = 2. Repeated observations make it possible to remove the effect of $c_i$ via differencing. 
+
+We have two periods: 
+
+$$Y_{i,t=2} = \beta_0 + \delta + \beta_1x_{i,t=2} + c_i + e_{i, t = 2} \\
+Y_{i,t=1} = \beta_0  + \beta_1x_{i,t=1} + c_i + e_{i, t = 1}$$
+???
+In most applications, the main reason to collect panel data is to allow for the unobserved effect to be correlated with the explanatory variable. For example, we might think of the effect of crime in a place depends on unmeasured factors of the city that will be correlated with say the unemployment rate. This gives rise to the first differenced equation. 
+
+As long as the change in error is uncorrelated with the change in x in both time periods we can run OLS on this and obtain the first differenced estimator. 
+
+Delta here denotes time. Since in the first period T can be indexed to 0, it drops out. 
+
+From these two equations it should be clear that we can remove the c_i term by subtracting the second equation from the first. 
+---
+
+## First Difference Estimator 
+
+Compute the first time difference for each unit. 
+
+$$\Delta y_i = y_{i2} - y_{i1}\\
+\Delta x_i = x_{i2} - x_{i1} \\
+\Delta e_i = e_{i2} - e_{i1}$$
+
+The first difference equation is then just the regression on this first differenced data. 
+
+$$\Delta y_i = \delta_0 + \beta_1\Delta x_i + \Delta e_i$$
+
+???
+
+The result of doing this is that we remove all time constant variables. That is why c_i disappears, but also why beta 0 disappears as well. As long as our usual assumptions for regression are met we are fine here from an estimation standpoint. The estimator is consistent and has a causal interpretation if the zero conditional mean assumption holds. 
+
+The FD estimator controls for time constant unobserved heterogeneity, but cannot be used when the regressor of interest is time-constant. It is also going to be imprecise if the regressor does not change much over time. 
+
+It is also the case that the first difference estimator is equivalent to the fixed effects estimator when the number of time periods is 2. 
+
+---
+
+## Fixed Effects
+
+A Fixed effects model is a type of UEM. Fixed effects are models for which we are interested in analyzing the impact of variables that vary over time. 
+
+If unobserved variables do not change over time, then any change in the dependent variable must be due to influences other than these fixed characteristics (Stock and Watson 2003)
+
+Models with fixed effects tend to make a similar argument for the CIA with the fixed effects. 
+
+We've seen fixed effects before when we use regression to analyze a block randomization study. 
+
+???
+
+FE explore the relationship between predictor and outcome variables within an entity  (country, person, company, etc.). Each entity has its own individual characteristics that may or may not influence the predictor variables (for example, being a male or female  could influence the opinion toward certain issue; or the political system of a particular country could have some effect on trade or GDP; or the business practices of a company may influence its stock price). 
+
+When using FE we assume that something within the individual may impact or bias the predictor or outcome variables and we need to control for this. This is the rationale behind the assumption of the correlation between entity’s error term and predictor variables. 
+FE remove the effect of those time-invariant characteristics so we can assess the net effect of 
+the predictors on the outcome variable. Another important assumption of the FE model is that those time-invariant characteristics are unique to the individual and should not be correlated with other individual characteristics. Each entity is different therefore the entity’s error term and the constant (which captures individual characteristics) should not be correlated with the others. If the 
+error terms are correlated, then FE is no suitable since inferences may not be correct and you need to model that relationship (probably using random-effects), this is the main rationale for the Hausman test (presented later on in this document). 
+---
+## Fixed Effects 
+
+Consider a model with a single explanatory variable 
+
+$$y_{it} = \beta_0 + \beta_1x_{it} + c_i + \epsilon_{it}$$
+
+The Within Transformation of this equation is: 
+
+$$y_{it} - \bar{y}_{it} = \beta_1(x_{it} -\bar{x}_{it}) + \epsilon_{it} - \bar{\epsilon}_{it}$$
+
+In R: 
+
+```{r, eval = F}
+fit <- lm_robust(outcome ~ D + time_var, data = data)
+
+```
+
+???
+
+We can average this equation over time for each unit i and then subtract that equation from the original model. This defines the demeaned data on [y,x] which is the observations of each panel with their mean values for each unit removed. 
+
+This regression is something called the Least Squared Dummy Variable.
+
+It's equivalent to what we commonly do, but I show it to be clear that at some level FE estimation is just a bunch of categorical dummies. 
+
+Like FD models, you cannot include time-invariant variables in a fixed effects model since the demeaning process will cause their value to be 0 for all time periods. That's also why the beta_0 drops out here. 
+---
+## Fixed Effects in Randomized Block Designs 
+
+We've seen fixed effects before when we estimated block randomized control trials 
+
+Each block is a categorical variable for which within each block we have some randomization scheme. 
+
+???
+
+Note that if we are worried that fixed effects will not work well if we have very different block sizes. For example, one village in each parish is selected for a treatment, but parishes are of different sizes. 
+
+Fortunately, we can solve this problem still in this model by just running the same analysis as before except with units reweighted by the inverse variance of assignment, or by using IPW with fixed effects 
+---
+## Fixed Effects of Experiment with estimatr 
+
+```{r, eval = F}
+
+FE_Estimator <- lm_robust(Y ~ D, 
+                          fixed_effects = ~block)
+
+FE_IPW <- lm_robust(Y~D, 
+                    weights = 1/D_cond_prob, 
+                    fixed_effects = ~block)
+
+FE_InvVarWeight <- lm_robust(Y~D, 
+                             weights = 1/(D_cond_prob*(1-D_cond_prob),
+                             fixed_effects = ~block)
+```
+
+???
+
+Here are just generically an example of why the actual code for this can be quite simple. 
+
+Note again, while fixed effects does average across the within block effects it might use the wrong weighting scheme and put more weight on the blocks with the greatest variance in the treatment variable. In situations where we are not treating every block equally this is going to lead to the problem. The last two are more useful because they can be used even if the heterogeneity in assignment propensities is at the unit level and not at the block level. 
+---
+## Assumptions for Fixed Effects 
+
+1. For each unit the model is $Y_{it} = X_{ij}\beta + c_i + \epsilon_{it}$ where the $\beta_j$ are parameters to estimate and $c_i$ is the unobserved effect. 
+
+2. We have a random sample from the cross-section 
+
+3. Full Rank. Each explanatory variable changes over time for at least some time periods and there is no perfect linear relationships among the explanatory variables
+
+4. For each time period $E[\epsilon_{it}|\textbf{X}_i, c_i] = 0$
+
+???
+
+Assumption 4 is the panel data equivalent of the zero conditional mean assumption. The expected value of the idiosyncratic error given the explanatory variables in all time periods and the unobserved effect is 0. 
+
+Under these 4 assumptions the fixed effects estimator is unbiased. It is also consistent with fixed T as N goes to infinity. 
+
+Less technically, the key assumption of no time-varying OMB means that except for the intervention the two groups should not otherwise have had any different changes over time
+---
+## Some Issues of Interpretation 
+
+In addition to the assumptions required for estimation, we should consider the following for interpretation. 
+
+1. Isolate relevant variation in the treatment 
+
+2. Identify the plausible counterfactual shift in D given data
+
+3. Clarify the variation being studied 
+
+4. Consider the outcome scale
+
+???
+
+Discussion comes from Mummolo and Peterson (2018)
+
+1. Residualize the key independent variable with respect to the fixed effects being employed (FWL). To do this, we regress treatment on dummies that are the fixed effects and store the resulting vector of residuals. This is the variation in X that is used to estimate the coefficient of interest in the FE model
+
+2. Make a visualization of the within-unit ranges of the treatment to get a sense of the relevant shifts in X that occur in the data. Compute the standard deviation of the transformed (residualized)
+independent variable, which can be thought of as a typical shift in the portion of the independent variable that is being used during the fixed effects estimation. Multiply the estimated coefficient of interest by the revised standard deviation of the independent variable to assess substantive importance. Note for readers what share of observations do not exhibit any variation within units to help characterize the generalizability of the result. Alternatively,
+if describing the effect of a one-unit shift, or any other quantity, note the ratio of this shift in X to the within-unit standard deviation, as well as its location on the recommended histogram, to gauge how typically a shift of this size occurs within units.
+
+3. researchers should clarify which variation is being used to estimate the coefficient of interest. For example, if only within-unit variation is being used, then phrases like “as X changes within countries over time, Y changes …” should be used when describing treatment effects.
+
+4. Consider characterizing this new effect in terms of both the
+outcome’s units and in terms of standard deviations of the original and transformed outcome (i.e., the outcome residualized with respect to fixed effects). The substance of particular studies should be used to guide which outcome scale is most relevant.
+---
+
+## Example 1: Eckhouse (2021)
+
+"Metrics Management and Bureaucratic Accountability: Evidence from Policing"
+
+Government depend on agents to enforce decisions. They may build in metrics to assess these. Eckhouse shows how metrics management encourages bureaucrats to prioritize work with rapid measurable results and deprioritize complex and uncertain projects 
+
+She focuses on police departments and the use of CompStat
+
+---
+## Example 1: Eckhouse (2021)
+
+<img src="eck2.png", width="90%"/>
+
+???
+
+Data manipulation has been identified locally in a variety of crimes: homicides, assault, and sexual assault (Bernstein and Isackson 2014; Poston and Rubin 2014; Rayman 2013). Measuring manipulation is challenging because researchers have access only to the altered data. However, I identify a strategy for identifying data manipulation in the case of rape reports: reclassifying rapes as “unfounded.”
+
+This strategy takes advantage of a socially constructed idea unique to rape: the common but erroneous belief that rape is prone to false allegations and unfounded complaints (Spohn and Horney 2013). This allows police to alter rape statistics—unlike numbers for assaults, homicides, motor vehicle theft, and other serious crimes—by designating rapes “unfounded,” a category reported in FBI data. In a comprehensive survey of problems in rape statistics, Yung (2014) finds many small studies in which police classified “ordinary rape complaints” with intoxicated victims as “unfounded,” and evidence that police in large city departments used unfoundedness to reduce crime measures.
+
+Eckhouse use policing as a case study because the stakes are high: the consequences of shirking, which metrics management aims to prevent, are serious, as are the consequences of increases in minor arrests and data manipulation. People's lives and civic participation may be forever altered by an arrest (Kohler-Hausmann 2013; Walker 2018; White 2019), or by the lack of state consequences for serious crimes when they are downgraded or hidden (Leovy 2015).
+
+data manipulation also has massive substantive consequences. Media accounts of the New York, Chicago, and Los Angeles police departments have described police downgrading of serious crimes. In New York, a string of related sexual assaults occurred in a single neighborhood in 2002. Under pressure to post weekly crime reductions, police recorded the assaults as criminal trespassing or other misdemeanors. Over two months, the perpetrator grew bolder in his methods and targets. The pattern of attacks was not discovered until he was apprehended and confessed, when the detective questioning him looked through the precinct's complaints and found the misclassified incidents (Rayman 2013).
+
+This case exemplifies the real-world consequences of data manipulation by police. Communities are robbed of public safety and access to formal law when officers downgrade complaints.
+---
+
+## Example 1: Eckhouse (2021)
+
+<img src="eckhouse.png", width="90%"/>
+
+
+???
+
+Compstat is a binary independent variable describing whether a city has adopted CompStat; it is equal to 0 until an agency adopts CompStat, and equal to 1 thereafter. urn:x-wiley:00925853:media:ajps12661:ajps12661-math-0093 is a vector of control variables described for each individual analysis. urn:x-wiley:00925853:media:ajps12661:ajps12661-math-0094 is the agency effect, and urn:x-wiley:00925853:media:ajps12661:ajps12661-math-0095 represents the year effect.
+
+The main threat to the validity of the estimate is omitted variable bias. With city-level fixed effects included, coefficient estimates control for both observed and unobserved differences between cities. I also include year fixed effects because both crime and arrests have substantial temporal variation. 
+
+I use “unfounded” classifications for reported rapes to test for data manipulation. Adopting CompStat is associated with an increase in 1.9 percentage points in the share of rapes designated unfounded (see Table 5). Because the mean share of rapes reported unfounded is 6.8%, adopting CompStat is associated with a 28% increase in the share of rapes reported as unfounded. Some may worry that CompStat would affect the number of rapes committed or reported to police, leading to posttreatment bias because the share of rapes declared unfounded is conditional on the denominator reported. 
+
+
+

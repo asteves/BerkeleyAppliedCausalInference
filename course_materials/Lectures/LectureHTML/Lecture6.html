@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lecture 6</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture6_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lecture 6
+### Alex Stephenson
+### 9-8-2021
+
+---
+
+
+
+
+
+
+## What did we do last time? 
+
+Explained in detail what we mean by randomization and what is required for randomization to eliminate selection bias. 
+
+We care about physical procedures that provide us with confidence that treatment is unconfounded with potential outcomes. 
+
+---
+
+## What are we doing today? 
+
+Announcing that OH this week are immediately after section in the same room 
+
+Introducing Randomization Inference
+
+---
+
+## What does inference mean? 
+
+It is usually not the case that we are interested in the subject pool exclusively. Rather we are interested in using the units in an experiment to make an inference about a target population. 
+
+Tests for inference ought to: 
+
+1. Control the false positive rate such that the test false positive size is less than or equal to the test's false positive level. This is satisfied by every common procedure you've heard about. 
+
+2. Be unbiased so that the probability of rejecting the null when it is false and the alternative hypothesis is true be at least as great as the probability of rejecting the null hypothesis when it is true and the alternative hypothesis is false. 
+
+3. Have the property that as the size of the study population increases while all other factors remain constant `\(P(Reject|H_0 = FALSE, H_1 = TRUE)\)` should go to 1. 
+
+???
+
+False positive is also referred to as Type 1 error. 
+
+The level of a test is the probability of making a type 1 error. The size of a test is the supremum over all data generating process that satisfy the null hypothesis 
+
+`$$\alpha = \sup_{h \in H_0} P[-H_0|h]$$`. In most cases of interests these are the same. 
+
+A supremum is the smallest upper bound of a set, and may or may not be in the set itself. For example B = {x|x &lt;2} the supremum is 2, the maximum is not well defined. 
+
+Intuitively, we want to reject something that is false and not reject something that is true. A test that leads us to reject true null with greater probability than false nulls does not yield unbiased inferences in this sense. 
+
+---
+
+## Sampling Distributions 
+
+A sampling distribution: The frequency distribution of a statistic obtained from hypothetical replications of a randomized experiment. 
+
+The sampling distribution of the ATE is ~ `\(N(\mu, \sigma^2)\)` as the number of observations in treatment and control groups increase
+
+???
+
+This actually travels more generally to hypothetical replications of a design
+---
+
+## Example 
+
+.pull-left[
+Suppose we have the following schedule of 
+potential outcomes 
+
+```
+## # A tibble: 7 × 4
+##      id    y0    y1   tau
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1    20    25     5
+## 2     2    25    25     0
+## 3     3    30    40    10
+## 4     4    30    25    -5
+## 5     5    20    30    10
+## 6     6    25    25     0
+## 7     7    25    40    15
+```
+]
+
+.pull-right[
+The sampling distribution of our estimated ATE when assigning 2 units to treatment
+
+&lt;img src="Lecture6_files/figure-html/unnamed-chunk-2-1.png" width="100%" /&gt;
+
+In this example, the true ATE is 5 but any single experiment is too high or too low
+]
+
+
+
+---
+## Definitions 
+
+Standard Deviation of a variable X: `\(\sqrt{\frac{1}{N}\sum_1^N(X_i - \bar{X})^2}\)`
+
+Sample Standard Deviation plug-in estimator: `\(\sqrt{\frac{1}{N-1}\sum_1^N(X_i - \bar{X})^2}\)`
+
+Standard Error: `\(\sqrt{\frac{1}{J}\sum_1^J(\hat{\theta_j} - \bar{\hat{\theta}})^2}\)`
+
+Covariance: `\(\frac{1}{N}\sum_1^N[(Y_i(0) - \bar{Y_i(0)})(Y_i(1)-\bar{Y_i(1)})]\)`
+???
+
+X bar denotes the mean of X. The formula divides by the total number of units. This is a population standard deviation formula. 
+
+The standard error is th standard deviation of a sampling distribution. Imagine there are J possibly ways to randomly assign units. Let hat theta j represent the estimate we obtain from the jth randomization and bar hat theta represent the average estimate for all J. 
+
+To get covariance, we subtract the mean from each variable and then calculate the average cross product of the result. The covariance is a measure of association between two variables. 
+
+---
+## Properties of Variances and Covariances 
+
+.pull-left[
+The correlation between two variables: 
+
+`\(\rho[X,Y]= \frac{Cov[X,Y]}{\sigma_x, \sigma_y}\)`
+]
+.pull-right[
+Properties of covariances 
+
+`\(Cov[X,X]=V[X] \geq 0\)` 
+
+`\(Cov[X, X + \tau]=V[X]+ Cov(X, \tau)\)`
+
+`\(Cov[aX, bY] = abCov[X, Y]\)`
+]
+
+???
+
+The sigmas are the standard deviations of the variances of X and Y respectively where X and Y are two random variables. 
+---
+## Proofs of Properties 
+
+Some facts about the `\(E[]\)` operator 
+
+1. Expectation of a constant `\(E[c] = c\)`
+
+2. Expectation of a scalar applied to a variable `\(E[aX] = aE[X]\)`
+
+3. Linearity of Expectations `\(E[aX + bY + c] = aE[X] + bE[Y]+c\)`
+
+---
+## Proofs of Properties 
+
+1) `\(Cov[X,X] = V[X]\)`
+
+Useful fact 1: to know that the variance can be written as `\(V[X] = E[X^2]-E[X]^2\)` 
+
+Useful fact 2: The alternative way to write `\(Cov[X,Y] = E[XY] - E[X]E[Y]\)`
+
+To prove the first property of interest 
+`$$\begin{aligned}
+Cov[X,X] &amp;= E[XX] - E[X]E[X] \\
+Cov[X,X] &amp;= E[X^2] - E[X^2] \\
+Cov[X,X] &amp;= V[X]
+\end{aligned}$$`
+
+---
+## Proofs of Properties 
+
+2) `\(Cov[X,X+\tau]=V[X] + Cov[X, \tau]\)`
+
+Useful fact: `\(Cov[X,c]=E[cX] - E[X]E[c] = cE[X]-cE[X] = 0\)`
+
+Useful fact 2: `\(V[X, c] = V[X]\)` and `\(V[aX] = a^2V[X]\)`
+
+To prove the second fact of covariances, provided `\(\tau\)` is a constant 
+`$$\begin{aligned}
+Cov[X,X+\tau] &amp;= Cov[X,X]+Cov[X,\tau] \\
+Cov[X,X+\tau] &amp;= V[X]+ Cov[X, \tau] \\
+Cov[X,X+\tau] &amp;= V[X]
+\end{aligned}$$`
+
+---
+
+## Proofs of Properties 
+
+3) `\(Cov[aX, bY] = abCov[X,Y]\)`
+
+To prove this: 
+`$$\begin{aligned}
+Cov[aX, bY]  &amp;= E\left[(aX - E[aX])(bY - E[bY])\right] \\
+Cov[aX, bY] &amp;= E\left[(aX - aE[X])(bY - bE[Y])\right] \\
+Cov[aX, bY] &amp;= E\left[a(X-E[X])b(Y-E[Y])\right] \\
+Cov[aX, bY] &amp;= abE[(X-E[X])(Y-E[Y])] \\
+Cov[aX, bY] &amp;= abCov[X,Y]
+\end{aligned}$$`
+
+---
+## Standard Error of the ATE 
+
+`$$\sigma_{\hat{ATE}} = \sqrt{\frac{1}{N-1}\left(\frac{mV[Y_i(0)])}{N-m} + \frac{(N-m)V[Y_i(1)]}{m} + 2Cov[Y_i(0), Y_i(1)]\right)}$$`
+???
+
+This formula has five inputs, N, m, V(Yi0), V(Yi1), and Cov(). We also never observe the last term in real data because we never see the covariance of both potential outcomes at once
+---
+## Implications for Research Designs 
+
+1. As `\(n \rightarrow \infty\)`, `\(\sigma_{\hat{ATE}}\)` decreases
+
+2. The smaller `\(V[Y_i(0)]\)` or `\(V[Y_i(1)]\)` the smaller the standard error
+
+3. If `\(Y_i(0)\)` and `\(Y_i(1)\)` vary the smaller the covariance between them the smaller the standard error
+
+4. When `\(V[Y_i(0)]\)` and `\(V[Y_i(1)]\)` are similar, assign groups equally. When different, assign more observations to condition with higher variance.
+
+5. Research designs, and experiments in particular, provide information on 4 of the 5 inputs to the formula. We cannot observe the covariance between `\(Y_i(0)\)` and `\(Y_i(1)\)`
+
+???
+
+Holding constant other inputs, including the size of treatment group, increasing N means increasing the control group. If control group were infinite, the only source of uncertainty would come from control group. The same holds for the reverse situation. Increasing size of both groups reduces all three terms in the equation
+---
+## Conservative Formula for SE in Samples 
+
+To get around this, our plug in estimator is conservative and assumes that the treatment effect is constant for all units. This implies that `\(\rho[Y_i(0), Y_i(1)] = 1\)`
+
+`$$\hat{\sigma_c} = \sqrt{\frac{\hat{V[Y_i(0)]}}{N-m} + \frac{\hat{V[Y_i(1)]}}{m}}$$`
+where: 
+
+`$$\hat{V[Y_i(1)]} = \frac{1}{m-1} \sum_1^m (Y_i(1)|d_i = 1 - \frac{\sum_i^m Y_i(1)|d_i = 1}{m})^2$$`
+`$$\hat{V[Y_i(0)]} = \frac{1}{N-m-1} \sum_1^m (Y_i(0)|d_i = 0 - \frac{\sum_i^m Y_i(0)|d_i = 0}{N-m})^2$$`
+
+???
+
+This plug-in estimator is unbiased when the treatment effect is either constant or when subjects are randomly sampled from a large population prior to random assignment and the objective is to get an estimate of the ATE. When we randomly sample from a large population, the selection of one subject for a treatment or control group has no material effect on the pool of available subjects for the other group, which makes the covariance irrelevant. 
+
+---
+## Hypothesis Testing with the Sharp Null Hypothesis 
+
+Primary question is how likely are we to observe an outcome at least as extreme provided there was no treatment effect at all. 
+
+Sharp Null Hypothesis of No Effect: `\(Y_i(1) = Y_i(0), \forall i\)`
+
+Null Hypothesis of No Average Effect: The ATE is 0. `\(\mu_{Y(1)} = \mu_{Y(0)}\)`
+
+---
+
+## *p*-values and Randomization Inference 
+
+Randomization Inference: The sampling distribution of the test statistic under the null is computed by simulating all (or a large random sample) possible treatment assignment. 
+
+*p*-value: The probability of obtaining a test statistic at least as large as the observed test. For a two tailed test, at least as large means at least as large in absolute value. 
+---
+
+## Randomization Inference Algorithm 
+
+1. Run an experiment 
+
+2. Decide the test statistic of interest. `\(T(D, Y^{obs}, \textbf{X})\)`
+
+3. State the null hypothesis of interest 
+
+4. State a randomization procedure
+
+???
+
+This is a non-parametric test. We do not rely on any model specified in terms of unknown parameters. We also do not model the distribution of outcomes. Our vectors of potential outcomes are fixed (by assumption), but unknown. What we do know is the assignment mechanism, and that drives all the results here. 
+---
+
+## Confidence Intervals with Randomization Inference 
+
+1. Assume the treatment effect `\(\tau_i\)` is the same for all units. 
+
+2. Impute missing potential outcomes for each unit. 
+
+3. Simulate all possible assignments 
+
+4. Sort in ascending order. The `\(CI_\alpha\)` of interest is the `\(\frac{\alpha}{2}, 1-\frac{\alpha}{2}\)` interval estimates. 
+
+Interpretation: Over infinite hypothetical realizations of the experiment, interval have a 95% change of containing the true ATE
+
+
+???
+When treatment and control groups contain equal numbers of units, these CI will tend to be conservative
+
+Another method, which we will not cover is the "inversion" method which is more computationally intense but yields similar results as N gets largeß
+---
+## Randomization Inference Example 
+
+.pull-left[
+
+
+
+One realization of assigning 2 units to treatment. Why are there only 21 unique ways to do this?
+
+Here we run an experiment and get a plug-in estimate of the ATE of 6.5. 
+
+What's the probability that we would obtain an estimate at least as large if the true effect was zero (SN)?
+
+
+]
+
+.pull-right[
+
+|  d|  y|
+|--:|--:|
+|  1| 25|
+|  0| 25|
+|  0| 30|
+|  0| 30|
+|  0| 20|
+|  0| 25|
+|  1| 40|
+]
+
+
+???
+
+There are 21 possible ways to do this because we have a combination problem. Here we need to assign 2 elements out of 7 to treatment group. There are 7 choose 2 ways to do this. 
+
+In R, there is a built in command choose(x,n) that will calculate this value for you. 
+---
+
+## Randomization Inference Example 
+.pull-left[
+
+```
+## # A tibble: 21 × 1
+##        x
+##    &lt;dbl&gt;
+##  1  -7.5
+##  2  -7.5
+##  3  -7.5
+##  4  -4  
+##  5  -4  
+##  6  -4  
+##  7  -4  
+##  8  -4  
+##  9  -0.5
+## 10  -0.5
+## # … with 11 more rows
+```
+]
+.pull-right[
+
+```r
+sum(x &gt;= 6.5)/21
+```
+
+```
+## [1] 0.2380952
+```
+
+```r
+## As a computational trick 
+# mean(x &gt;=6.5) also works
+```
+
+Even if the true value was 0, we'd still expect to see a value of 6.5 or greater ~24% of the time under this allocation scheme. 
+
+Do we think it's likely that the true effect is 6.5?
+]
+---
+## Randomization Inference Example 
+
+
+```r
+ci_l &lt;- quantile(sort(x), 0.025)
+ci_u &lt;- quantile(sort(x), 0.975)
+
+print(paste0("95% CI is (", ci_l,",", ci_u,")"))
+```
+
+```
+## [1] "95% CI is (-7.5,10)"
+```
+
+The confidence interval for this test statistic is very wide and includes 0. 
+
+As a rule, if the CI includes 0 we cannot reject the null at the level specified 
+---
+
+## Next Time 
+
+Apply the same methods to block and cluster designs 
+
+Compare randomization with approximation methods
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

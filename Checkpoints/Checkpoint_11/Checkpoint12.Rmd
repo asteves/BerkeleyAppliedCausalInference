@@ -1,0 +1,28 @@
+---
+title: "Checkpoint 12"
+date: "Due: 11/12/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Required Reading 
+
+Read "Targeting Ordinary Voters or Political Elites? Why Pork Is Distributed Along Partisan Lines in India" (Bohlken 2018) available on bCourses or through the Library. 
+
+We have reached the point in the semester where you have seen many examples RMarkdown files to answer Checkpoints. For this checkpoint, you must create your own file with the title "Checkpoint 12" and your name as the author. 
+
+
+## Questions 
+
+After reading the article, answer the following questions. For all of these questions, write the answers in your own words targeted towards the comprehension level of an interested friend. 
+
+1. What is the primary research question of this article? Why does it matter for politics?
+
+
+2. There are two significant logics discussed in the article. Define them and explain the main observable implication of each. 
+
+
+3. Describe how the regression discontinuity design was done to such a level that someone with the same data as the original article would have a clear idea of how to replicate the analysis. Simply copy/pasting from the article or giving partial fragments will not be accepted. Imagine as if you are writing this answer as the main part of an application essay. A complete answer to this question will include within the answer: the nature of the RD, the three main components of a regression discontinuity as applied to the research problem of the article, and the main result of the article. 

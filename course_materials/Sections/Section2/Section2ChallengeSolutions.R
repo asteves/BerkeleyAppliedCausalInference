@@ -1,0 +1,118 @@
+# Section Script Challenge Answers 
+library(tidyverse)
+
+### Challenge 1 
+### Create a data frame with three variables both ways
+
+myDf <- data.frame(
+  x = c(1,2,4,6),
+  y = c("John", "Paul", "George", "Ringo"),
+  z = c(TRUE, FALSE, TRUE, FALSE)
+) 
+
+# see the first few rows
+head(myDf)
+
+myTibble <- tibble(
+  x = c(1,2,4,6),
+  y = c("John", "Paul", "George", "Ringo"),
+  z = c(TRUE, FALSE, TRUE, FALSE)
+) 
+
+# see the first few rows 
+head(myTibble)
+
+### Challenge 2 
+### Create a tibble with three variables. Make the second variable equivalent to the first variable + 10 and the third variable equivalent to the first variable + 100 
+
+myTibble2 <-tibble(
+  x = c(1,2,4,6),
+  y = x + 10,
+  z = x + 100
+)
+
+
+### Challenge 3 
+# Generate two different random normal variables. For the first one, draw 100 observations from a standard normal distribution. For the second, draw a different number of observations from a different normal distribution. 
+
+rand1 <- rnorm(n = 100, mean = 0, sd = 1) 
+
+# Show the first six values 
+rand1[1:6]
+
+rand2 <- rnorm(n = 1000, mean = 20, sd = 13.5)
+
+# As an example of another way to get numbers
+# Show the 1,3,5,7,9,11 elements 
+rand2[seq(1,12,by = 2)]
+
+### Challenge 4
+## Fill in the following tibble to create a data frame for simulation
+
+research_df <- tibble(
+  id = 1:50,
+  Y0 = rnorm(50, 50, 10),
+  Y1 = Y0 + 5, 
+  ITE = Y1 - Y0,
+  treat = if_else(id %% 2 == 0, 1, 0),
+  YObs = if_else(treat == 1, Y1, Y0)
+)
+
+head(research_df)
+
+### Challenge 5 
+## a) Fill in the function addition so that it runs correctly on test data 
+
+addition <- function(arg1, arg2){
+  out <- arg1 + arg2
+  return(out)
+}
+addition(2,4) == 6
+
+# Note you don't need to specify the initial computation. This also works 
+addition <- function(arg1, arg2){
+  return(arg1 + arg2)
+}
+
+## Test by running this line. Should return TRUE if correct 
+addition(2,4) == 6
+
+## b) Fill in the arguments for add4 so that it runs correctly on test data 
+
+addNumber <- function(start, toAdd){
+  return(start + toAdd)
+}
+
+## Test by running this line. Should return TRUE if correct
+addNumber(0,4) == 4
+
+## c) Write your own function to multiply two numbers together. Call this function multNum 
+multNum <- function(arg1, arg2){
+  return(arg1 * arg2)
+}
+
+## Test by running these three line. Should return TRUE if correct 
+multNum(2,2) == 4 
+multNum(0, 100) == 0
+multNum(100, 0) == 0
+
+# This also works 
+multNum <- function(arg1, arg2){
+  out <- arg1 * arg2
+  return(out)
+}
+## Test by running these three line. Should return TRUE if correct 
+multNum(2,2) == 4 
+multNum(0, 100) == 0
+multNum(100, 0) == 0
+
+# So does this but is probably the least preferred
+# because the arguments are not clear like the other two functions
+multNum <- function(curtis, mayfield){
+  return(curtis*mayfield)
+}
+
+## Test by running these three line. Should return TRUE if correct 
+multNum(2,2) == 4 
+multNum(0, 100) == 0
+multNum(100, 0) == 0

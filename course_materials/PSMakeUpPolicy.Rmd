@@ -1,0 +1,22 @@
+---
+title: "Problem Set Makeup Guidelines"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+To move a problem set grade from incomplete to complete, you must do the following. 
+
+A) On the original problem set, a good faith effort was made to answer every question. Starting on problem set 2, problems that have no answer are not eligible for makeups. This means it will be impossible to receive an E grade for the assignment. 
+
+B) The student will create their own RMarkdown file and knit it to a pdf document which they will then submit. A basic RMarkdown template to work from is available on bCourses. 
+
+C) For each problem highlighted by the instructor to be made up, the student must. 
+
+1. Provide the correct solution as given by the solution manual. 
+
+2. Concisely explain what is different between the correct solution and the student's original answer. 
+
+D) Following corrections for all the problems highlighted by the instructor, a self-assessment about what you thought you did well and what you thought was challenging for you on the assignment. The self-assessment should be a reasonable length. The purpose of this exercise pedagogically is related to, though not the same, as what is known as retrieval practice. 

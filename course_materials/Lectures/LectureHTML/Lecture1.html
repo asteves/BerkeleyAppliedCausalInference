@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Applied Causal Inference</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Alex Stephenson" />
+    <script src="Lecture1_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Applied Causal Inference
+## Lecture 1
+### Alex Stephenson
+### 8-25-2021
+
+---
+
+
+
+
+
+
+## What are we doing today?
+
+1. Course Overview 
+2. Introductions 
+3. Take the Final Exam
+
+---
+class: highlight-last-item 
+## Course Overview 
+
+We have three goals in this course 
+
+- Understand the concepts of applied causal inference 
+
+
+
+- Demonstrate our learning through code that we can take to future research or jobs 
+
+
+
+- Enjoy doing Goals 1 and 2
+
+
+
+My job is to help you learn this material as best as possible. Think of me as a coach. 
+
+---
+
+## Where do I find stuff? 
+
+- The syllabus has all basic information for the course. 
+
+
+
+- I cannot emphasize enough that you should read the syllabus 
+
+
+
+- Seriously, instructors spend lots of time on the syllabus. Humor us by reading the syllabus. 
+---
+
+## Yeah, but what if it's not in the syllabus?
+
+- Feel free to reach out to me or your fellow classmates. 
+
+
+- Lots of information comes through email and bCourses. Check them frequently. 
+---
+
+class: center, middle 
+## Course Mechanics 
+
+---
+class: highlight-last-item 
+## Lecture Mechanics 
+
+Berkeley time means we 150 minutes of lecture a week. I plan to split up the lectures as follows: 
+
+- First 50 Minutes: Concept overview 
+
+
+
+- Second 50 Minutes: Basic application of the concept 
+
+
+
+- Third 50 Minutes: Additional application of the concept. 
+
+- Lecture slides go up on bCourses after lecture.
+---
+## What should I bring to lecture?
+
+- On Mondays: 
+  - Whatever you like to take notes on. 
+
+
+
+- On Wednesdays and Fridays: 
+
+  - Whatever notes you thought were useful
+  - Anything else that you think will be helpful, but at minimum a computer. 
+
+---
+
+## A Brief Digression on Notes and Studying 
+
+- You're probably taking notes wrong 
+
+- You're probably studying wrong 
+
+- If either or both are true, it's not your fault. No one taught you. 
+
+---
+## Section Mechanics 
+
+Section is R heavy by design. 
+
+The purpose of section is to prepare you for applications and assignments. 
+
+You will always need a laptop in Section. 
+
+Section materials will always be posted on bCourses, often before section begins.
+
+---
+
+## Assignments 
+
+- This class works differently than other classes you have taken at Berkeley. 
+
+- We're working together during a pandemic, so flexibility to changing circumstances is a virtue. 
+
+---
+
+class: center, middle 
+## Introductions 
+
+---
+class: center, middle
+## Final Exam
+---
+
+## Are you \*\*\*\*\*\*\* kidding?
+
+---
+## No, but it's short. 
+
+The answers themselves have no effect on your grade. It is for you and I to have a record of where you started at the beginning of class. 
+
+Completing and turning in the assignment counts as the first Checkpoint. 
+
+We will cover all the material on the final exam over the semester. 
+
+Please turn it in before you leave today. I'll hand it back in section. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
