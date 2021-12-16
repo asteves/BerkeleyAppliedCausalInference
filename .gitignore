@@ -1,2 +1,4 @@
 .DS_*
 *DS_
+.RHistory
+.Rhistory
